@@ -108,29 +108,45 @@ export class RegisterComponent {
   submitted2: boolean = false;
   verifyCodeErrorMessage = "";
 
-  onVerifyCode() {
-    this.isLoading = true;
-    this.submitted2 = true;
-    if (this.codeForm.valid) {
-      this.userService.verifycode(this.emailsaved, this.codeForm.value.verificationCode).subscribe({
-        next: value => {
-          console.log(value);
-        },
-        error: err => {
-          console.error(err);
-          console.log(this.emailsaved);
-          console.log(this.codeForm.value.verificationCode);
-          this.verifyCodeErrorMessage = "code de verification invalide";
-          this.isLoading = false;
-        },
-        complete: () => {
-          this.successMessage = "Votre compte a été créé avec succès!";
-          this.showCodeInput = false;
-          this.isLoading = false;
-        }
-      });
-    }
+onVerifyCode() {
+  this.isLoading = true;
+  this.submitted2 = true;
+
+  if (this.codeForm.valid) {
+    const verificationPayload = {
+      email: this.emailsaved,
+      code: this.codeForm.value.verificationCode,
+      nom_user: this.registerForm.value.username,
+      password: this.registerForm.value.password,
+      tbl_filiere_id: this.registerForm.value.filiere,
+      matricule: this.registerForm.value.matricule
+    };
+
+    this.userService.verifycode(
+      verificationPayload.email,
+      verificationPayload.code,
+      verificationPayload.nom_user,
+      verificationPayload.password,
+      verificationPayload.tbl_filiere_id,
+      verificationPayload.matricule
+    ).subscribe({
+      next: value => {
+        console.log('✅ Compte créé avec succès :', value);
+      },
+      error: err => {
+        console.error('❌ Erreur de vérification :', err);
+        this.verifyCodeErrorMessage = "Code de vérification invalide ou informations incorrectes.";
+        this.isLoading = false;
+      },
+      complete: () => {
+        this.successMessage = "Votre compte a été créé avec succès!";
+        this.showCodeInput = false;
+        this.isLoading = false;
+      }
+    });
   }
+}
+
 
   openDialog(): void {
     const dialogRef = this.dialog.open(LoginPopupComponent, {

@@ -86,13 +86,29 @@ export class UserService {
     );
   }
 
-  verifycode(email: string, code: string): Observable<any> {
-    return this.http.post(
-      `${this.apiUrl}/usecases/auth/verify`,
-      { email, code },
-      { withCredentials: true }
-    );
-  }
+  verifycode(
+  email: string,
+  code: string,
+  nom_user: string,
+  password: string,
+  tbl_filiere_id: string,
+  matricule: string
+): Observable<any> {
+  const body = {
+    email,
+    code,
+    nom_user,
+    password,
+    tbl_filiere_id,
+    matricule
+  };
+
+  return this.http.post(
+    `${this.apiUrl}/usecases/auth/verify`,
+    body
+  );
+}
+
 
   verifyResetcode(email: string, verification_code: string): Observable<any> {
     return this.http.post(
