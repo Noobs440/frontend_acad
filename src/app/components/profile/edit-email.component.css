@@ -1,0 +1,79 @@
+.edit-email-container {
+  max-width: 400px; /* Largeur maximale du conteneur */
+  margin: auto;
+  text-align: center;
+  background-color: #ffffff; /* Fond blanc pour un aspect propre */
+  padding: 20px;
+  border-radius: 10px; /* Coins arrondis */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Ombre légère pour profondeur */
+}
+
+h2 {
+  color: #2196f3; /* Couleur bleue pour le titre */
+  margin-bottom: 20px; /* Espace sous le titre */
+}
+
+.form-group {
+  margin-bottom: 15px; /* Espace entre les groupes de formulaires */
+  text-align: left; /* Alignement à gauche pour les labels */
+}
+
+label {
+  font-weight: bold; /* Met le label en gras */
+  color: #333; /* Couleur du texte du label */
+}
+
+.input-group {
+  position: relative; /* Pour le positionnement des éléments internes */
+}
+
+.form-control {
+  width: 100%; /* Prend toute la largeur */
+  padding: 10px; /* Espacement interne */
+  border: 1px solid #ccc; /* Bordure grise claire */
+  border-radius: 5px; /* Coins arrondis */
+  transition: border-color 0.3s; /* Transition pour la bordure */
+}
+
+.form-control:focus {
+  border-color: #2196f3; /* Bordure bleue au focus */
+  outline: none; /* Supprime le contour par défaut */
+}
+
+.is-invalid {
+  border-color: #dc3545; /* Bordure rouge pour les champs invalides */
+}
+
+.invalid-feedback {
+  color: #dc3545; /* Couleur rouge pour le message d'erreur */
+  font-size: 0.875em; /* Taille de police réduite pour le message d'erreur */
+}
+
+.btn-primary {
+  background-color: #2196f3; /* Couleur de fond bleue */
+  color: white; /* Texte en blanc */
+  border: none; /* Pas de bordure */
+  border-radius: 5px; /* Coins arrondis */
+  padding: 10px 20px; /* Espacement interne */
+  cursor: pointer; /* Curseur pointer sur hover */
+  transition: background-color 0.3s; /* Transition pour l'effet de survol */
+}
+
+.btn-primary:hover {
+  background-color: #1976d2; /* Teinte plus foncée au survol */
+}
+
+.alert {
+  margin-top: 15px; /* Espace au-dessus des alertes */
+  border-radius: 5px; /* Coins arrondis */
+}
+
+.alert-success {
+  background-color: #d4edda; /* Fond vert clair */
+  color: #155724; /* Texte vert foncé */
+}
+
+.alert-danger {
+  background-color: #f8d7da; /* Fond rouge clair */
+  color: #721c24; /* Texte rouge foncé */
+}

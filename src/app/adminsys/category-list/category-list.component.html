@@ -1,0 +1,69 @@
+<div class="category-list">
+
+  <div class="controls">
+    <input type="text" placeholder="Recherche par nom" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+
+    <button (click)="toggleSort()">
+      Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
+    </button>
+
+    <button (click)="openAddModal()">Ajouter une catégorie</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let cat of filteredCategories">
+        <td>{{ cat.nom_cat }}</td>
+        <td>{{ cat.descript_cat || '-' }}</td>
+        <td>
+          <button (click)="openEditModal(cat)">Modifier</button>
+          <button (click)="deleteCategory(cat.id!)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+    <span>Page {{ currentPage }} / {{ totalPages }}</span>
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  </div>
+
+<!-- Modal -->
+<div class="modal" *ngIf="isModalOpen">
+  <div class="modal-content">
+    <h3>{{ isEditMode ? 'Modifier catégorie' : 'Ajouter catégorie' }}</h3>
+
+    <label>
+      Nom:
+      <input type="text" [(ngModel)]="currentCategory.nom_cat" />
+    </label>
+
+    <label>
+      Description:
+      <textarea [(ngModel)]="currentCategory.descript_cat"></textarea>
+    </label>
+
+    <label>
+      Icône:
+      <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+    </label>
+
+    <div class="modal-actions">
+      <button (click)="saveCategory()">
+        {{ isEditMode ? 'Enregistrer' : 'Ajouter' }}
+      </button>
+      <button (click)="closeModal()">Annuler</button>
+    </div>
+  </div>
+</div>
+
+
+</div>

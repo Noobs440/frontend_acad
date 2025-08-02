@@ -1,0 +1,79 @@
+body {
+  background-color: #615f5f; /* Arrière-plan global légèrement sombre */
+  font-family: Arial, sans-serif; /* Police générale */
+  margin: 0; /* Supprime les marges par défaut */
+}
+
+.profile-container {
+  display: flex;
+  gap: 2rem;
+  margin: 20px; /* Espace autour du conteneur principal */
+}
+
+.profile-aside {
+  width: 250px;
+  text-align: center;
+  background-color: #ffffff; /* Fond blanc du profil */
+  padding: 20px;
+  border-radius: 10px; /* Coins arrondis */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Ombre légère */
+}
+
+.profile-img-wrapper {
+  cursor: pointer;
+  display: inline-block;
+  position: relative; /* Pour le positionnement de l'input */
+}
+
+.profile-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #007bff; /* Bordure bleue */
+  transition: transform 0.3s; /* Transition pour l'effet de survol */
+}
+
+.profile-img-wrapper:hover .profile-img {
+  transform: scale(1.05); /* Agrandit légèrement l'image au survol */
+}
+
+h4 {
+  margin-top: 1rem;
+  color: #333; /* Couleur sombre pour le texte */
+  font-weight: bold; /* Met le nom en gras */
+}
+
+p {
+  color: #777; /* Couleur grise pour l'email */
+  white-space: nowrap; /* Empêche le retour à la ligne */
+  overflow: hidden; /* Cache le débordement */
+  text-overflow: ellipsis; /* Ajoute des points de suspension si le texte dépasse */
+}
+
+.profile-links {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.profile-links a {
+  text-decoration: none;
+  color: #007bff; /* Couleur bleue pour les liens */
+  font-weight: 500; /* Poids de police pour les liens */
+  position: relative; /* Pour le positionnement de l'effet */
+  transition: color 0.3s; /* Transition pour l'effet de survol */
+}
+
+.profile-links a:hover {
+  color: #0056b3; /* Couleur plus foncée au survol */
+}
+
+.profile-content {
+  flex-grow: 1; /* Permet au contenu de prendre tout l'espace restant */
+  background-color: #f9f9f9; /* Fond léger pour le contenu */
+  padding: 20px; /* Espacement interne */
+  border-radius: 10px; /* Coins arrondis */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Ombre légère */
+}

@@ -1,0 +1,136 @@
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Admin Dashboard</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a [routerLink]="['/home']">Home</a></li>
+          <li class="breadcrumb-item active">Admin Dashboard</li>
+          <!-- <li class="breadcrumb-item active">{{ selectedProjectTitle }}</li> -->
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+      <div class="row">
+        <!-- Left side columns -->
+        <div class="col-lg-12">
+          <div class="row">
+
+            <!-- Sales Card -->
+            <div class="col-xxl-4 col-md-4">
+              <div class="card info-card sales-card">
+
+                <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                      <h6>Filter</h6>
+                    </li>
+                    <li><a class="dropdown-item" [routerLink]="['/admin/dashboard']">Today</a></li>
+                    <li><a class="dropdown-item" [routerLink]="['/admin/dashboard']">This Month</a></li>
+                    <li><a class="dropdown-item" [routerLink]="['/admin/dashboard']">This Year</a></li>
+                  </ul>
+                </div>
+
+                <div class="card-body">
+                  <h5 class="card-title">Projects Approved</h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6>{{ approvedProjects }}</h6>
+                       <span class="text-muted small pt-2 ps-1">Approved projects</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End Sales Card -->
+
+            <!-- pending projects -->
+            <div class="col-xxl-4 col-md-4">
+              <div class="card info-card revenue-card">
+
+                <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                      <h6>Filter</h6>
+                    </li>
+
+                    <li><a class="dropdown-item" [routerLink]="['/admin/dashboard']">Today</a></li>
+                    <li><a class="dropdown-item" [routerLink]="['/admin/dashboard']">This Month</a></li>
+                    <li><a class="dropdown-item" [routerLink]="['/admin/dashboard']">This Year</a></li>
+                  </ul>
+                </div>
+
+                <div class="card-body">
+                  <h5 class="card-title">Pending Projects</h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-hourglass-split"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6>{{pendingProjects}}</h6>
+                       <span class="text-muted small pt-2 ps-1">pending projects</span>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End pending projects Card -->
+
+            <!-- Deleted Projects Card -->
+            <div class="col-xxl-4 col-md-4">
+              <div class="card info-card customers-card">
+
+                <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                      <h6>Filter</h6>
+                    </li>
+
+                    <li><a class="dropdown-item" [routerLink]="['/admin/dashboard']">Today</a></li>
+                    <li><a class="dropdown-item" [routerLink]="['/admin/dashboard']">This Month</a></li>
+                    <li><a class="dropdown-item" [routerLink]="['/admin/dashboard']">This Year</a></li>
+                  </ul>
+                </div>
+
+                <div class="card-body">
+                  <h5 class="card-title">Rejected Projects</h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-trash"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6>{{rejectedProjects}}</h6>
+                       <span class="text-muted small pt-2 ps-1">rejected projects</span>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End pending projects Card -->
+            <!-- End Deleted projects -->
+
+             <!-- your.component.html -->
+              <div class="col-12">
+                <div class="card recent-sales overflow-auto">
+                  <h5 class="card-title">All Projects</h5>
+                  <app-ag-tab></app-ag-tab>
+                </div>
+              </div>
+          </div>
+        </div>
+        <!-- End Left side columns -->
+
+      </div>
+    </section>
+
+  </main><!-- End #main -->

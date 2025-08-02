@@ -1,0 +1,19 @@
+a{
+  text-decoration: none;
+}
+.contact{
+  background-color: #06BBCC;
+}
+.row{
+  box-shadow: -10px 20px 30px color-mix(in srgb, white, transparent 30%);
+  background-color: white;
+  border-radius: 5px;
+  padding: 10px;
+}
+.con1{
+  padding:50px ;
+  color: white;
+}
+.bgwhite{
+  background-color: white;
+}

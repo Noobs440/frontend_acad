@@ -1,0 +1,182 @@
+<div #body>
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a class="logo d-flex align-items-center">
+        <img src="assets/img/logo1.jpg" alt="Logo">
+        <span class="d-none d-lg-block">User {{ user_name | uppercase }}</span>
+      </a>
+      <i #toggleSidebarBtn (click)="toggleSidebar()" class="bi bi-list toggle-sidebar-btn d-lg-none"></i>
+    </div>
+
+    <!-- Barre de recherche -->
+    <div class="search-bar d-flex align-items-center flex-grow-1 mx-4">
+      <form class="search-form d-flex align-items-center w-100" (submit)="$event.preventDefault()">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (input)="filterProjects()"
+          placeholder="Rechercher un projet..."
+          class="form-control me-2"
+          name="query"
+        />
+        <button type="submit" class="btn btn-outline-primary l" title="Search"><i class="bi bi-search"></i></button>
+      </form>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+        <!-- Notifications -->
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-icon position-relative" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-bell fs-5"></i>
+            <span *ngIf="notifications.length > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              {{ notifications.length }}
+            </span>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications p-3" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+            <li class="d-flex justify-content-between align-items-center mb-2">
+              <strong>Notifications ({{ notifications.length }})</strong>
+              <button class="btn btn-sm btn-link" (click)="markAllNotificationAsRead()">Tout marquer comme lu</button>
+            </li>
+
+            <li *ngIf="notifications.length === 0" class="text-center text-muted py-3">
+              Aucune notification
+            </li>
+
+            <li *ngFor="let notification of notifications" class="dropdown-item border rounded mb-2 p-2">
+              <div>
+                <h6 class="mb-1">{{ notification.data.project_title }}</h6>
+                <small class="text-primary fw-bold">{{ notification.data.status }}</small>
+                <p class="mb-1">{{ notification.data.message }}</p>
+                <small class="text-muted">{{ notification.created_at | date:'medium' }}</small>
+              </div>
+              <button class="btn btn-outline-primary btn-sm mt-2" (click)="markNotificationAsRead(notification.id)">
+                Marquer comme lu
+              </button>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Profil -->
+        <li class="nav-item dropdown pe-3">
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown">
+            <img [src]="photo" (error)="photo = 'assets/img/default.png'" alt="Profil" class="user-photo" style="width: 40px; height: 40px; border-radius: 50%;">
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{ user_name }}</span>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6>{{ user_name }}</h6>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" routerLink="/profile">
+                <i class="bi bi-person"></i>
+                <span>Mon Profil</span>
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center">
+                <i class="bi bi-gear"></i>
+                <span>Paramètres</span>
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" [routerLink]="['/helpUser']">
+                <i class="bi bi-question-circle"></i>
+                <span>Aide</span>
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+
+            <li>
+              <p class="dropdown-item d-flex align-items-center mb-0" (click)="deconnexion()">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Déconnexion</span>
+              </p>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  <!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link">
+          <i class="bi bi-grid"></i>
+          <span>{{ user_name | uppercase }} Dashboard</span>
+        </a>
+      </li>
+
+      <li class="nav-heading">Pages</li>
+
+      <li class="nav-item">
+        <a class="nav-link collapsed"
+           (click)="toggleProjects()"
+           [attr.aria-expanded]="isProjectsOpen"
+           style="cursor:pointer;">
+          <i class="bi bi-menu-button-wide"></i>
+          <span>My Projects</span>
+          <i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="components-nav"
+            class="nav-content"
+            [class.collapse]="!isProjectsOpen"
+            [class.show]="isProjectsOpen"
+            data-bs-parent="#sidebar-nav">
+          <li *ngIf="filteredProjects.length === 0" class="text-muted px-3">Aucun projet trouvé.</li>
+          <li *ngFor="let project of filteredProjects">
+            <a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+               [routerLink]="['/user/dashboard/project-detail', project.id]">
+              <i class="bi bi-circle"></i><span>{{ project.titre }}</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" routerLink="/profile">
+          <i class="bi bi-person"></i>
+          <span>Profile</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link collapsed">
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
+        </a>
+      </li>
+    </ul>
+  </aside>
+  <!-- End Sidebar -->
+
+  <!-- Affichage du filtre actif -->
+  <span *ngIf="selectedTypeFilter !== 'all'" class="badge bg-info text-dark ms-2">
+    Filtré par : {{ selectedTypeFilter }}
+    <i class="bi bi-x ms-1" style="cursor: pointer;" (click)="clearTypeFilter()"></i>
+  </span>
+
+  <router-outlet></router-outlet>
+
+  <footer id="footer" class="footer">
+    <div class="mycopyright">
+      &copy; Copyright <strong><span>AcadProManage</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits"></div>
+  </footer>
+</div>

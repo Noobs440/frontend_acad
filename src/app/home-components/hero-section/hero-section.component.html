@@ -1,0 +1,94 @@
+<!-- Hero Section -->
+<section id="hero" class="hero section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <h2 [@fadeUp]>{{ 'WELCOME_MESSAGE' | translate }}</h2>
+        <p [@fadeUp]>{{ 'WELCOME_DESCRIPTION' | translate }}</p>
+      </div>
+      <div class="col-lg-5">
+        <div class="search-overlay-wrapper">
+          <form (ngSubmit)="onSubmitSearch()" class="sign-up-form d-flex">
+            <input name="searchInput" [(ngModel)]="searchValue" type="text" class="form-control" placeholder="{{ 'SEARCH_PLACEHOLDER' | translate }}" (focus)="showOverlay()">
+            <button type="submit" class="btn"><i class="fas fa-search"></i></button>
+          </form>
+          <div class="overlay-content custom-scroll" *ngIf="overlayVisible">
+            <div class="col-lg-12">
+              <ul>
+                <label for="">{{ 'PROJECTS_LABEL' | translate }}</label>
+                <li (mousedown)="search(project.titre_projet)" *ngFor="let project of data">
+                  <i class="fas fa-search"></i> {{ project.titre_projet }}
+                </li>
+                <label for="">{{ 'DOMAINS_LABEL' | translate }}</label>
+                <li (mousedown)="search(category.nom_cat)" *ngFor="let category of data2">
+                  <i class="fas fa-search"></i> {{ category.nom_cat }}
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="backdrop" *ngIf="overlayVisible" (click)="hideOverlay()"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row justify-content-center mb-3 mt-3">
+      <div class="col-lg-7 text-center" [@fadeUp]>
+        <h2 class="line-bottom text-center mb-4">{{ 'BROWSE_TOP_DOMAINS' | translate }}</h2>
+      </div>
+    </div>
+    <div class="carousel-container position-relative">
+      <button class="carousel-control-prev" type="button" data-bs-target="#categoryCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">{{ 'PREVIOUS' | translate }}</span>
+      </button>
+      <div id="categoryCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner bg-white p-4 rounded">
+          <div *ngIf="isLoading" class="container d-flex projects p-4 justify-content-center align-items-center">
+            <div class="spinner-grow text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner-grow text-secondary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner-grow text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner-grow text-danger" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner-grow text-warning" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner-grow text-info" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <div class="spinner-grow text-info" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+          <div *ngFor="let chunk of chunkedCategories; let i = index" class="carousel-item" [class.active]="i === 0">
+            <div class="row align-items-stretch">
+              <div *ngFor="let category of chunk; let j = index" class="col-sm-6 col-md-6 col-lg-3 mb-4">
+                <a [routerLink]="['/home/projects-listing']" [queryParams]="{search:category.nom_cat}" class="category d-flex align-items-start h-100">
+                  <div>
+                    <i [class]="icones[j]"></i>
+                  </div>
+                  <div>
+                    <h3>{{ category.nom_cat }}</h3>
+                    <span>{{ category.projets_count }} {{ 'PROJECTS' | translate }}</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+            <div class="consultMore">
+              <a [routerLink]="['/home/category']">{{ 'CONSULT_MORE_DOMAINS' | translate }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-next" type="button" data-bs-target="#categoryCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">{{ 'NEXT' | translate }}</span>
+      </button>
+    </div>
+  </div>
+</section>

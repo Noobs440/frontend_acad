@@ -1,0 +1,73 @@
+<!-- Recent Posts Section -->
+<section id="recent-posts" class="recent-posts section" [ngStyle]="{'background-color': bgColor}">
+  <!-- Section Title -->
+  <div class="con1 container section-title">
+    <h2>{{ 'RECENT_PROJECTS_POSTED' | translate }}</h2>
+    <p>{{ 'MOST_RECENT_PROJECTS' | translate }}</p>
+  </div><!-- End Section Title -->
+
+  <div *ngIf="isLoading" class="container d-flex projects p-4 justify-content-center align-items-center">
+    <div class="spinner-grow text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-secondary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-success" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-danger" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-warning" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-info" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <div class="spinner-grow text-dark" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+
+  <div id="recentPostsCarousel" class="carousel slide" [class.carousel-fade]="true" data-bs-ride="carousel" data-bs-interval="5000">
+    <div class="carousel-inner container p-4">
+      <div *ngFor="let chunk of chunkedPosts; let i = index" class="carousel-item" [class.active]="i === 0">
+        <div class="row gy-4">
+          <div *ngFor="let post of chunk" class="col-xl-3 col-md-6" [@fadeUp]>
+            <article [routerLink]="['/home/project-detail', post.id]" [queryParams]="getProjectQueryParams(post)">
+              <div class="project-img">
+                <img [src]="getFullImageUrl(post.image)" alt="" class="img-fluid">
+              </div>
+              <p class="post-category">{{ post.nom_categorie }}</p>
+              <h2 class="title">
+                <a>{{ post.titre_projet }}</a>
+              </h2>
+              <a *ngIf="post.lien_doc" [href]="getFullDocumentUrl(post.lien_doc)" target="_blank" rel="noopener">
+                <i class="bi bi-filetype-pdf"></i> Voir le document
+              </a>
+              <div class="d-flex align-items-center">
+                <div class="post-meta">
+                  <p class="post-author">{{ post.nom_utilisateur }}</p>
+                  <p class="post-date">
+                    <time [attr.datetime]="post.date">{{ post.created_at | date: 'mediumDate' }}</time>
+                  </p>
+                </div>
+              </div>
+            </article>
+          </div><!-- End post list item -->
+        </div><!-- End recent posts list -->
+      </div><!-- End carousel-item -->
+    </div><!-- End carousel-inner -->
+
+    <!-- Controls -->
+    <button [ngStyle]="{ 'color': prevButtonColor}" class="carousel-control-prev" *ngIf="data.length > 6" type="button" data-bs-target="#recentPostsCarousel" data-bs-slide="prev">
+      <span [ngStyle]="{'color': prevButtonColor}" class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">{{ 'PREVIOUS' | translate }}</span>
+    </button>
+    <button class="carousel-control-next" *ngIf="data.length > 6" type="button" data-bs-target="#recentPostsCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">{{ 'NEXT' | translate }}</span>
+    </button>
+  </div><!-- End carousel -->
+</section><!-- /Recent Posts Section -->

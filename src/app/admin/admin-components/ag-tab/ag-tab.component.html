@@ -1,0 +1,12 @@
+<!-- ag-tab.component.html -->
+
+<ag-grid-angular
+  style="width: 100%; height: 400px;"
+  class="ag-theme-alpine"
+  [rowData]="rowData"
+  [columnDefs]="columnDefs"
+  [pagination]="true"
+  [paginationPageSize]="7"
+  [defaultColDef]="{ sortable: true, filter: true }"
+  (gridReady)="onGridReady($event)"
+></ag-grid-angular>

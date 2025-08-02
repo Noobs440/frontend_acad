@@ -1,0 +1,48 @@
+<header id="header" [ngStyle]="{ 'background-color': bgColor }" class="header d-flex align-items-center fixed-top">
+  <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
+
+    <a class="logo d-flex align-items-center me-auto me-xl-0" routerLink="/home">
+      <img src="assets/img/logo1.jpg" alt="Logo" width="50" height="50" style="border-radius: 50%;" />
+      <h1 class="sitename">AcadProManage</h1><span>.</span>
+    </a>
+
+    <nav id="navmenu" class="navmenu">
+      <ul>
+        <li>
+          <a [routerLink]="['/home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <i class="fas fa-home"></i> {{ 'HOME' | translate }}
+          </a>
+        </li>
+        <li>
+          <a [routerLink]="['/home/category']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <i class="fas fa-th-list"></i> {{ 'DOMAINS' | translate }}
+          </a>
+        </li>
+        <li>
+          <a [routerLink]="['/home/projects-listing']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <i class="fas fa-project-diagram"></i> {{ 'PROJECTS' | translate }}
+          </a>
+        </li>
+        <li>
+          <a [routerLink]="['/home/contact']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <i class="fas fa-envelope"></i> {{ 'CONTACT' | translate }}
+          </a>
+        </li>
+
+        <!-- Dropdown Language -->
+        <li class="dropdown">
+          <a href="#"><span>{{ 'LANGUAGE' | translate }}</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <ul>
+            <li><a (click)="switchLanguage('en')"><span>🇺🇸 {{ 'ENGLISH' | translate }}</span></a></li>
+            <li><a (click)="switchLanguage('fr')"><span>🇫🇷 {{ 'FRENCH' | translate }}</span></a></li>
+          </ul>
+        </li>
+      </ul>
+      <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+    </nav>
+
+    <a class="btn-getstarted" (click)="openDialog()">
+      <i class="fas fa-sign-in-alt"></i> {{ 'SIGN_IN' | translate }}
+    </a>
+  </div>
+</header>

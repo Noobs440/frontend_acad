@@ -1,0 +1,82 @@
+.edit-photo-container {
+  max-width: 300px;
+  margin: auto;
+  text-align: center;
+  background-color: #ffffff; /* Fond blanc pour une apparence propre */
+  padding: 20px;
+  border-radius: 10px; /* Coins légèrement arrondis */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Ombre plus marquée pour profondeur */
+  border: 1px solid #e0e0e0; /* Bordure légère */
+}
+
+.photo-preview {
+  margin: 20px auto;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden; /* Cache toute partie de l'image qui dépasse */
+  border: 2px solid #7c7e80; /* Bordure bleue */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative; /* Pour le positionnement de l'emoji */
+  z-index: 1; /* Cadre en arrière-plan */
+}
+
+.photo-preview img.profile-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+  transition: transform 0.3s; /* Transition pour l'effet de survol */
+}
+
+.photo-preview:hover img.profile-photo {
+  transform: scale(1.05); /* Agrandit légèrement l'image au survol */
+}
+
+.camera-icon {
+  position: absolute;
+  bottom: 10px; /* Ajustez cette valeur pour le positionnement vertical */
+  right: 10px; /* Ajustez cette valeur pour le positionnement horizontal */
+  font-size: 28px; /* Taille de l'emoji */
+  cursor: pointer;
+  background-color: #ffffff; /* Fond blanc */
+  border-radius: 50%;
+  padding: 5px;
+  z-index: 2; /* Emoji au premier plan */
+  transition: background-color 0.3s, transform 0.3s; /* Transition pour l'effet de survol */
+}
+
+.camera-icon:hover {
+  background-color: rgba(80, 75, 75, 0.9); /* Légère transparence au survol */
+  transform: scale(1.1); /* Agrandit légèrement l'emoji au survol */
+}
+
+.submit-btn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #2196f3; /* Bleu */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s; /* Transition pour l'effet de survol */
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #1976d2; /* Teinte plus foncée au survol */
+  transform: scale(1.05); /* Agrandit légèrement le bouton au survol */
+}
+
+.submit-btn:disabled {
+  background-color: #90caf9; /* Couleur pour le bouton désactivé */
+  cursor: not-allowed;
+}
+
+.message {
+  margin-top: 15px;
+  color: #388e3c; /* Couleur verte pour le message */
+  font-weight: bold; /* Met le message en gras */
+}

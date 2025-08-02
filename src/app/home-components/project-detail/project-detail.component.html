@@ -1,0 +1,72 @@
+<main class="main">
+  <!-- Page Title -->
+  <div class="con1 page-title" [@fadeUp]>
+    <div class="heading">
+      <div class="container con1">
+        <div class="row d-flex justify-content-center text-center">
+          <div class="con1 container section-title" [@fadeUp]>
+            <h2 class="conp"> Project Detail</h2>
+            <h5 class="text-white">Here we give you all informations and documents related to a project.</h5>
+          </div><!-- End Section Title -->
+        </div>
+      </div>
+    </div>
+  </div><!-- End Page Title -->
+
+  <!-- Service Details Section -->
+  <section id="service-details" class="service-details section">
+    <div class="con1 container">
+      <div class="row gy-5">
+        <div class="col-lg-4 ps-lg-5" [@fadeUp]>
+          <img [src]="getFullImageUrl(projectImage)" alt="" class="img-fluid services-img">
+          <h3>{{selectedProjectTitle}} ({{type}})</h3>
+          <p>{{description}}</p>
+          <ul>
+            <li><i class="bi bi-person-circle"></i><span class="font-bold">{{author}}</span></li>
+            <li><i class="fas fa-graduation-cap"></i> <span>{{level}}</span></li>
+            <li><i class="fas fa-eye"></i> <span>{{views}} Views {{projectStatus}}</span></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-4" [@fadeUp]>
+          <div class="service-box">
+            <h4>Documents Related</h4>
+            <div class="download-catalog">
+              <a *ngFor="let document of documents | slice:0:(isExpanded ? documents.length : 4)"
+                 [href]="getFullDocumentUrl(document.lien_doc)" target="_blank" rel="noopener">
+                <i class="bi bi-filetype-pdf"></i><span>{{ document.nom_doc }}</span>
+              </a>
+            </div>
+            <div *ngIf="documents.length > 4" class="show-more" (click)="toggleExpand()">
+              <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+              <span>{{ isExpanded ? 'Show Less' : 'Show More' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4" [@fadeUp]>
+          <div class="service-box">
+            <h4>Other Projects</h4>
+            <div class="services-list">
+              <a  style="cursor:pointer;" *ngFor="let project of projects | slice:0:(isProjectExpanded2 ? projects.length : 4)">
+
+                <i  class="bi bi-arrow-right-circle"></i><span (click)="updateProjectDetails(project)">{{project.titre}}</span>
+              </a>
+            </div>
+            <div *ngIf="projects.length > 4" class="show-more" (click)="toggleProjectExpand2()">
+              <i class="bi" [ngClass]="isProjectExpanded2 ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+              <span>{{ isProjectExpanded2 ? 'Show Less' : 'Show More' }}</span>
+            </div>
+          </div><!-- End Services List -->
+
+          <div class="help-box d-flex flex-column justify-content-center align-items-center">
+            <i class="bi bi-headset help-icon"></i>
+            <h4>Contact Author</h4>
+            <p class="d-flex align-items-center mt-2 mb-0"><i class="bi bi-telephone me-2"></i> <span>+1 5589 55488 55</span></p>
+            <p class="d-flex align-items-center mt-1 mb-0"><i class="bi bi-envelope me-2"></i> <a href="mailto:contact@example.com">{{email}}</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><!-- /Service Details Section -->
+</main>

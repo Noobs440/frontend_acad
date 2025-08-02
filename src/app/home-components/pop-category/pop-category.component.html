@@ -1,0 +1,108 @@
+<section id="recent-posts" class="recent-posts section">
+  <!-- Section Title -->
+  <div class="con1 container section-title" [@fadeUp]>
+    <h2>{{ 'CONSULT_BY_DOMAINS' | translate }}</h2>
+    <h5>{{ 'ACCESS_TO_ALL_DOMAINS' | translate }}</h5>
+  </div><!-- End Section Title -->
+
+  <!-- Filters -->
+  <div class="container filters p-4" [@fadeUp]>
+    <div class="row align-items-center">
+      <div class="col-md-3">
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-university"></i></span>
+          <select class="custom-select no-focus form-select" [(ngModel)]="selectedFaculty" (change)="applyFilters()">
+            <option disabled selected value="">{{ 'FACULTY' | translate }}</option>
+            <option *ngFor="let faculte of faculties" [value]="faculte.nom_fac">{{ faculte.nom_fac }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+          <select class="custom-select no-focus form-select" [(ngModel)]="selectedDepartment" (change)="applyFilters()">
+            <option disabled selected value="">{{ 'DEPARTMENT' | translate }}</option>
+            <option *ngFor="let filiere of filieres" [value]="filiere.nom_fil">{{ filiere.nom_fil }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-book"></i></span>
+          <select class="no-focus form-select" [(ngModel)]="selectedLevel" (change)="applyFilters()">
+            <option disabled selected value="">{{ 'LEVEL' | translate }}</option>
+            <option *ngFor="let niveau of niveaux" [value]="niveau.code_niv">{{ niveau.code_niv }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="input-group">
+          <input type="text" class="form-control no-focus" placeholder="{{ 'SEARCH_DOMAIN' | translate }}" [(ngModel)]="searchQuery" (input)="applyFilters()">
+          <button class="btn btn-outline-secondary" type="button" (click)="clearFilters()"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+    </div>
+  </div><!-- End Filters -->
+
+  <!-- Domains -->
+  <div class="container domains p-4">
+    <div class="row gy-4">
+      <div *ngIf="isLoading" class="container d-flex projects p-4 justify-content-center align-items-center">
+        <div class="spinner-grow text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-secondary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-success" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-danger" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-warning" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-info" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-info" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6" *ngFor="let category of paginatedCategories" [@fadeUp]>
+        <article>
+          <div class="post-img">
+            <img [src]="getFullImageUrl(category.icone)" alt="" class="img-fluid">
+          </div>
+          <p class="categories-category bg-blue-600" [ngClass]="category.badge"><i class="fas fa-robot"></i> {{ category.nom_cat }}</p>
+          <h2 class="title">
+            <a [routerLink]="['/home/projects-listing']" [queryParams]="{search:category.nom_cat}">{{ category.descript_cat }}</a>
+          </h2>
+          <div class="d-flex align-items-center">
+            <div class="categories-meta">
+              <p class="categories-author">{{ category.projets_count }} <i>projets</i></p>
+            </div>
+          </div>
+        </article>
+      </div><!-- End categories list item -->
+    </div><!-- End recent categories list -->
+  </div><!-- End projects -->
+
+  <!-- Pagination Controls -->
+  <div class="container pagination-controls" [@fadeUp]>
+    <nav>
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" (click)="goToPage(currentPage - 1)"><i class="fas fa-backward"></i> {{ 'PREVIOUS' | translate }}</a>
+        </li>
+        <li class="page-item" *ngFor="let page of pages" [class.active]="currentPage === page">
+          <a class="page-link" (click)="goToPage(page)">{{ page }}</a>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <a class="page-link" (click)="goToPage(currentPage + 1)">{{ 'NEXT' | translate }} <i class="fas fa-forward"></i></a>
+        </li>
+      </ul>
+    </nav>
+  </div><!-- End Pagination Controls -->
+</section><!-- /Recent categories Section -->

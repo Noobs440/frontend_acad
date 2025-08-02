@@ -1,0 +1,368 @@
+<div class="w-full contain-content h-full max-w-lg p-6 pt-2 bg-white rounded-lg shadow-lg">
+  <!-- Bouton fermeture -->
+  <button *ngIf="formType === 'project'" (click)="onCancel()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+    <i class="fas fa-times text-l"></i>
+  </button>
+
+  <!-- Titre général -->
+  <h2 class="mb-2 text-3xl font-bold text-center text-customBlue poppins-bold">Créer un projet</h2>
+
+  <!-- FORM STEP 1 : Projet -->
+  <form *ngIf="formType === 'project'" class="space-y-6" [formGroup]="creationForm" (ngSubmit)="onSubmit()">
+    <div class="flex justify-center mb-4">
+      <img src="assets/img/create_.jpg" alt="Header Image" class="w-full h-52 bg-cover object-cover" />
+    </div>
+
+    <div class="step" [class.active]="currentStep === 1">
+      <div class="text-center text-customBlue mb-2">
+        <h3 class="text-xl font-semibold">
+          <i class="fas fa-chevron-circle-left"></i> Step 1 : Project Info <i class="fas fa-chevron-circle-right"></i>
+        </h3>
+      </div>
+      <div class="form-group mb-1">
+        <label for="title" class="mb-1">Titre</label>
+        <input
+          formControlName="title"
+          type="text"
+          id="title"
+          placeholder="Titre"
+          [ngClass]="{ 'custom-outline': (creationFormControl['title'].touched || submitted) && creationFormControl['title'].errors }"
+          class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+        />
+        <span class="text-red-600 text-sm" *ngIf="(creationFormControl['title'].touched || submitted) && creationFormControl['title'].errors?.['required']">
+          Titre requis !
+        </span>
+      </div>
+
+      <div class="form-group mb-1">
+        <label for="type" class="mb-1">Type Projet</label>
+        <select
+          formControlName="type"
+          id="type"
+          [ngClass]="{ 'custom-outline': (creationFormControl['type'].touched || submitted) && creationFormControl['type'].errors }"
+          class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+        >
+          <option value="" disabled selected>Type Projet</option>
+          <option *ngFor="let projet of projets" [value]="projet">{{ projet }}</option>
+        </select>
+        <span class="text-red-600 text-sm" *ngIf="(creationFormControl['type'].touched || submitted) && creationFormControl['type'].errors?.['required']">
+          Choisissez le type de projet !
+        </span>
+      </div>
+
+      <div class="form-group mb-1">
+        <label for="file" class="mb-1">Couverture du Projet</label>
+        <input
+          accept="image/*"
+          type="file"
+          id="file"
+          (change)="onFileSelected($event)"
+          [ngClass]="{ 'custom-outline': (creationFormControl['file'].touched || submitted) && creationFormControl['file'].errors }"
+          class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+        />
+        <span class="text-red-600 text-sm" *ngIf="(creationFormControl['file'].touched || submitted) && creationFormControl['file'].errors?.['required']">
+          Couverture projet requis !
+        </span>
+      </div>
+
+      <div class="flex mt-1 justify-end">
+        <button
+          type="button"
+          (click)="nextStep()"
+          class="mt-1 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark"
+        >
+          Next <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 2 : Project Details -->
+    <div class="step" [class.active]="currentStep === 2">
+      <div class="text-center text-customBlue mb-4">
+        <h3 class="text-xl font-semibold">
+          <i class="fas fa-chevron-circle-left"></i> Step 2 : Project Info <i class="fas fa-chevron-circle-right"></i>
+        </h3>
+      </div>
+
+      <div class="form-group mb-2">
+        <label for="niveau" class="mb-1">Niveau</label>
+        <select
+          formControlName="niveau"
+          id="niveau"
+          [ngClass]="{ 'custom-outline': (creationFormControl['niveau'].touched || submitted) && creationFormControl['niveau'].errors?.['required'] }"
+          class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+        >
+          <option value="" disabled selected>Sélectionnez votre niveau</option>
+          <option *ngFor="let id of niveaux_id; index as i" [value]="id">{{ niveaux_name[i] }}</option>
+        </select>
+        <span class="text-red-600 text-sm" *ngIf="(creationFormControl['niveau'].touched || submitted) && creationFormControl['niveau'].errors?.['required']">
+          Niveau requis !
+        </span>
+      </div>
+
+      <div class="form-group mb-2">
+        <label for="category" class="mb-1">Catégorie</label>
+        <select
+          formControlName="category"
+          id="category"
+          [ngClass]="{ 'custom-outline': (creationFormControl['category'].touched || submitted) && creationFormControl['category'].errors }"
+          class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+        >
+          <option *ngFor="let id of categories_id; index as i" [value]="id">{{ categories_name[i] }}</option>
+        </select>
+        <span class="text-red-600 text-sm" *ngIf="(creationFormControl['category'].touched || submitted) && creationFormControl['category'].errors?.['required']">
+          Catégorie requise !
+        </span>
+      </div>
+
+      <div class="flex justify-between mt-3">
+        <button
+          type="button"
+          (click)="previousStep()"
+          class="px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark"
+        >
+          <i class="fas fa-chevron-left"></i> Previous
+        </button>
+        <button
+          type="button"
+          (click)="nextStep()"
+          class="px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark"
+        >
+          Next <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 3 : Summary -->
+    <div class="step" [class.active]="currentStep === 3">
+      <div class="text-center text-customBlue mb-4">
+        <h3 class="text-xl font-semibold">
+          <i class="fas fa-chevron-circle-left"></i> Step 3 : Project Info <i class="fas fa-chevron-circle-right"></i>
+        </h3>
+      </div>
+
+      <div class="form-group col-span-2 mb-2">
+        <label for="summary" class="mb-1">Resume</label>
+        <textarea
+          formControlName="summary"
+          id="summary"
+          placeholder="Description"
+          [ngClass]="{ 'custom-outline': (creationFormControl['summary'].touched || submitted) && creationFormControl['summary'].errors }"
+          class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+        ></textarea>
+        <span class="text-red-600 text-sm" *ngIf="(creationFormControl['summary'].touched || submitted) && creationFormControl['summary'].errors?.['required']">
+          Description requise !
+        </span>
+      </div>
+
+      <div class="flex justify-between mt-1">
+        <button
+          type="button"
+          (click)="previousStep()"
+          class="px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark"
+        >
+          Previous
+        </button>
+        <button
+          type="submit"
+          class="px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark disabled:bg-gray-300 disabled:cursor-not-allowed"
+          [disabled]="creationForm.invalid"
+        >
+          <span *ngIf="!isLoading">Next <i class="fas fa-chevron-right"></i></span>
+          <mat-spinner *ngIf="isLoading" [diameter]="24"></mat-spinner>
+        </button>
+      </div>
+
+      <div class="text-red-600 mt-2 text-sm text-center" *ngIf="ErrorMessage">{{ ErrorMessage }}</div>
+    </div>
+  </form>
+
+  <!-- STEP 4 : Document -->
+  <form *ngIf="formType === 'document'" class="space-y-1" [formGroup]="documentForm" (ngSubmit)="onSubmit()">
+    <div class="flex justify-center mb-4">
+      <img src="assets/img/docImage.png" alt="Header Image" class="w-full h-48 bg-cover object-cover" />
+    </div>
+    <div class="step" [class.active]="currentStep === 4">
+      <div class="text-center text-customBlue mb-2">
+        <h3 class="text-xl font-semibold">
+          <i class="fas fa-chevron-circle-left"></i> Step 4 : Document Info <i class="fas fa-chevron-circle-right"></i>
+        </h3>
+      </div>
+
+      <div class="form-group mb-1">
+        <label for="title" class="mb-1">Nom du document</label>
+        <input
+          formControlName="title"
+          type="text"
+          id="title"
+          placeholder="Nom du Document"
+          [ngClass]="{ 'custom-outline': (documentFormControl['title'].touched || submitted) && documentFormControl['title'].errors }"
+          class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+        />
+        <span class="text-red-600 text-sm" *ngIf="(documentFormControl['title'].touched || submitted) && documentFormControl['title'].errors?.['required']">
+          Nom du document requis !
+        </span>
+      </div>
+
+      <div class="form-group mb-1">
+        <label for="file" class="mb-1">Fichier</label>
+        <input
+          type="file"
+          id="file"
+          (change)="onFileSelectedD($event)"
+          [ngClass]="{ 'custom-outline': (documentFormControl['file'].touched || submitted) && documentFormControl['file'].errors }"
+          class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+        />
+        <span class="text-red-600 text-sm" *ngIf="(documentFormControl['file'].touched || submitted) && documentFormControl['file'].errors?.['required']">
+          Fichier requis !
+        </span>
+      </div>
+
+      <div class="flex justify-between mt-3">
+        <button
+          type="submit"
+          class="px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark disabled:bg-gray-300 disabled:cursor-not-allowed"
+          [disabled]="documentForm.invalid"
+        >
+          <span *ngIf="!isLoading"><i class="fas fa-plus"></i> Add</span>
+          <mat-spinner *ngIf="isLoading" [diameter]="24"></mat-spinner>
+        </button>
+        <button
+          (click)="nextStep(); formType='collaborator';"
+          class="mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark"
+          [disabled]="!saveD"
+        >
+          Next <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <!-- STEP 5 : Collaborator -->
+  <form *ngIf="formType === 'collaborator'" class="space-y-1" [formGroup]="collaboratorForm" (ngSubmit)="onSubmit()">
+    <div class="flex justify-center mb-4">
+      <img src="assets/img/colImage2.jpg" alt="Header Image" class="w-full h-52 bg-cover object-cover" />
+    </div>
+    <div class="step" [class.active]="currentStep === 5">
+      <div class="text-center text-customBlue mb-2">
+        <h3 class="text-xl font-semibold">
+          <i class="fas fa-chevron-circle-left"></i> Step 5 : Collaborators <i class="fas fa-chevron-circle-right"></i>
+        </h3>
+      </div>
+
+      <div class="form-group mb-1">
+        <label for="name" class="mb-1">Nom du Collaborateur</label>
+        <input
+          formControlName="name"
+          type="text"
+          id="name"
+          placeholder="Nom du Collaborateur"
+          [ngClass]="{ 'custom-outline': (collaboratorFormControl['name'].touched || submitted) && collaboratorFormControl['name'].errors }"
+          class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+        />
+        <span class="text-red-600 text-sm" *ngIf="(collaboratorFormControl['name'].touched || submitted) && collaboratorFormControl['name'].errors?.['required']">
+          Nom du collaborateur requis !
+        </span>
+      </div>
+
+      <div class="form-group mb-1">
+        <label for="email" class="mb-1">Email du Collaborateur</label>
+        <input
+          formControlName="email"
+          type="email"
+          id="email"
+          placeholder="Email du Collaborateur"
+          [ngClass]="{ 'custom-outline': (collaboratorFormControl['email'].touched || submitted) && collaboratorFormControl['email'].errors }"
+          class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+        />
+        <span class="text-red-600 text-sm" *ngIf="(collaboratorFormControl['email'].touched || submitted) && collaboratorFormControl['email'].errors?.['required']">
+          Adresse Email requis !
+        </span>
+        <span class="text-red-600 text-sm" *ngIf="(collaboratorFormControl['email'].touched || submitted) && collaboratorFormControl['email'].errors?.['email']">
+          Adresse Email invalide !
+        </span>
+      </div>
+
+      <div class="flex justify-between mt-3">
+        <button
+          type="submit"
+          class="px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark disabled:bg-gray-300 disabled:cursor-not-allowed"
+          [disabled]="collaboratorForm.invalid || isLoading"
+        >
+          <span *ngIf="!isLoading"><i class="fas fa-plus"></i> Add</span>
+          <mat-spinner *ngIf="isLoading" [diameter]="24"></mat-spinner>
+        </button>
+        <button
+          (click)="nextStep(); formType='supervisor';"
+          class="mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark"
+        >
+          Next <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <!-- STEP 6 : Supervisor -->
+  <form *ngIf="formType === 'supervisor'" class="space-y-1" [formGroup]="supervisorForm" (ngSubmit)="onSubmit()">
+    <div class="flex justify-center mb-4">
+      <img src="assets/img/supervisor.jpg" alt="Header Image" class="w-full h-52 bg-cover object-cover" />
+    </div>
+    <div class="step" [class.active]="currentStep === 6">
+      <div class="text-center text-customBlue mb-4">
+        <h3 class="text-xl font-semibold">
+          <i class="fas fa-chevron-circle-left"></i> Step 6 : Supervisor Info <i class="fas fa-chevron-circle-right"></i>
+        </h3>
+      </div>
+
+      <div class="form-group mb-1">
+        <label for="name" class="mb-1">Nom du Superviseur</label>
+        <input
+          formControlName="name"
+          type="text"
+          id="name"
+          placeholder="Nom du Superviseur"
+          [ngClass]="{ 'custom-outline': (supervisorFormControl['name'].touched || submitted) && supervisorFormControl['name'].errors }"
+          class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+        />
+        <span class="text-red-600 text-sm" *ngIf="(supervisorFormControl['name'].touched || submitted) && supervisorFormControl['name'].errors?.['required']">
+          Nom du superviseur requis !
+        </span>
+      </div>
+
+      <div class="form-group mb-1">
+        <label for="email" class="mb-1">Email du Superviseur</label>
+        <input
+          formControlName="email"
+          type="email"
+          id="email"
+          placeholder="Email du Superviseur"
+          [ngClass]="{ 'custom-outline': (supervisorFormControl['email'].touched || submitted) && supervisorFormControl['email'].errors }"
+          class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+        />
+        <span class="text-red-600 text-sm" *ngIf="(supervisorFormControl['email'].touched || submitted) && supervisorFormControl['email'].errors?.['required']">
+          Adresse Email requis !
+        </span>
+        <span class="text-red-600 text-sm" *ngIf="(supervisorFormControl['email'].touched || submitted) && supervisorFormControl['email'].errors?.['email']">
+          Adresse Email invalide !
+        </span>
+      </div>
+
+      <div class="flex justify-between mt-3">
+        <button
+          type="submit"
+          class="px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark disabled:bg-gray-300 disabled:cursor-not-allowed"
+          [disabled]="supervisorForm.invalid"
+        >
+          <span *ngIf="!isLoading"><i class="fas fa-plus"></i> Add</span>
+          <mat-spinner *ngIf="isLoading" [diameter]="24"></mat-spinner>
+        </button>
+        <button
+          (click)="onCancel(); formType='collaborator';"
+          class="mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark"
+        >
+          Finish <i class="fas fa-chevron-left"></i>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

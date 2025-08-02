@@ -1,0 +1,69 @@
+<!-- Modifier Collaborateur Form -->
+<div lass="w-full contain-content h-full max-w-lg p-6 pt-2 bg-white rounded-lg shadow-lg">
+  <h2 class="mb-2 text-2xl font-bold text-center text-customBlue poppins-bold">Modifier un Collaborateur</h2>
+
+  <!-- Croix de fermeture en haut à droite -->
+  <button
+    type="button"
+    (click)="onCancel()"
+    class="absolute top-0 right-0 text-gray-500 hover:text-gray-700"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+
+  <form class="space-y-1" [formGroup]="editForm" (ngSubmit)="onSubmit()">
+    <div class="flex justify-center mb-4">
+      <img src="assets/img/colImage2.jpg" alt="Header Image" class="w-full h-52 bg-cover object-cover">
+    </div>
+
+    <!-- Nom du collaborateur -->
+    <div class="form-group mb-1">
+      <label class="mb-1" for="name">Nom du Collaborateur</label>
+      <input
+        formControlName="name"
+        type="text"
+        id="name"
+        name="name"
+        placeholder="Nom du Collaborateur"
+        [ngClass]="{'custom-outline': (f['name'].touched || submitted) && f['name'].errors}"
+        class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+      >
+      <span class="text-red-600 text-sm" *ngIf="(f['name'].touched || submitted) && f['name'].errors?.['required']">
+        Nom du collaborateur requis !
+      </span>
+    </div>
+
+    <!-- Email du collaborateur -->
+    <div class="form-group mb-1">
+      <label class="mb-1" for="email">Email du Collaborateur</label>
+      <input
+        formControlName="email"
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Email du Collaborateur"
+        [ngClass]="{'custom-outline': (f['email'].touched || submitted) && f['email'].errors}"
+        class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
+      >
+      <span class="text-red-600 text-sm" *ngIf="(f['email'].touched || submitted) && f['email'].errors?.['required']">
+        Email requis !
+      </span>
+      <span class="text-red-600 text-sm" *ngIf="(f['email'].touched || submitted) && f['email'].errors?.['email']">
+        Email invalide !
+      </span>
+    </div>
+
+    <!-- Bouton Modifier seulement -->
+    <div class="step">
+      <button
+        type="submit"
+        class="w-full mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark disabled:bg-gray-300 disabled:cursor-not-allowed"
+        [disabled]="editForm.invalid"
+      >
+        Modifier
+      </button>
+    </div>
+  </form>
+</div>

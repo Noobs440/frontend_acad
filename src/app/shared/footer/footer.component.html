@@ -1,0 +1,57 @@
+<footer id="footer" class="footer position-relative">
+  <div class="container footer-top">
+    <div class="row gy-4">
+      <div class="col-lg-5 col-md-12 footer-about">
+        <a class="logo d-flex align-items-center">
+          <span class="sitename">AcadProManage</span>
+        </a>
+        <p>{{ 'FOOTER_ABOUT' | translate }}</p>
+        <div class="social-links d-flex mt-4">
+          <a href=""><i class="bi bi-twitter-x"></i></a>
+          <a href=""><i class="bi bi-facebook"></i></a>
+          <a href=""><i class="bi bi-instagram"></i></a>
+          <a href=""><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-6 footer-links">
+        <h4>{{ 'USEFUL_LINKS' | translate }}</h4>
+        <ul>
+          <li><a [routerLink]="['/home']">{{ 'HOME' | translate }}</a></li>
+          <li><a [routerLink]="['/home/category']">{{ 'CATEGORIES' | translate }}</a></li>
+          <li><a [routerLink]="['/home/projects-listing']">{{ 'PROJECTS' | translate }}</a></li>
+          <li><a [routerLink]="['/home/contact']">{{ 'CONTACT' | translate }}</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-2 col-6 footer-links">
+        <h4>{{ 'CATEGORIES' | translate }}</h4>
+        <ul>
+          <li><a href="#">{{ 'ARTIFICIAL_INTELLIGENCE' | translate }}</a></li>
+          <li><a href="#">{{ 'CYBER_SECURITY' | translate }}</a></li>
+          <li><a href="#">{{'NETWORK_AND_DISTRIBUTED_SYSTEMS' | translate}}</a></li>
+          <li><a href="#">Data Science</a></li>
+          <li><a href="#">{{ 'SOFTWARE_ENGINEERING' | translate }}</a></li>
+          <li><a href="#">Block Chain</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
+        <h4>{{ 'CONTACT_US' | translate }}</h4>
+        <p>{{ 'ADDRESS' | translate }}</p>
+        <p class="mt-4"><strong>{{ 'PHONE' | translate }}</strong> <span>+237 233451381</span></p>
+        <p><strong>{{ 'EMAIL' | translate }}</strong> <span>info&#64;univ-dschang.org</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container copyright text-center mt-4">
+    <p>© Copyright <strong class="sitename"> AcadProManage </strong> {{ 'ALL_RIGHTS_RESERVED' | translate }}</p>
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you've purchased the pro version. -->
+      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+      <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+    </div>
+  </div>
+</footer>

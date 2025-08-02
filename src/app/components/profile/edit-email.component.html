@@ -1,0 +1,35 @@
+<div class="edit-email-container">
+  <h2>Modifier mon adresse email</h2>
+
+  <form (ngSubmit)="updateEmail()" #emailForm="ngForm" novalidate>
+    <div class="form-group">
+      <label for="email">Nouvel email</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        [(ngModel)]="email"
+        required
+        email
+        class="form-control"
+        placeholder="Entrez votre nouvel email"
+        [class.is-invalid]="emailForm.submitted && !emailForm.controls['email']?.valid"
+      />
+      <div *ngIf="emailForm.submitted && !emailForm.controls['email']?.valid" class="invalid-feedback">
+        Veuillez entrer une adresse email valide.
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="!emailForm.form.valid" class="btn btn-primary mt-2">
+      Mettre à jour
+    </button>
+  </form>
+
+  <div *ngIf="message" class="alert alert-success mt-3">
+    {{ message }}
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger mt-3">
+    {{ error }}
+  </div>
+</div>

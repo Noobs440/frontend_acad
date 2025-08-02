@@ -1,0 +1,88 @@
+a{
+  text-decoration: none;
+}
+.recent-posts{
+  background: #06BBCC;
+}
+.row{
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: -10px 20px 30px color-mix(in srgb, white, transparent 30%);
+
+}
+.con1{
+  padding-top:50px ;
+  color: white;
+}
+.section-title h2:before,
+.section-title h2:after {
+  content: "";
+  width: 50px;
+  height: 2px;
+  background: black;
+  display: inline-block;
+}
+
+
+.filters {
+  margin-bottom: 20px;
+}
+
+.pagination-controls {
+  margin-top: 20px;
+}
+
+.pagination {
+  justify-content: center;
+}
+
+.page-item.disabled .page-link {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.page-item.active .page-link {
+  background-color: #06BBCC;
+  border-color: white;
+  color: #fff;
+}
+.page-link.active{
+  color: gray;
+}
+.page-link {
+  cursor: pointer;
+  color: #06BBCC;
+}
+.page-item.disabled .page-link {
+  color: #aaa; /* Disabled text color */
+  pointer-events: none;
+  cursor: not-allowed;
+}
+.no-focus:focus {
+  box-shadow: none;
+  border-color: #06BBCC;
+
+}
+
+.input-group {
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.input-group .form-control {
+  border-right: 0;
+}
+.custom-select li:hover{
+  background-color: #ced4da;
+}
+
+.input-group .input-group-text {
+  background-color: #e9ecef;
+  border-left: 0;
+}
+
+.btn-outline-secondary {
+  border-color: #ced4da;
+}
+

@@ -1,0 +1,123 @@
+<div class="w-full contain-content h-full max-w-lg p-6 pt-2 bg-white rounded-lg shadow-lg relative">
+  <button (click)="onCancel()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+    <i class="fas fa-times text-lg"></i>
+  </button>
+
+  <!-- Navigation boutons exemple -->
+  <div class="flex justify-center gap-2 mb-4">
+    <button (click)="setFormType('document')" class="px-3 py-1 rounded" [class.bg-blue-200]="formType==='document'">Document</button>
+    <button (click)="setFormType('collaborator')" class="px-3 py-1 rounded" [class.bg-blue-200]="formType==='collaborator'">Collaborateur</button>
+    <button (click)="setFormType('supervisor')" class="px-3 py-1 rounded" [class.bg-blue-200]="formType==='supervisor'">Superviseur</button>
+  </div>
+
+  <!-- ====== Document Form ====== -->
+  <h2 *ngIf="formType === 'document'" class="mb-2 text-3xl font-bold text-center text-customBlue poppins-bold">
+    Créer un Document
+  </h2>
+  <form *ngIf="formType === 'document'" class="space-y-3" [formGroup]="documentForm" (ngSubmit)="onSubmit()">
+    <div class="flex justify-center mb-4">
+      <img src="assets/img/docImage.png" alt="Document" class="w-full h-48 object-cover rounded-md" />
+    </div>
+
+    <div>
+      <label class="block mb-1">Nom du document</label>
+      <input formControlName="title" type="text" placeholder="Nom du document"
+             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
+             [ngClass]="{'border-red-500': submittedDocument && documentFormControl['title'].invalid}" />
+      <small class="text-red-600" *ngIf="submittedDocument && documentFormControl['title'].errors?.['required']">
+        Champ requis
+      </small>
+    </div>
+
+    <div>
+      <label class="block mb-1">Fichier</label>
+      <input type="file" (change)="onFileSelected($event)"
+             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
+             [ngClass]="{'border-red-500': submittedDocument && documentFormControl['file'].invalid}" />
+      <small class="text-red-600" *ngIf="submittedDocument && documentFormControl['file'].errors?.['required']">
+        Champ requis
+      </small>
+    </div>
+
+    <button type="submit" class="w-full py-2 mt-2 text-white bg-customBlue rounded hover:bg-blue-700"
+            [disabled]="documentForm.invalid">
+      Ajouter
+    </button>
+  </form>
+
+  <!-- ====== Collaborator Form ====== -->
+  <h2 *ngIf="formType === 'collaborator'" class="mb-2 text-2xl font-bold text-center text-customBlue">
+    {{ isEditMode ? 'Modifier un Collaborateur' : 'Ajouter un Collaborateur' }}
+  </h2>
+  <form *ngIf="formType === 'collaborator'" class="space-y-3" [formGroup]="collaboratorForm" (ngSubmit)="onSubmit()">
+    <div class="flex justify-center mb-4">
+      <img src="assets/img/colImage2.jpg" alt="Collaborateur" class="w-full h-52 object-cover rounded-md" />
+    </div>
+
+    <div>
+      <label class="block mb-1">Nom</label>
+      <input formControlName="name" type="text" placeholder="Nom du collaborateur"
+             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
+             [ngClass]="{'border-red-500': submittedCollaborator && collaboratorFormControl['name'].invalid}" />
+      <small class="text-red-600" *ngIf="submittedCollaborator && collaboratorFormControl['name'].errors?.['required']">
+        Champ requis
+      </small>
+    </div>
+
+    <div>
+      <label class="block mb-1">Email</label>
+      <input formControlName="email" type="email" placeholder="Email"
+             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
+             [ngClass]="{'border-red-500': submittedCollaborator && collaboratorFormControl['email'].invalid}" />
+      <small class="text-red-600" *ngIf="submittedCollaborator && collaboratorFormControl['email'].errors?.['required']">
+        Champ requis
+      </small>
+      <small class="text-red-600" *ngIf="submittedCollaborator && collaboratorFormControl['email'].errors?.['email']">
+        Email invalide
+      </small>
+    </div>
+
+    <button type="submit" class="w-full py-2 mt-2 text-white bg-customBlue rounded hover:bg-blue-700"
+            [disabled]="collaboratorForm.invalid">
+      {{ isEditMode ? 'Modifier' : 'Ajouter' }}
+    </button>
+  </form>
+
+  <!-- ====== Supervisor Form ====== -->
+  <h2 *ngIf="formType === 'supervisor'" class="mb-2 text-2xl font-bold text-center text-customBlue">
+    Ajouter un Superviseur
+  </h2>
+  <form *ngIf="formType === 'supervisor'" class="space-y-3" [formGroup]="supervisorForm" (ngSubmit)="onSubmit()">
+    <div class="flex justify-center mb-4">
+      <img src="assets/img/supervisor.jpg" alt="Superviseur" class="w-full h-52 object-cover rounded-md" />
+    </div>
+
+    <div>
+      <label class="block mb-1">Nom</label>
+      <input formControlName="name" type="text" placeholder="Nom du superviseur"
+             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
+             [ngClass]="{'border-red-500': submittedSupervisor && supervisorFormControl['name'].invalid}" />
+      <small class="text-red-600" *ngIf="submittedSupervisor && supervisorFormControl['name'].errors?.['required']">
+        Champ requis
+      </small>
+    </div>
+
+    <div>
+      <label class="block mb-1">Email</label>
+      <input formControlName="email" type="email" placeholder="Email"
+             class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-customBlue"
+             [ngClass]="{'border-red-500': submittedSupervisor && supervisorFormControl['email'].invalid}" />
+      <small class="text-red-600" *ngIf="submittedSupervisor && supervisorFormControl['email'].errors?.['required']">
+        Champ requis
+      </small>
+      <small class="text-red-600" *ngIf="submittedSupervisor && supervisorFormControl['email'].errors?.['email']">
+        Email invalide
+      </small>
+    </div>
+
+    <button type="submit" class="w-full py-2 mt-2 text-white bg-customBlue rounded hover:bg-blue-700"
+            [disabled]="supervisorForm.invalid">
+      Ajouter
+    </button>
+  </form>
+</div>

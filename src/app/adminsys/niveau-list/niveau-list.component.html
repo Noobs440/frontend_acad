@@ -1,0 +1,56 @@
+<div class="niveau-list">
+
+  <div class="controls">
+    <input type="text" placeholder="Recherche par code" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+
+    <button (click)="toggleSort()">
+      Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
+    </button>
+
+    <button (click)="openAddModal()">Ajouter un niveau</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let niv of filteredNiveaux">
+        <td>{{ niv.code_niv }}</td>
+        <td>
+          <button (click)="openEditModal(niv)">Modifier</button>
+          <button (click)="deleteNiveau(niv.id)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+    <span>Page {{ currentPage }} / {{ totalPages }}</span>
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3>{{ isEditMode ? 'Modifier niveau' : 'Ajouter niveau' }}</h3>
+
+      <label>
+        Code:
+        <input type="text" [(ngModel)]="currentNiveau.code_niv" />
+      </label>
+
+      <div class="modal-actions">
+        <button (click)="saveNiveau()">
+          {{ isEditMode ? 'Enregistrer' : 'Ajouter' }}
+        </button>
+        <button (click)="closeModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+</div>

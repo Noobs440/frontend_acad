@@ -1,0 +1,89 @@
+<section id="contact" class="contact section">
+
+  <!-- Section Title -->
+  <div class="con1 container section-title mb-4" [@fadeUp]>
+    <h2>{{ 'CONTACT' | translate }}</h2>
+    <h6>{{ 'CONTACT_DESCRIPTION' | translate }}</h6>
+  </div><!-- End Section Title -->
+
+  <div class="container" [@fadeUp]>
+
+    <div class="row gy-4">
+
+      <div class="col-lg-6">
+
+        <div class="row gy-4">
+          <div class="col-md-6">
+            <div class="info-item" [@fadeUp]>
+              <i class="bi bi-geo-alt"></i>
+              <h3>{{ 'ADDRESS' | translate }}</h3>
+              <p>BP: 96 Dschang</p>
+            </div>
+          </div><!-- End Info Item -->
+
+          <div class="col-md-6">
+            <div class="info-item" [@fadeUp]>
+              <i class="bi bi-telephone"></i>
+              <h3>{{ 'CALL_US' | translate }}</h3>
+              <p>+237 233451381</p>
+            </div>
+          </div><!-- End Info Item -->
+
+          <div class="col-md-6">
+            <div class="info-item" [@fadeUp]>
+              <i class="bi bi-envelope"></i>
+              <h3>{{ 'EMAIL_US' | translate }}</h3>
+              <p>info&#64;univ-dschang.org</p>
+            </div>
+          </div><!-- End Info Item -->
+
+          <!-- <div class="col-md-6">
+            <div class="info-item"  data-aos-delay="500">
+              <i class="bi bi-clock"></i>
+              <h3>Open Hours</h3>
+              <p>Monday - Friday</p>
+              <p>9:00AM - 05:00PM</p>
+            </div>
+          </div>End Info Item -->
+
+        </div>
+
+      </div>
+
+      <div class="col-lg-6 bgwhite">
+        <form class="php-email-form" [@fadeUp]>
+          <div class="row gy-4">
+
+            <div class="col-md-6">
+              <input type="text" name="name" class="form-control" placeholder="{{ 'YOUR_NAME' | translate }}" required>
+            </div>
+
+            <div class="col-md-6">
+              <input type="email" class="form-control" name="email" placeholder="{{ 'YOUR_EMAIL' | translate }}" required>
+            </div>
+
+            <div class="col-md-12">
+              <input type="text" class="form-control" name="subject" placeholder="{{ 'SUBJECT' | translate }}" required>
+            </div>
+
+            <div class="col-md-12">
+              <textarea class="form-control" name="message" rows="6" placeholder="{{ 'MESSAGE' | translate }}" required></textarea>
+            </div>
+
+            <div class="col-md-12 text-center">
+              <div class="loading">{{ 'LOADING' | translate }}</div>
+              <div class="error-message">{{ 'ERROR_MESSAGE' | translate }}</div>
+              <div class="sent-message">{{ 'SENT_MESSAGE' | translate }}</div>
+
+              <button type="submit">{{ 'SEND_MESSAGE' | translate }}</button>
+            </div>
+
+          </div>
+        </form>
+      </div><!-- End Contact Form -->
+
+    </div>
+
+  </div>
+
+</section><!-- /Contact Section -->

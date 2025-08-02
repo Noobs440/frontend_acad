@@ -1,0 +1,40 @@
+.overlay-content {
+  background: white;
+  box-shadow: inset;
+  position: absolute;
+  padding: 10px;
+  width: 100%;
+  border-top-left-radius:0px;
+  border-top-right-radius: 0px;
+
+  cursor: pointer;
+  height: 300px;
+  box-shadow: inset;
+
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), /* Bottom shadow */
+              4px 0 8px rgba(0, 0, 0, 0.1), /* Right shadow */
+              -4px 0 8px rgba(0, 0, 0, 0.1); /* Left shadow */
+  border-radius: 5px; /* Optional: Add rounded corners */
+  max-height: 80vh; /* Optional: Set a max height for the overlay content */
+  overflow-y: auto; /* Optional: Add vertical scroll if content exceeds max height */
+  height: 200px;
+}
+.overlay-content ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.overlay-content ul li {
+  padding: 5px 10px;
+  border-bottom: 1px solid #eee; /* Optional: Add a border between items */
+
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Hide overflowing text */
+  text-overflow: ellipsis; /* Add ellipsis for overflowing text */
+}
+
+.overlay-content ul li:hover {
+  background-color: #f1f1f1; /* Slightly darker background on hover */
+}

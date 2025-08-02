@@ -1,0 +1,96 @@
+<main id="main" class="main">
+  <div class="pagetitle">
+      <h1>Admin Dashboard</h1>
+      <nav>
+          <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a [routerLink]="['/home']">Home</a></li>
+              <li class="breadcrumb-item "><a [routerLink]="['/admin/dashboard']">Admin Dashboard</a></li>
+              <li class="breadcrumb-item active">{{ selectedProjectTitle }}</li>
+          </ol>
+      </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section dashboard">
+      <div class="row gap-5">
+          <div class="col-lg-12">
+              <!-- Tab Section -->
+              <div class="tabs">
+                  <ul class="nav nav-tabs" id="myTab" role="tablist">
+                      <li class="nav-item" role="presentation">
+                          <button class="nav-link active" id="actions-tab" data-bs-toggle="tab" data-bs-target="#actions" type="button" role="tab" aria-controls="actions" aria-selected="true">
+                              Actions
+                          </button>
+                      </li>
+                  </ul>
+                  <div class="tab-content" id="myTabContent">
+                      <div class="tab-pane fade show active" id="actions" role="tabpanel" aria-labelledby="actions-tab">
+                          <div class="actions mt-3" *ngIf="projectStatus=='Approved'">
+                              <button class="btn btn-view" (click)="onView()"><i class="fas fa-eye"></i> View</button>
+                              <button class="btn btn-del" (click)="onRestore()"><i class="fas fa-trash-alt"></i> Restore</button>
+                          </div>
+                          <div class="actions mt-3" *ngIf="projectStatus=='Pending'">
+                            <button class="btn btn-view" (click)="onView()"><i class="fas fa-eye"></i> View</button>
+                            <button class="btn btn-val" (click)="onValidate()"><i class="fas fa-check"></i> Approve</button>
+                            <button class="btn btn-del" (click)="onDelete()"><i class="fas fa-trash-alt"></i> Delete</button>
+                          </div>
+                          <div class="actions mt-3" *ngIf="projectStatus=='Rejected'">
+
+                            <button class="btn btn-val" (click)="onRestore()"><i class="fas fa-check"></i> Restore</button>
+                          </div>
+                      </div>
+                  </div>
+              </div><!-- End Tabs Section -->
+
+              <!-- Service Details Section -->
+              <section id="service-details" class="service-details section">
+                  <div class="con1 container">
+                      <div class="row ">
+                        <div class="col-lg-6 ps-lg-5">
+                          <img [src]="getFullImageUrl(projectImage)" alt="" class="img-fluid services-img">
+                          <h3>{{selectedProjectTitle}} ({{type}})</h3>
+                          <p>
+                             {{description}}
+                          </p>
+                          <ul>
+                            <li><i class="bi bi-person-circle"></i><span class="font-bold">{{author}}</span></li>
+                            <li><i class="fas fa-graduation-cap"></i> <span>{{level}}</span></li>
+                            <li><i class="fas fa-eye"></i> <span>{{views}} Views {{projectStatus}}</span></li>
+                          </ul>
+                          <p>
+                          </p>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="service-box">
+                          <h4>Documents Related</h4>
+                          <div class="download-catalog">
+                            <a *ngFor="let document of documents | slice:0:(isExpanded ? documents.length : 4)"
+                               [href]="getFullDocumentUrl(document.lien_doc)" target="_blank" rel="noopener">
+                              <i class="bi bi-filetype-pdf"></i><span>{{ document.nom_doc }}</span>
+                            </a>
+                          </div>
+                          <div *ngIf="documents.length > 4" class="show-more" (click)="toggleExpand()">
+                            <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                            <span>{{ isExpanded ? 'Show Less' : 'Show More' }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                          <div class="col-lg-12 mt-4" [@fadeUp]>
+
+
+
+                            <div class="help-box d-flex flex-column justify-content-center align-items-center">
+                              <i class="bi bi-headset help-icon"></i>
+                              <h4>Contact Author</h4>
+                              <p class="d-flex align-items-center mt-2 mb-0"><i class="bi bi-telephone me-2"></i> <span>+589 55488 55</span></p>
+                              <p class="d-flex align-items-center mt-1 mb-0"><i class="bi bi-envelope me-2"></i> <a href="mailto:contact@example.com">{{email}}</a></p>
+                            </div>
+
+                          </div>
+                      </div>
+                  </div>
+              </section><!-- /Service Details Section -->
+          </div>
+      </div>
+  </section>
+</main><!-- End #main -->

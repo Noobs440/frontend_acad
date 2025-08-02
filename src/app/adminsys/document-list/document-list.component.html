@@ -1,0 +1,79 @@
+<div class="document-list">
+
+  <div class="controls">
+    <input type="text" placeholder="Recherche par nom" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+
+    <button (click)="toggleSort()">
+      Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
+    </button>
+
+    <button (click)="openAddModal()">Ajouter un document</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Fichier</th>
+        <th>Utilisateur</th>
+        <th>Projet</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let doc of filteredDocuments">
+        <td>{{ doc.nom_doc }}</td>
+        <td>
+          <a href="{{ doc.lien_doc }}" target="_blank" rel="noopener noreferrer">📥 Télécharger</a>
+        </td>
+        <td>{{ doc.user_id }}</td>
+        <td>{{ doc.tbl_projet_id }}</td>
+        <td>
+          <button (click)="openEditModal(doc)">Modifier</button>
+          <button (click)="deleteDocument(doc.id)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+    <span>Page {{ currentPage }} / {{ totalPages }}</span>
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3>{{ isEditMode ? 'Modifier document' : 'Ajouter document' }}</h3>
+
+      <label>
+        Nom:
+        <input type="text" [(ngModel)]="currentDocument.nom_doc" />
+      </label>
+
+      <label>
+        Fichier:
+        <input type="file" (change)="onFileSelected($event)" />
+      </label>
+
+      <label>
+        Utilisateur (ID):
+        <input type="number" [(ngModel)]="currentDocument.user_id" />
+      </label>
+
+      <label>
+        Projet (ID):
+        <input type="number" [(ngModel)]="currentDocument.tbl_projet_id" />
+      </label>
+
+      <div class="modal-actions">
+        <button (click)="saveDocument()">
+          {{ isEditMode ? 'Enregistrer' : 'Ajouter' }}
+        </button>
+        <button (click)="closeModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+</div>

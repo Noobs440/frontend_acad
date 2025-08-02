@@ -1,0 +1,75 @@
+<div class="collaborator-list">
+
+  <div class="controls">
+    <input type="text" placeholder="Recherche par nom" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+
+    <button (click)="toggleSort()">
+      Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
+    </button>
+
+    <button (click)="openAddModal()">Ajouter un collaborateur</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Projet (ID)</th>
+        <th>Utilisateur (ID)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let collab of filteredCollaborators">
+        <td>{{ collab.nom_collab }}</td>
+        <td>{{ collab.email_collab }}</td>
+        <td>{{ collab.tbl_projet_id }}</td>
+        <td>{{ collab.user_id }}</td>
+        <td>
+          <button (click)="openEditModal(collab)">Modifier</button>
+          <button (click)="deleteCollaborator(collab.id)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+    <span>Page {{ currentPage }} / {{ totalPages }}</span>
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3>{{ isEditMode ? 'Modifier collaborateur' : 'Ajouter collaborateur' }}</h3>
+
+      <label>
+        Nom:
+        <input type="text" [(ngModel)]="currentCollaborator.nom_collab" />
+      </label>
+
+      <label>
+        Email:
+        <input type="email" [(ngModel)]="currentCollaborator.email_collab" />
+      </label>
+
+      <label>
+        Projet (ID):
+        <input type="number" [(ngModel)]="currentCollaborator.tbl_projet_id" />
+      </label>
+
+      <label>
+        Utilisateur (ID):
+        <input type="number" [(ngModel)]="currentCollaborator.user_id" />
+      </label>
+
+      <div class="modal-actions">
+        <button (click)="saveCollaborator()">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</button>
+        <button (click)="closeModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+</div>

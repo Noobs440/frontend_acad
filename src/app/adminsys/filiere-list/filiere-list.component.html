@@ -1,0 +1,63 @@
+<div class="filiere-list">
+
+  <div class="controls">
+    <input type="text" placeholder="Recherche par nom" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+
+    <button (click)="toggleSort()">
+      Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
+    </button>
+
+    <button (click)="openAddModal()">Ajouter une filière</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Faculté (ID)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let fil of filteredFilieres">
+        <td>{{ fil.nom_fil }}</td>
+        <td>{{ fil.tbl_faculte_id }}</td>
+        <td>
+          <button (click)="openEditModal(fil)">Modifier</button>
+          <button (click)="deleteFiliere(fil.id)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+    <span>Page {{ currentPage }} / {{ totalPages }}</span>
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3>{{ isEditMode ? 'Modifier filière' : 'Ajouter filière' }}</h3>
+
+      <label>
+        Nom:
+        <input type="text" [(ngModel)]="currentFiliere.nom_fil" />
+      </label>
+
+      <label>
+        Faculté (ID):
+        <input type="number" [(ngModel)]="currentFiliere.tbl_faculte_id" />
+      </label>
+
+      <div class="modal-actions">
+        <button (click)="saveFiliere()">
+          {{ isEditMode ? 'Enregistrer' : 'Ajouter' }}
+        </button>
+        <button (click)="closeModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+</div>

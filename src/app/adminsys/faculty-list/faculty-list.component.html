@@ -1,0 +1,68 @@
+<div class="faculty-list">
+
+  <div class="controls">
+    <input type="text" placeholder="Recherche par nom" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+
+    <button (click)="toggleSort()">
+      Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
+    </button>
+
+    <button (click)="openAddModal()">Ajouter une faculté</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Université (ID)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let fac of filteredFaculties">
+        <td>{{ fac.nom_fac }}</td>
+        <td>{{ fac.email_fac }}</td>
+        <td>{{ fac.tbl_universite_id }}</td>
+        <td>
+          <button (click)="openEditModal(fac)">Modifier</button>
+          <button (click)="deleteFaculty(fac.id)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+    <span>Page {{ currentPage }} / {{ totalPages }}</span>
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3>{{ isEditMode ? 'Modifier faculté' : 'Ajouter faculté' }}</h3>
+
+      <label>
+        Nom:
+        <input type="text" [(ngModel)]="currentFaculty.nom_fac" />
+      </label>
+
+      <label>
+        Email:
+        <input type="email" [(ngModel)]="currentFaculty.email_fac" />
+      </label>
+
+      <label>
+        Université (ID):
+        <input type="number" [(ngModel)]="currentFaculty.tbl_universite_id" />
+      </label>
+
+      <div class="modal-actions">
+        <button (click)="saveFaculty()">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</button>
+        <button (click)="closeModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+</div>

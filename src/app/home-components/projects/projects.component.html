@@ -1,0 +1,125 @@
+<section id="recent-posts" class="recent-posts section" [ngStyle]="{'background-color': bgColor}">
+  <!-- Titre de la section -->
+  <div class="con1 container section-title" [ngStyle]="{'padding-top': pad, 'color': fColor}" [@fadeUp]>
+    <h2>{{ 'CONSULT_PROJECTS' | translate }}</h2>
+    <h5>{{ 'DISCOVER_IDEAS' | translate }}</h5>
+  </div><!-- Fin du Titre de la section -->
+
+  <!-- Filtres -->
+  <div class="container filters p-4" [@fadeUp]>
+    <div class="row">
+      <div class="col-md-3">
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-university"></i></span>
+          <select title="{{ 'SELECT_DEPARTMENT' | translate }}" class="no-focus form-select" [(ngModel)]="selectedFilliere" (change)="applyFilters()">
+            <option disabled selected value="">{{ 'SELECT_DEPARTMENT' | translate }}</option>
+            <option *ngFor="let filiere of filieres" [value]="filiere.nom_fil">{{ filiere.nom_fil }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+          <select title="{{ 'SELECT_LEVEL' | translate }}" class="no-focus form-select" [(ngModel)]="selectedNiveau" (change)="applyFilters()">
+            <option disabled selected value="">{{ 'SELECT_LEVEL' | translate }}</option>
+            <option *ngFor="let niveau of niveaux" [value]="niveau.code_niv">{{ niveau.code_niv }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-book"></i></span>
+          <select title="{{ 'SELECT_DOMAIN' | translate }}" class="no-focus form-select" [(ngModel)]="selectedDomain" (change)="applyFilters()">
+            <option disabled selected value="">{{ 'SELECT_DOMAIN' | translate }}</option>
+            <option *ngFor="let domain of categories" [value]="domain.nom_cat">{{ domain.nom_cat }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="input-group">
+          <input type="text" class="form-control no-focus" placeholder="{{ 'SEARCH_PROJECT' | translate }}" [(ngModel)]="searchQuery">
+          <button class="btn btn-outline-primary" type="button" (click)="searchProjects()"><i class="fas fa-search"></i></button>
+          <button class="btn btn-outline-secondary" type="button" (click)="clearFilters()"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+    </div>
+  </div><!-- Fin des Filtres -->
+
+  <!-- Message Aucun Résultat -->
+  <div *ngIf="noResults && !isLoading" class="container projects p-4 align-items-center mytext">
+    <div class="row gy-4">
+      <p>{{ 'NO_RESULTS_FOUND' | translate }}</p>
+    </div>
+  </div>
+
+  <!-- Projets -->
+  <div *ngIf="!noResults " class="container projects p-4">
+    <div class="row gy-4">
+      <div *ngIf="isLoading" class="container d-flex projects p-4 justify-content-center align-items-center">
+        <div class="spinner-grow text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-secondary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-success" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-danger" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-warning" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-info" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-info" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+
+      <div *ngFor="let post of paginatedPosts" class="col-xl-3 col-md-6" [@fadeUp]>
+        <article>
+          <div class="project-img">
+            <img [src]="getFullImageUrl(post.image)" alt="" class="img-fluid">
+          </div>
+          <p class="project-category">{{ post.nom_categorie }}</p>
+          <h2 class="title">
+            <a [routerLink]="['/home/project-detail', post.id]" [queryParams]="getProjectQueryParams(post)">{{ post.titre_projet }}</a>
+          </h2>
+          <div class="d-flex align-items-center">
+            <!-- <img [src]="getFullImageUrl(post.image_utilisateur)" alt="" class="img-fluid user-avatar"> -->
+            <div class="post-meta">
+              <p class="author">{{ post.nom_utilisateur }}</p>
+              <p class="date">
+                <time datetime="2020-01-01">{{ post.date }}</time>
+              </p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div><!-- Fin des Projets -->
+
+  <!-- Contrôles de Pagination -->
+  <div *ngIf="!noResults && totalPages > 1" class="container pagination-controls" [@fadeUp]>
+    <nav>
+      <ul class="pagination">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(currentPage - 1)" aria-label="Precedent">
+            <span aria-hidden="true">&laquo;</span>
+          </button>
+        </li>
+        <li *ngFor="let page of pages" class="page-item" [class.active]="page === currentPage">
+          <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToPage(currentPage + 1)" aria-label="Suivant">
+            <span aria-hidden="true">&raquo;</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div><!-- Fin des Contrôles de Pagination -->
+</section>

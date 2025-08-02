@@ -1,0 +1,12 @@
+<h3>Modifier le nom et prénom</h3>
+<form (ngSubmit)="submit()" class="form-container">
+  <label for="name">Nom :</label>
+  <input id="nom_user" [(ngModel)]="nom_user" name="nom_user" required class="input" />
+
+  <label for="surname">Prénom :</label>
+  <input id="surname" [(ngModel)]="surname" name="surname" required class="input" />
+
+  <button type="submit" class="submit-btn">Enregistrer</button>
+</form>
+
+<p *ngIf="message" class="success-msg">{{ message }}</p>

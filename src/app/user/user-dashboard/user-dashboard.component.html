@@ -1,0 +1,134 @@
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>{{ name | uppercase }}</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink]="['/home']">Home</a></li>
+        <li class="breadcrumb-item active">{{ name }} Dashboard</li>
+      </ol>
+    </nav>
+  </div>
+
+  <h4 style="color:#06BBCC; font-weight:bold;">
+    {{ name | uppercase }} Bienvenue dans votre espace personnel
+  </h4>
+
+
+  
+  <section class="section dashboard">
+<!-- 🔍 Barre de filtre centrée et sur une seule ligne -->
+<div class="filter-container d-flex justify-content-center mb-4">
+  <div class="filter-bar d-flex align-items-center gap-3">
+    <input
+      type="text"
+      class="form-control filter-input"
+      placeholder="🔍 Rechercher un projet..."
+      [value]="searchQuery"
+      (input)="onSearchQueryChange($event)"
+      aria-label="Recherche par titre"
+    />
+
+    <select
+      class="form-select filter-select"
+      [value]="selectedTypeFilter"
+      (change)="onTypeFilterChange($event)"
+      aria-label="Filtrer par type"
+    >
+      <option value="all">📁 Tous</option>
+      <option value="projet">📘 Projet</option>
+      <option value="mémoire">📙 Mémoire</option>
+      <option value="article">📗 Article</option>
+    </select>
+  </div>
+</div>
+
+   <div class="myheader text-center mb-4">
+  <h6 class="mb-3">Vous pouvez téléverser un projet en cliquant sur le bouton ci-dessous.</h6>
+  <button (click)="openDialog()" class="mybutton">
+    <i class="fas fa-plus "></i> UPLOAD
+  </button>
+</div>
+
+
+
+    <div class="container">
+      <div class="row">
+        <div *ngIf="isLoading" class="container d-flex projects p-4 justify-content-center align-items-center">
+          <div *ngFor="let spinner of [1,2,3,4,5,6,7]" class="spinner-grow text-info" role="status" aria-label="Loading">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 mb-4" *ngFor="let project of selectedProject">
+          <a
+            [routerLink]="['/user/dashboard/project-detail', project.id]"
+            [queryParams]="getProjectQueryParams(project)"
+            class="card text-decoration-none h-100"
+            style="cursor: pointer;"
+            title="Voir les détails du projet {{ project.titre }}"
+          >
+            <img
+              [src]="getFullImageUrl(project.image)"
+              alt="Image du projet {{ project.titre }}"
+              class="card-img-top"
+              style="height: 180px; object-fit: cover;"
+            />
+            <div class="card-body">
+              <h5 class="card-title">{{ project.titre }}</h5>
+              <span
+                class="badge category-badge me-2"
+                [style.backgroundColor]="project.couleur_categorie || '#6c757d'"
+              >
+                {{ project.nom_categorie }}
+              </span>
+              <span
+                class="badge status-badge"
+                [ngClass]="{
+                  'badge-not-submitted': project.status === 'Not Submitted',
+                  'badge-pending': project.status === 'Pending',
+                  'badge-approved': project.status === 'Approved',
+                  'badge-rejected': project.status === 'Rejected'
+                }"
+              >
+                {{ project.status | titlecase }}
+              </span>
+              <p class="card-text mt-2">
+                <small class="text-muted fw-bold">
+                  Par {{ project.nom_utilisateur }} le {{ project.created_at | date: 'mediumDate' }}
+                </small>
+              </p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- 📄 Pagination -->
+      <div
+        class="pagination-controls d-flex justify-content-center align-items-center mt-4"
+        *ngIf="totalPages > 1"
+      >
+        <button
+          (click)="onPageChange(currentPage - 1)"
+          [disabled]="currentPage === 1"
+          class="btn btn-outline-primary me-3"
+          aria-label="Page précédente"
+        >
+          <i class="fas fa-chevron-left"></i> Previous
+        </button>
+        <span>Page {{ currentPage }} sur {{ totalPages }}</span>
+        <button
+          (click)="onPageChange(currentPage + 1)"
+          [disabled]="currentPage === totalPages"
+          class="btn btn-outline-primary ms-3"
+          aria-label="Page suivante"
+        >
+          Next <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center" aria-label="Retour en haut">
+  <i class="bi bi-arrow-up-short"></i>
+</a>

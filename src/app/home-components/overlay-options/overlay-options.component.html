@@ -1,0 +1,13 @@
+<div class="overlay-content">
+    <div class="col-lg-5">
+      <h5>Categories</h5>
+      <ul>
+        <li (click)="search(category.category)" *ngFor="let category of categories">{{ category.category }}</li>
+      </ul>
+      <h5>Projects</h5>
+      <ul>
+        <li (click)="search(project.category)" *ngFor="let project of categories">{{ project.category }}</li>
+      </ul>
+    </div>
+    <!-- affiche le resultat dela recherche du back -->
+</div>

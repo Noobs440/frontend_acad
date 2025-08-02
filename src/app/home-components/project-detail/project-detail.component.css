@@ -1,0 +1,28 @@
+.page-title{
+  background-color: #06BBCC;
+  height: 300px;
+}
+.row{
+  border-radius: 5px;
+}
+.con1{
+}
+a{
+  text-decoration: none;
+  cursor:pointer;
+}
+.conp{
+  color:white;
+  margin-top: 30px;
+}
+.show-more {
+  cursor: pointer;
+  color: #06BBCC;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.show-more:hover {
+font-weight: bold;
+  cursor: pointer;
+}

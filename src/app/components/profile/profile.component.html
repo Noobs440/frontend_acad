@@ -1,0 +1,52 @@
+
+<div class="profile-container" style="display: flex; gap: 2rem;">
+  <aside class="profile-aside" style="width: 250px; text-align: center;">
+    <!-- Photo de profil cliquable -->
+    <label
+      class="profile-img-wrapper"
+      (click)="triggerFile()"
+      style="cursor: pointer; display: inline-block;"
+    >
+      <img
+        [src]="photoUrl || 'assets/navi.png'"
+        alt="Photo de profil"
+        class="profile-img"
+        style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 2px solid #ccc;"
+      />
+      <input
+        type="file"
+        accept="image/*"
+        (change)="onFileSelected($event)"
+        hidden
+        #fileInput
+      />
+    </label>
+
+    <h4 style="margin-top: 1rem;">{{ user.nom_user || 'Nom' }}</h4>
+    <p>{{ user.email || 'email@example.com' }}</p>
+    
+    <nav
+      class="profile-links"
+      style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;"
+    >
+      <a routerLink="edit-name" style="text-decoration: none; color: #007bff;">
+        ⚙ Modifier Nom/Prénom
+      </a>
+      <a routerLink="edit-email" style="text-decoration: none; color: #007bff;">
+        ⚙ Modifier Email
+      </a>
+      <a routerLink="edit-password" style="text-decoration: none; color: #007bff;">
+        ⚙ Modifier Mot de passe
+      </a>
+      <a routerLink="edit-photo" style="text-decoration: none; color: #007bff;">
+        📷 Modifier Photo
+      </a>
+    </nav>
+  </aside>
+
+  <section class="profile-content" style="flex-grow: 1;">
+    <router-outlet></router-outlet>
+  </section>
+</div>
+
+  
