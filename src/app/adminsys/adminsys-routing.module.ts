@@ -7,6 +7,7 @@ import { CollaboratorListComponent } from './collaborator-list/collaborator-list
 import { FacultyListComponent } from './faculty-list/faculty-list.component';
 import { FiliereListComponent } from './filiere-list/filiere-list.component';
 import { NiveauListComponent } from './niveau-list/niveau-list.component';
+import { IndexComponent } from './index/index.component'; 
 
 const routes: Routes = [
   {
@@ -19,8 +20,9 @@ const routes: Routes = [
       { path: 'collaborateurs', component: CollaboratorListComponent },
       { path: 'documents', component: DocumentListComponent },
       { path: 'categories', component: CategoryListComponent },
+      { path: 'index', component: IndexComponent },
       // autres routes
-      { path: '', redirectTo: 'categories', pathMatch: 'full' }
+      { path: '', redirectTo: 'index', pathMatch: 'full' }
     ]
   }
 ];

@@ -1,0 +1,28 @@
+<div class="dashboard-container">
+  <h1>Dashboard Administrateur</h1>
+
+  <div class="stats-cards">
+    <div class="card">
+      <h3>Universités</h3>
+      <p>{{ universityCount }}</p>
+    </div>
+    <div class="card">
+      <h3>Filières</h3>
+      <p>{{ filiereCount }}</p>
+    </div>
+    <div class="card">
+      <h3>Projets</h3>
+      <p>{{ projetCount }}</p>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <canvas baseChart
+      [data]="barChartData"
+      [labels]="barChartLabels"
+      [options]="barChartOptions"
+      [legend]="true"
+      chartType="bar">
+    </canvas>
+  </div>
+</div>

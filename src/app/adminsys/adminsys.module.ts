@@ -9,6 +9,8 @@ import { CollaboratorListComponent } from './collaborator-list/collaborator-list
 import { FacultyListComponent } from './faculty-list/faculty-list.component';
 import { FiliereListComponent } from './filiere-list/filiere-list.component';
 import { NiveauListComponent } from './niveau-list/niveau-list.component';
+import { IndexComponent } from './index/index.component';
+import { NgChartsModule } from 'ng2-charts';
 // autres composants à ajouter ici
 
 @NgModule({
@@ -20,6 +22,8 @@ import { NiveauListComponent } from './niveau-list/niveau-list.component';
     FacultyListComponent,
     FiliereListComponent,
     NiveauListComponent,
+    IndexComponent,
+    NgChartsModule,
     // autres composants
   ],
   imports: [
