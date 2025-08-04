@@ -124,21 +124,6 @@ export class DetailProjetComponent {
     if (this.projectStatus === "Pending") {
       const userConfirmed = confirm("Souhaitez-vous rejeter ce projet ?");
 
-      if (userConfirmed) {
-        this.projetStatusService.rejectProject(this.selectedProjectId).subscribe({
-          next: value => {
-            alert(`Le projet a été rejeté et un email a été envoyé à ${this.author}, l'auteur du projet.`);
-          },
-          error: err => {
-            alert(`Le projet n'a pas été rejeté, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
-            console.error(err);
-          },
-          complete: () => {
-            this.router.navigate(['/admin']);
-            console.log("Succès");
-          }
-        });
-      }
     }
   }
 

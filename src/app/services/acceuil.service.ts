@@ -11,7 +11,7 @@ export class AcceuilService {
   constructor(private http:HttpClient , private router:Router) { }
 
   getProjectsByOrder(): Observable<any[]>{
-    return this.http.get<any[]>('https://backend-acad.onrender.com/api/usecases/acceuil/projets/ordre').pipe(
+    return this.http.get<any[]>('http://localhost:8000/api/usecases/acceuil/projets/ordre').pipe(
       tap((response)=>console.table(response)),
       catchError((error) =>{
         console.log(error);
@@ -21,7 +21,7 @@ export class AcceuilService {
   }
 
   getCategoriesWithProjectNumber(): Observable<any[]>{
-    return this.http.get<any[]>('https://backend-acad.onrender.com/api/usecases/acceuil/categories').pipe(
+    return this.http.get<any[]>('http://localhost:8000/api/usecases/acceuil/categories').pipe(
       tap((response)=>console.table(response)),
       catchError((error) =>{
         console.log(error);

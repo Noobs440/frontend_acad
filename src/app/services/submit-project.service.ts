@@ -16,11 +16,11 @@ export class SubmitProjectService {
     // 1. Soumettre le projet (logique métier, notification admin, etc.)
     // 2. Associer le superviseur
     return new Observable(observer => {
-      this.http.post<any>(`https://backend-acad.onrender.com/api/usecases/submit/${projetId}`, null, { headers }).subscribe({
+      this.http.post<any>(`http://localhost:8000/api/usecases/submit/${projetId}`, null, { headers }).subscribe({
         next: (submitRes) => {
           // Après soumission, associer le superviseur
           const body = { supervisor_id: supervisorId };
-          this.http.post<any>(`https://backend-acad.onrender.com/api/projects/${projetId}/assign-supervisor`, body, { headers }).subscribe({
+          this.http.post<any>(`http://localhost:8000/api/projects/${projetId}/assign-supervisor`, body, { headers }).subscribe({
             next: (assignRes) => {
               observer.next({ submit: submitRes, assign: assignRes });
               observer.complete();

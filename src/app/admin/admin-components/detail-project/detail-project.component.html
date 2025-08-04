@@ -31,10 +31,14 @@
                           <div class="actions mt-3" *ngIf="projectStatus=='Pending'">
                             <button class="btn btn-view" (click)="onView()"><i class="fas fa-eye"></i> View</button>
                             <button class="btn btn-val" (click)="onValidate()"><i class="fas fa-check"></i> Approve</button>
-                            <button class="btn btn-del" (click)="onDelete()"><i class="fas fa-trash-alt"></i> Delete</button>
+                            <button class="btn btn-del" (click)="openRejectModal()"><i class="fas fa-trash-alt"></i> Delete</button>
                           </div>
-                          <div class="actions mt-3" *ngIf="projectStatus=='Rejected'">
 
+                          <div class="actions mt-3" *ngIf="projectStatus=='Rejected'">
+                            <div class="alert alert-danger mb-2">
+                              <strong>Motif du rejet :</strong>
+                              <span>{{ getRejectionReason() }}</span>
+                            </div>
                             <button class="btn btn-val" (click)="onRestore()"><i class="fas fa-check"></i> Restore</button>
                           </div>
                       </div>
@@ -94,3 +98,24 @@
       </div>
   </section>
 </main><!-- End #main -->
+
+<!-- Modal motif de rejet -->
+<div class="modal" tabindex="-1" [ngClass]="{'show': showRejectModal}" style="display: {{showRejectModal ? 'block' : 'none'}}; background: rgba(0,0,0,0.5); position: fixed; top:0; left:0; width:100vw; height:100vh; z-index:1050;">
+  <div class="modal-dialog" style="margin-top:10vh;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Motif du rejet</h5>
+        <button type="button" class="btn-close" (click)="closeRejectModal()"></button>
+      </div>
+      <div class="modal-body">
+        <label for="motif">Veuillez fournir le motif du rejet :</label>
+        <textarea id="motif" [(ngModel)]="rejectReason" class="form-control" rows="3" required></textarea>
+        <div *ngIf="rejectError" class="text-danger mt-2">Le motif est obligatoire.</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeRejectModal()">Annuler</button>
+        <button type="button" class="btn btn-danger" (click)="confirmReject()">Rejeter</button>
+      </div>
+    </div>
+  </div>
+</div>

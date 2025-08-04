@@ -1,17 +1,16 @@
-import { Component, inject, Input } from '@angular/core';
-import { ScriptLoaderService } from '../../services/script.service';
-import { ColDef, ICellRendererParams } from 'ag-grid-community';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProjetService } from '../../services/projet.service';
-
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
 })
-export class AdminDashboardComponent {
-  constructor(private router:Router, private projetService:ProjetService){}
+export class AdminDashboardComponent implements OnInit {
+  adminId: any = null;
+  constructor(private router:Router, private projetService:ProjetService, private userService: UserService){}
 
   projectStatus: ProjectStatus = {
     Approved: 0,
@@ -23,31 +22,42 @@ export class AdminDashboardComponent {
   approvedProjects!: number;
   pendingProjects!: number;
   rejectedProjects!: number;
+
+  selectedStatus: string | null = null;
   selectedProjectTitle: string | null = null;
-  showDetailProject: boolean = false;
-  data: any[]=[];
-  // ngOnInit(): void {
-  //   this.scriptLoader.loadScript('assets/assets/js/main.js');
-  // }
-
-
-  ngOnInit() {
-    this.paginate(this.filteredData);
-    this.projetService.countProjectsByStatus().subscribe(projets => {
-      this.data = projets;
-      this.approvedProjects = this.data[0].Approved;
-      this.pendingProjects = this.data[0].Pending;
-      this.rejectedProjects = this.data[0].Rejected;
-      
-
-    });
-  }
-
-
+  rowData: RowData[] = [];
+  filteredData: RowData[] = [];
+  paginatedData: RowData[] = [];
+  currentPage = 1;
+  rowsPerPage = 2;
+  totalPages: number[] = [];
 
   isSidebarCollapsed = true;
-
   rowSelection = 'single';
+
+  ngOnInit() {
+    // Charger l'id de l'admin connecté
+    this.userService.loadUserProfile();
+    this.userService.getUserProfile().subscribe(user => {
+      if (user && user.id) {
+        this.adminId = user.id;
+        this.loadAdminProjects();
+
+    }
+  });
+  }
+
+  onCardClick(status: string) {
+    this.selectedStatus = status;
+    this.filterTable(status);
+  }
+
+  hideProjectList() {
+  this.selectedStatus = null;
+  this.filteredData = [];
+  this.paginatedData = [];
+  this.loadAdminProjects();
+}
 
   toggleSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
@@ -56,14 +66,13 @@ export class AdminDashboardComponent {
   ngAfterViewInit() {
     const toggleButton = document.querySelector('.toggle-sidebar-btn');
     const sidebar = document.querySelector('.sidebar');
-
     if (toggleButton && sidebar) {
       toggleButton.addEventListener('click', () => {
         sidebar.classList.toggle('collapsed');
       });
     }
   }
-  
+
   getStatusClass(status: string) {
     return {
       'bg-success': status === 'Approved',
@@ -71,26 +80,12 @@ export class AdminDashboardComponent {
       'bg-danger': status === 'Rejected'
     };
   }
-  rowData: RowData[] = [
-    { sn: 1, title: 'Brandon Jacob', author: 'At praesentium minu', image: 'https://via.placeholder.com/50', status: 'Approved' },
-    { sn: 2, title: 'Bridie Kessler', author: 'Blanditiis dolor omnis similique', image: 'https://via.placeholder.com/50', status: 'Pending' },
-    { sn: 3, title: 'Ashleigh Langosh', author: 'At recusandae consectetur', image: 'https://via.placeholder.com/50', status: 'Approved' },
-    { sn: 4, title: 'Angus Grady', author: 'Ut voluptatem id earum et', image: 'https://via.placeholder.com/50', status: 'Rejected' },
-    { sn: 5, title: 'Raheem Lehner', author: 'Sunt similique distinctio', image: 'https://via.placeholder.com/50', status: 'Approved' }
-  ];
-
-  filteredData: RowData[] = [...this.rowData];
-  paginatedData: RowData[] = [];
-  currentPage = 1;
-  rowsPerPage = 2;
-  totalPages: number[] = [];
 
 
   renderActionButtons(status: string): string {
     let actionButtons = `
       <i  class="fas fa-eye text-primary" style="border-radius:50%; box-shadow:white; padding:7px; font-size:20px; background-color:#f6f6fe; cursor: pointer;"></i>
     `;
-
     if (status === 'Pending') {
       actionButtons += `
         <i class="fas fa-check text-success" style="border-radius:50%; box-shadow:white; padding:7px; font-size:20px; background-color:#e0f8e9; cursor: pointer;"></i>
@@ -101,7 +96,6 @@ export class AdminDashboardComponent {
         <i class="fas fa-trash-alt text-danger" style="background-color:#ffecdf; border-radius:50%; box-shadow:white; padding:7px; font-size:20px; cursor: pointer;"></i>
       `;
     }
-
     return actionButtons;
   }
 
@@ -138,8 +132,47 @@ export class AdminDashboardComponent {
     this.router.navigate(['/admin/dashboard/project-detail', this.selectedProjectId], { queryParams: { title: this.selectedProjectTitle } });
   }
 
+loadAdminProjects() {
+  this.projetService.getProjects().subscribe({
+    next: (projects: any[]) => {
+      const adminProjects = (projects || []).filter(p => String(p.admin_id) === String(this.adminId));
+      this.rowData = adminProjects.map((p, idx) => ({
+        sn: p.id,
+        title: p.titre_projet || p.title,
+        author: p.nom_user || p.author,
+        image: p.image,
+        status: p.status
+      }));
+      this.filteredData = [...this.rowData];
+      this.paginate(this.filteredData);
+      // Mettre à jour les compteurs par statut pour l'admin
+      this.approvedProjects = adminProjects.filter(p => p.status === 'Approved').length;
+      this.pendingProjects = adminProjects.filter(p => p.status === 'Pending').length;
+      this.rejectedProjects = adminProjects.filter(p => p.status === 'Rejected').length;
+    },
+    error: (err) => {
+      console.error('Erreur lors du chargement des projets admin:', err);
+      this.rowData = [];
+      this.filteredData = [];
+      this.paginatedData = [];
+      this.approvedProjects = 0;
+      this.pendingProjects = 0;
+      this.rejectedProjects = 0;
+    }
+  });
 }
 
+updateProjectStatus(projectId: number, newStatus: string): void {
+  this.projetService.updateProjectStatus(projectId, newStatus).subscribe({
+    next: () => {
+      this.loadAdminProjects();
+    },
+    error: (err) => {
+      console.error('Erreur lors de lamiseajour du status du projet:', err); 
+    }
+  });
+ }
+}
 interface ProjectStatus {
   Approved: number;
   Pending: number;

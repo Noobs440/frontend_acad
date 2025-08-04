@@ -47,25 +47,32 @@
               aria-labelledby="actions-tab"
             >
               <div class="actions mt-3">
+                <div *ngIf="projectStatus === 'Rejected'" class="alert alert-danger mb-2">
+                  <strong>Motif du rejet :</strong>
+                  <span>{{ getRejectionReason() }}</span>
+                </div>
+                <button *ngIf="projectStatus === 'Rejected'" class="btn btn-primary mb-2" (click)="resubmitProject()">
+                  <i class="fas fa-redo"></i> Resoumettre
+                </button>
                 <button class="btn btn-view" (click)="openDialog('document')">
                   <i class="fas fa-plus"></i> Add Document
                 </button>
                 <button class="btn btn-cola" (click)="openDialog('collaborator')">
                   <i class="fas fa-plus"></i> Add Collaborator
                 </button>
-                <!-- Dropdown to select supervisor -->
+                <!-- Dropdown to select admin -->
                 <div class="mt-2 mb-2">
-                  <label for="supervisorSelect" class="form-label">Choose Supervisor:</label>
-                  <select id="supervisorSelect" class="form-select" [(ngModel)]="selectedSupervisorId">
-                    <option [ngValue]="null" disabled selected>-- Choisir un superviseur --</option>
-                    <option *ngFor="let supervisor of supervisors" [ngValue]="supervisor.id">
-                      {{ supervisor.name }} ({{ supervisor.email }})
+                  <label for="adminSelect" class="form-label">Choisir un admin :</label>
+                  <select id="adminSelect" class="form-select" [(ngModel)]="selectedAdminId">
+                    <option [ngValue]="null" disabled selected>-- Choisir un admin --</option>
+                    <option *ngFor="let admin of admins" [ngValue]="admin.id">
+                      {{ admin.nom_user }}
                     </option>
                   </select>
                   <button class="btn btn-primary mt-2" 
-                          (click)="selectedSupervisorId && addSupervisorToProject(selectedSupervisorId.toString())" 
-                          [disabled]="!selectedSupervisorId">
-                    <i class="fas fa-user-plus"></i> Assigner le superviseur sélectionné
+                          (click)="selectedAdminId && addAdminToProject(selectedAdminId)" 
+                          [disabled]="!selectedAdminId">
+                    <i class="fas fa-user-plus"></i> Assigner l'admin sélectionné
                   </button>
                 </div>
                 <button class="btn btn-del" (click)="openDeleteDialog(deleteDialog)">

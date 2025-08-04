@@ -11,7 +11,7 @@ export class FiliereService {
 
 
   getFilieres(): Observable<any[]>{
-    return this.http.get<any[]>('https://backend-acad.onrender.com/api/ressources/filieres').pipe(
+    return this.http.get<any[]>('http://localhost:8000/api/ressources/filieres').pipe(
       tap((response)=>console.table(response)),
       catchError((error) =>{
         console.log(error);

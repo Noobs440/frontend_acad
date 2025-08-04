@@ -1,6 +1,7 @@
 <main id="main" class="main">
   <div class="pagetitle">
-    <h1>{{ name | uppercase }}</h1>
+    <h1>{{ name |
+     uppercase }}</h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a [routerLink]="['/home']">Home</a></li>
@@ -16,6 +17,18 @@
 
   
   <section class="section dashboard">
+<!-- Filtres par état de projet -->
+<div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+  <button *ngFor="let state of projectStates"
+          class="btn btn-outline-primary position-relative"
+          [ngClass]="{'active': selectedStateFilter === state}"
+          (click)="onStateFilterChange(state)">
+    {{ state | titlecase }}
+    <span class="badge bg-info position-absolute top-0 start-100 translate-middle rounded-pill">
+      {{ stateCounts[state] || 0 }}
+    </span>
+  </button>
+</div>
 <!-- 🔍 Barre de filtre centrée et sur une seule ligne -->
 <div class="filter-container d-flex justify-content-center mb-4">
   <div class="filter-bar d-flex align-items-center gap-3">
@@ -59,76 +72,178 @@
           </div>
         </div>
 
-        <div class="col-md-6 col-lg-3 mb-4" *ngFor="let project of selectedProject">
-          <a
-            [routerLink]="['/user/dashboard/project-detail', project.id]"
-            [queryParams]="getProjectQueryParams(project)"
-            class="card text-decoration-none h-100"
-            style="cursor: pointer;"
-            title="Voir les détails du projet {{ project.titre }}"
-          >
-            <img
-              [src]="getFullImageUrl(project.image)"
-              alt="Image du projet {{ project.titre }}"
-              class="card-img-top"
-              style="height: 180px; object-fit: cover;"
-            />
-            <div class="card-body">
-              <h5 class="card-title">{{ project.titre }}</h5>
-              <span
-                class="badge category-badge me-2"
-                [style.backgroundColor]="project.couleur_categorie || '#6c757d'"
-              >
-                {{ project.nom_categorie }}
-              </span>
-              <span
-                class="badge status-badge"
-                [ngClass]="{
-                  'badge-not-submitted': project.status === 'Not Submitted',
-                  'badge-pending': project.status === 'Pending',
-                  'badge-approved': project.status === 'Approved',
-                  'badge-rejected': project.status === 'Rejected'
-                }"
-              >
-                {{ project.status | titlecase }}
-              </span>
-              <p class="card-text mt-2">
-                <small class="text-muted fw-bold">
-                  Par {{ project.nom_utilisateur }} le {{ project.created_at | date: 'mediumDate' }}
-                </small>
-              </p>
-            </div>
-          </a>
-        </div>
-      </div>
+        <!-- Affichage groupé par état -->
+        <ng-container *ngIf="!selectedStateFilter">
+          <ng-container *ngFor="let state of projectStates">
+            <ng-container *ngIf="groupedProjects[state]?.length">
+              <div class="col-12 mb-2 mt-4">
+                <h5 class="fw-bold text-primary">{{ state | titlecase }} ({{ groupedProjects[state].length }})</h5>
+              </div>
+              <ng-container *ngFor="let project of groupedProjects[state]">
+                <div class="col-md-6 col-lg-3 mb-4 d-inline-block">
+                  <a
+                    [routerLink]="['/user/dashboard/project-detail', project.id]"
+                    [queryParams]="getProjectQueryParams(project)"
+                    class="card text-decoration-none h-100"
+                    style="cursor: pointer;"
+                    title="Voir les détails du projet {{ project.titre }}"
+                  >
+                    <img
+                      [src]="getFullImageUrl(project.image)"
+                      alt="Image du projet {{ project.titre }}"
+                      class="card-img-top"
+                      style="height: 180px; object-fit: cover;"
+                    />
+                    <div class="card-body">
+                      <h5 class="card-title">{{ project.titre }}
+                        <span *ngIf="project.readonly" class="badge bg-warning text-dark ms-2">Collaborateur</span>
+                      </h5>
+                      <span
+                        class="badge category-badge me-2"
+                        [style.backgroundColor]="project.couleur_categorie || '#6c757d'"
+                      >
+                        {{ project.nom_categorie }}
+                      </span>
+                      <span
+                        class="badge status-badge"
+                        [ngClass]="{
+                          'badge-not-submitted': project.status === 'Not Submitted',
+                          'badge-pending': project.status === 'Pending',
+                          'badge-approved': project.status === 'Approved',
+                          'badge-rejected': project.status === 'Rejected'
+                        }"
+                      >
+                        {{ project.status | titlecase }}
+                      </span>
+                      <p class="card-text mt-2">
+                        <small class="text-muted fw-bold">
+                          Par {{ project.nom_utilisateur }} le {{ project.created_at | date: 'mediumDate' }}
+                        </small>
+                      </p>
+                      <button class="btn btn-outline-info mt-2 w-100" (click)="openCommentZone(project)">
+                        <i class="fas fa-comments"></i> Commentaires
+                      </button>
+                    </div>
+                  </a>
+                </div>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </ng-container>
 
-      <!-- 📄 Pagination -->
-      <div
-        class="pagination-controls d-flex justify-content-center align-items-center mt-4"
-        *ngIf="totalPages > 1"
-      >
-        <button
-          (click)="onPageChange(currentPage - 1)"
-          [disabled]="currentPage === 1"
-          class="btn btn-outline-primary me-3"
-          aria-label="Page précédente"
-        >
-          <i class="fas fa-chevron-left"></i> Previous
-        </button>
-        <span>Page {{ currentPage }} sur {{ totalPages }}</span>
-        <button
-          (click)="onPageChange(currentPage + 1)"
-          [disabled]="currentPage === totalPages"
-          class="btn btn-outline-primary ms-3"
-          aria-label="Page suivante"
-        >
-          Next <i class="fas fa-chevron-right"></i>
-        </button>
-      </div>
-    </div>
+        <!-- Si un état est filtré, on affiche la pagination classique -->
+        <ng-container *ngIf="selectedStateFilter">
+          <div class="col-md-6 col-lg-3 mb-4" *ngFor="let project of selectedProject">
+            <a
+              [routerLink]="['/user/dashboard/project-detail', project.id]"
+              [queryParams]="getProjectQueryParams(project)"
+              class="card text-decoration-none h-100"
+              style="cursor: pointer;"
+              title="Voir les détails du projet {{ project.titre }}"
+            >
+              <img
+                [src]="getFullImageUrl(project.image)"
+                alt="Image du projet {{ project.titre }}"
+                class="card-img-top"
+                style="height: 180px; object-fit: cover;"
+              />
+              <div class="card-body">
+                <h5 class="card-title">{{ project.titre }}</h5>
+                <span
+                  class="badge category-badge me-2"
+                  [style.backgroundColor]="project.couleur_categorie || '#6c757d'"
+                >
+                  {{ project.nom_categorie }}
+                </span>
+                <span
+                  class="badge status-badge"
+                  [ngClass]="{
+                    'badge-not-submitted': project.status === 'Not Submitted',
+                    'badge-pending': project.status === 'Pending',
+                    'badge-approved': project.status === 'Approved',
+                    'badge-rejected': project.status === 'Rejected'
+                  }"
+                >
+                  {{ project.status | titlecase }}
+                </span>
+                <p class="card-text mt-2">
+                  <small class="text-muted fw-bold">
+                    Par {{ project.nom_utilisateur }} le {{ project.created_at | date: 'mediumDate' }}
+                  </small>
+                </p>
+                <button class="btn btn-outline-info mt-2 w-100" (click)="openCommentZone(project)">
+                  <i class="fas fa-comments"></i> Commentaires
+                </button>
+              </div>
+            </a>
+          </div>
+        </ng-container>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center align-items-center mt-4" *ngIf="totalPages > 1">
+          <button
+            (click)="onPageChange(currentPage - 1)"
+            [disabled]="currentPage === 1"
+            class="btn btn-outline-primary me-3"
+            aria-label="Page précédente"
+          >
+            <i class="fas fa-chevron-left"></i> Previous
+          </button>
+          <span>Page {{ currentPage }} sur {{ totalPages }}</span>
+          <button
+            (click)="onPageChange(currentPage + 1)"
+            [disabled]="currentPage === totalPages"
+            class="btn btn-outline-primary ms-3"
+            aria-label="Page suivante"
+          >
+            Next <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+
+
+      </div> <!-- .row -->
+    </div> <!-- .container -->
   </section>
+
+  <!-- Zone de commentaires projet (overlay) -->
+  <div *ngIf="activeCommentProject" class="comment-overlay">
+    <div class="comment-modal">
+      <button class="btn btn-sm btn-danger float-end" (click)="closeCommentZone()">Fermer</button>
+      <app-comment-zone [projectId]="activeCommentProject.id"></app-comment-zone>
+    </div>
+    <div class="comment-backdrop" (click)="closeCommentZone()"></div>
+  </div>
+
 </main>
 
 <a href="#" class="back-to-top d-flex align-items-center justify-content-center" aria-label="Retour en haut">
   <i class="bi bi-arrow-up-short"></i>
 </a>
+
+<style>
+.comment-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.comment-modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  min-width: 400px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.comment-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 1999;
+}
+</style>

@@ -1,25 +1,27 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap, catchError, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjetstatusService {
 
-  constructor(private http:HttpClient) { }
+  private apiUrl = 'http://localhost:8000/api/usecases/status';
 
-  approveProject(id:number):Observable<any>{
-    return this.http.get<any>(`https://backend-acad.onrender.com/api/usecases/status/approved/pending/${id}`);
+  constructor(private http: HttpClient) { }
+
+  approveProject(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/approved/pending/${id}`);
   }
 
-  rejectProject(id:number):Observable<any>{
-    return this.http.get<any>(`https://backend-acad.onrender.com/api/usecases/status/rejected/pending/${id}`);
+  rejectProject(id: number, reason: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/rejected/pending/${id}`, {
+      motif: reason
+    });
   }
 
-  pendingProject(id:number):Observable<any>{
-    return this.http.get<any>(`https://backend-acad.onrender.com/api/usecases/status/pending/${id}`);
+  pendingProject(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/pending/${id}`);
   }
-
-
 }

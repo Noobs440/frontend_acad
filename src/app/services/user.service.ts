@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, BehaviorSubject,throwError } from 'rxjs';
@@ -9,6 +10,10 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class UserService {
+
+  getAdmins(): Observable<any[]>{
+    return this.http.get<any[]>(`${this.apiUrl}/admins`);
+  }
   // Récupérer tous les superviseurs (table superviseurs Laravel)
   getSupervisors(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/ressources/superviseurs`, this.getAuthHeaders());

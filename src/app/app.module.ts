@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { MatIconModule } from '@angular/material/icon';
 import { ProfileComponent } from './components/profile/profile.component';
@@ -38,6 +39,7 @@ import { PopularProjectComponent } from './home-components/popular-project/popul
 import { LoaderComponent } from './shared/loader/loader.component';
 import { DefaultComponent } from './layouts/default/default.component';
 import { LoginPopupComponent } from './home-components/modals/login-popup/login-popup.component';
+import { SubmitPopupComponent } from './user/user-components/submit-popup/submit-popup.component';
 import { OverlayOptionsComponent } from './home-components/overlay-options/overlay-options.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { OverlayModule } from '@angular/cdk/overlay';
@@ -46,6 +48,8 @@ import { CounterDirective } from './home-components/stats/counter.directive';
 import { SafeUrlPipe } from './safe-url.pipe';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
 import { HelpComponent } from './user/user-components/help/help.component';
+
+
 
 
 
@@ -84,7 +88,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     SafeUrlPipe,
     ConfirmDialogComponent,
     EditEmailComponent,
-    
   ],
   imports: [
 
@@ -95,15 +98,18 @@ export function HttpLoaderFactory(http: HttpClient) {
     EditPhotoComponent,
     MatIconModule,
     BrowserModule,
-    BrowserAnimationsModule ,
+    BrowserModule,
     AppRoutingModule,
+    BrowserAnimationsModule,
     HttpClientModule,
-    ReactiveFormsModule,
     MatDialogModule,
     MatProgressSpinnerModule,
-    ScrollingModule,
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
     OverlayModule,
     FormsModule,
+    CommonModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

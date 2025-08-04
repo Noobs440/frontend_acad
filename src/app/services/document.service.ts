@@ -17,7 +17,7 @@ export interface Document {
 })
 export class DocumentService {
 
-  private baseUrl = 'https://backend-acad.onrender.com/api/ressources/documents';
+  private baseUrl = 'http://localhost:8000/api/ressources/documents';
 
   constructor(private http: HttpClient) {}
 

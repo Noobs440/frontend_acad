@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserRoutingModule } from './user-routing.module';
@@ -14,7 +15,10 @@ import { HelpComponent } from './user-components/help/help.component';
 import { CollaborateurEditPopupComponent } from './collaborateur-edit-popup/collaborateur-edit-popup.component';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialogModule } from '@angular/material/dialog'; // ✅ correction ici
+
+import { CommentZoneModule } from '../comment-zone/comment-zone.module';
+import { MatDialogModule } from '@angular/material/dialog'; 
+
 
 @NgModule({
   declarations: [
@@ -25,15 +29,18 @@ import { MatDialogModule } from '@angular/material/dialog'; // ✅ correction ic
     DocumentPopupComponent,
     CompleteDialogComponent,
       HelpComponent,
-      CollaborateurEditPopupComponent
+      CollaborateurEditPopupComponent,
+    
   ],
   imports: [
     CommonModule,
+    RouterModule,
     UserRoutingModule,
     FormsModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
-    MatDialogModule // ✅ module correct
+    MatDialogModule,
+    CommentZoneModule
   ]
 })
 export class UserModule { }

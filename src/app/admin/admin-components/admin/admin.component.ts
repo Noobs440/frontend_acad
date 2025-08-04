@@ -32,25 +32,27 @@ export class AdminComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllProjects();
-    this.loadNotifications();
-    this.route.queryParams.subscribe(params => {
-      this.token = params['token'];
-      this.name = params['name'];
-      this.role = params['role'];
-      this.id = params['id'];
-    });
-
-    // Chargement de la photo de profil dynamique
+    // Charger le profil utilisateur AVANT de charger les projets
     this.userService.loadUserProfile();
     this.userService.getUserProfile().subscribe({
       next: (userData) => {
+        this.id = userData?.id;
+        this.name = userData?.name;
+        this.role = userData?.role;
         this.photo = this.getFullImageUrl(userData?.photo);
+        // Charge les projets seulement si l'id est bien défini
+        if (this.id) {
+          this.getAllProjects();
+        } else {
+          this.projects = [];
+        }
       },
       error: () => {
         this.photo = 'assets/img/default-profile.png';
+        this.projects = [];
       }
     });
+    this.loadNotifications();
   }
 
   @ViewChild('toggleSidebarBtn', { static: true }) toggleSidebarBtn!: ElementRef;
@@ -61,9 +63,25 @@ export class AdminComponent implements OnInit {
   }
 
   getAllProjects(): void {
-    this.projetService.getProjects().subscribe(projets => {
-      this.projects = projets;
+    if (!this.id) {
+      this.projects = [];
+      return;
+    }
+    this.projetService.getProjects().subscribe({
+      next: (projets) => {
+        // Filtrer les projets assignés à l'admin connecté
+        this.projects = (projets || []).filter((project: any) => String(project.admin_id) === String(this.id));
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des projets admin:', err);
+        this.projects = [];
+      }
     });
+  }
+
+  // Pour debug : méthode manuelle de rafraîchissement
+  refreshProjects(): void {
+    this.getAllProjects();
   }
 
   loadNotifications(): void {
@@ -123,8 +141,13 @@ export class AdminComponent implements OnInit {
   }
 
   updateProjectStatus(projectId: number, newStatus: string): void {
-    this.projetService.updateProjectStatus(projectId, newStatus).subscribe(() => {
-      this.getAllProjects();
+    this.projetService.updateProjectStatus(projectId, newStatus).subscribe({
+      next: () => {
+        this.getAllProjects();
+      },
+      error: (err) => {
+        console.error('Erreur lors de la mise à jour du statut du projet:', err);
+      }
     });
   }
 

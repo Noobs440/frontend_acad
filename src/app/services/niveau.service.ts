@@ -12,7 +12,7 @@ export class NiveauService {
 
 
   getNiveaux(): Observable<any[]>{
-    return this.http.get<any[]>('https://backend-acad.onrender.com/api/ressources/niveaux').pipe(
+    return this.http.get<any[]>('http://localhost:8000/api/ressources/niveaux').pipe(
       tap((response)=>console.table(response)),
       catchError((error) =>{
         console.log(error);

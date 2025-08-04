@@ -1,5 +1,7 @@
+ 
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ProjetService } from '../../../services/projet.service';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
 import { Router } from '@angular/router';
 import { DocumentService } from '../../../services/document.service';
@@ -25,7 +27,14 @@ export class DetailProjectComponent {
   date!:string;
   email!:string;
   id!:number;
-  constructor(private route: ActivatedRoute,private router:Router,private documentService:DocumentService, private projetStatusService:ProjetstatusService) {}
+  rejection_reason: string = '';
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private documentService: DocumentService,
+    private projetService: ProjetService,
+    private projetStatusService: ProjetstatusService
+  ) {}
 
   ngOnInit(): void {
 
@@ -45,7 +54,8 @@ export class DetailProjectComponent {
        this.type=params['type'];
        this.date=params['date'];
        this.views=params['views'];
-       this.email=params['email']
+       this.email=params['email'];
+       this.rejection_reason = params['rejection_reason'] || '';
      });
 
      this.documentService.getDocumentsByProject(this.selectedProjectId).subscribe(response => {
@@ -57,6 +67,47 @@ export class DetailProjectComponent {
   }
 
   isExpanded = false;
+
+  showRejectModal = false;
+  rejectReason: string = '';
+  rejectError: boolean = false;
+
+  openRejectModal() {
+    this.rejectReason = '';
+    this.rejectError = false;
+    this.showRejectModal = true;
+  }
+
+  closeRejectModal() {
+    this.showRejectModal = false;
+    this.rejectError = false;
+    this.rejectReason = '';
+  }
+
+  confirmReject() {
+    if (!this.rejectReason || this.rejectReason.trim().length === 0) {
+      this.rejectError = true;
+      return;
+    }
+    this.rejectError = false;
+    this.showRejectModal = false;
+    // Appel du service avec le motif
+    this.projetStatusService.rejectProject(this.selectedProjectId, this.rejectReason).subscribe({
+      next: value => {
+        alert(`Le projet a été rejeté pour le motif: ${this.rejectReason}. Un email a été envoyé à ${this.author}, l'auteur du projet.`);
+        this.projectStatus = 'Rejected';
+        this.rejection_reason = this.rejectReason;
+      },
+      error: err => {
+        alert(`Le projet n'a pas été rejeté, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
+        console.error(err);
+      },
+      complete: () => {
+        this.router.navigate(['/admin']);
+        console.log("Succès");
+      }
+    });
+  }
 
   toggleExpand() {
     this.isExpanded = !this.isExpanded;
@@ -108,10 +159,11 @@ export class DetailProjectComponent {
       if (userConfirmed) {
         this.projetStatusService.approveProject(this.selectedProjectId).subscribe({
           next: value => {
-            alert(`Le projet a été approuve et un email a été envoyé à ${this.author}, l'auteur du projet.`);
+            alert(`Le projet a été approuvé et un email a été envoyé à ${this.author}, l'auteur du projet.`);
+            this.projectStatus = 'Approved';
           },
           error: err => {
-            alert(`Le projet n'a pas été approuve, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
+            alert(`Le projet n'a pas été approuvé, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
             console.error(err);
           },
           complete: () => {
@@ -124,27 +176,6 @@ export class DetailProjectComponent {
   }
 
 
-  onDelete(): void {
-    if (this.projectStatus === "Pending") {
-      const userConfirmed = confirm("Souhaitez-vous rejeter ce projet ?");
-
-      if (userConfirmed) {
-        this.projetStatusService.rejectProject(this.selectedProjectId).subscribe({
-          next: value => {
-            alert(`Le projet a été rejeté et un email a été envoyé à ${this.author}, l'auteur du projet.`);
-          },
-          error: err => {
-            alert(`Le projet n'a pas été rejeté, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
-            console.error(err);
-          },
-          complete: () => {
-            this.router.navigate(['/admin']);
-            console.log("Succès");
-          }
-        });
-      }
-    }
-  }
 
   onRestore():void{
     if (this.projectStatus === "Approved" || this.projectStatus === "Rejected") {
@@ -153,10 +184,11 @@ export class DetailProjectComponent {
       if (userConfirmed) {
         this.projetStatusService.pendingProject(this.selectedProjectId).subscribe({
           next: value => {
-            alert(`Le projet a été restaurer et un email a été envoyé à ${this.author}, l'auteur du projet.`);
+            alert(`Le projet a été restauré et un email a été envoyé à ${this.author}, l'auteur du projet.`);
+            this.projectStatus = 'Pending';
           },
           error: err => {
-            alert(`Le projet n'a pas été restaurer, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
+            alert(`Le projet n'a pas été restauré, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
             console.error(err);
           },
           complete: () => {
@@ -168,4 +200,7 @@ export class DetailProjectComponent {
     }
   }
 
+   getRejectionReason(): string {
+    return this.rejection_reason && this.rejection_reason.trim() !== '' ? this.rejection_reason : 'Aucun motif fourni.';
+  }
 }
