@@ -1,3 +1,5 @@
+  // ✅ Resoumettre un projet rejeté (endpoint dédié)
+  
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap, catchError, of } from 'rxjs';
@@ -84,6 +86,14 @@ export class ProjetService {
       tbl_niveau_id,
       tbl_categorie_id
     });
+  }
+
+getProjectById(id: number) {
+  return this.http.get<any>(`${this.API_BASE}/ressources/projets/${id}`);
+}
+
+resubmitProject(id: number): Observable<any> {
+    return this.http.post(`${this.API_BASE}/ressources/projets/${id}/resubmit`, {});
   }
 
   // ✅ Compter les projets par statut (utile pour les stats ou dashboard)

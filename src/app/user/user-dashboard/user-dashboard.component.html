@@ -1,3 +1,21 @@
+<!-- Section Projets en collaboration -->
+<div class="mt-5">
+  <h4>Projets en collaboration</h4>
+  <div *ngIf="collaboratorProjects.length; else noCollab">
+    <ul>
+      <li *ngFor="let projet of collaboratorProjects">
+        <a [routerLink]="['/user/dashboard/project-detail', projet.id]">
+          {{ projet.titre || projet.titre_projet }}
+          <span class="badge bg-warning text-dark ms-2">Collaborateur</span>
+        </a>
+        <span class="text-muted ms-2">({{ projet.status || projet.status_projet }})</span>
+      </li>
+    </ul>
+  </div>
+  <ng-template #noCollab>
+    <p class="text-muted">Aucun projet en collaboration.</p>
+  </ng-template>
+</div>
 <main id="main" class="main">
   <div class="pagetitle">
     <h1>{{ name |
@@ -18,16 +36,18 @@
   
   <section class="section dashboard">
 <!-- Filtres par état de projet -->
-<div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
-  <button *ngFor="let state of projectStates"
-          class="btn btn-outline-primary position-relative"
-          [ngClass]="{'active': selectedStateFilter === state}"
-          (click)="onStateFilterChange(state)">
-    {{ state | titlecase }}
-    <span class="badge bg-info position-absolute top-0 start-100 translate-middle rounded-pill">
-      {{ stateCounts[state] || 0 }}
-    </span>
-  </button>
+
+<div class="status-grouping-container">
+  <div class="status-card"
+       *ngFor="let state of projectStates"
+       [ngClass]="{'active': selectedStateFilter === state}"
+       (click)="onStateFilterChange(state)">
+    <img class="status-icon" src="assets/img/icon/images.png" alt="{{state}} icon" />
+    <div class="status-info">
+      <span class="status-count">{{ stateCounts[state] || 0 }}</span>
+      <span class="status-label">{{ state | titlecase }}</span>
+    </div>
+  </div>
 </div>
 <!-- 🔍 Barre de filtre centrée et sur une seule ligne -->
 <div class="filter-container d-flex justify-content-center mb-4">

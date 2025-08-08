@@ -132,9 +132,30 @@
                         <img [src]="project.image" alt="Image du projet" class="card-img-top" style="height:180px; object-fit:cover;">
                         <div class="card-body">
                           <h5 class="card-title">{{ project.title }}</h5>
-                          <p class="card-text mb-1"><strong>Auteur :</strong> {{ project.author }}</p>
-                          <p class="card-text mb-1"><strong>Status :</strong> <span [ngClass]="getStatusClass(project.status)">{{ project.status }}</span></p>
-                          <p class="card-text mb-1"><strong>ID :</strong> {{ project.sn }}</p>
+                          <span
+                            class="badge category-badge me-2"
+                            [style.backgroundColor]="project.couleur_categorie || '#6c757d'"
+                          >
+                            {{ project.nom_categorie || 'Catégorie' }}
+                          </span>
+                          <span
+                            class="badge status-badge"
+                            [ngClass]="{
+                              'badge-not-submitted': project.status === 'Not Submitted',
+                              'badge-pending': project.status === 'Pending',
+                              'badge-approved': project.status === 'Approved',
+                              'badge-rejected': project.status === 'Rejected'
+                            }"
+                          >
+                            {{ project.status | titlecase }}
+                          </span>
+                          <p class="card-text mt-2">
+                            <small class="text-muted fw-bold">
+                              Par {{ project.author }}
+                              <span *ngIf="project.created_at"> | {{ project.created_at | date: 'mediumDate' }}</span>
+                            </small>
+                          </p>
+                          <p class="card-text mb-1"><strong>Collaborateurs :</strong> {{ project.collaboratorsCount || 0 }}</p>
                         </div>
                       </div>
                     </div>

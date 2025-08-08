@@ -75,7 +75,7 @@ export class UserComponent implements OnInit {
 
     const storedPhoto = localStorage.getItem('photo');
   this.photo = storedPhoto && storedPhoto !== 'null' && storedPhoto !== 'undefined'
-    ? (storedPhoto.startsWith('http') ? storedPhoto : `https://backend-acad.onrender.com/${storedPhoto}`)
+    ? (storedPhoto.startsWith('http') ? storedPhoto : `http://localhost:8000/${storedPhoto}`)
     : 'assets/img/default.png';
 
     // Mets à jour le UserService si besoin
@@ -96,7 +96,7 @@ export class UserComponent implements OnInit {
         if (profile.photo) {
           this.photo = profile.photo.startsWith('http')
             ? profile.photo
-            : `https://backend-acad.onrender.com/${profile.photo}`;
+            : `http://localhost:8000/${profile.photo}`;
         }
       }
     });

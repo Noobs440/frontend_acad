@@ -14,9 +14,12 @@ export class AdminComponent implements OnInit {
   notifications: any[] = [];
   token!: string;
   name!: string;
+  surname!: string;
   role!: string;
   id: any;
-
+  matricule!: string;
+  tbl_filiere_id!: string;
+  email!: string;
   photo: string = 'assets/img/default-profile.png'; // photo par défaut
 
   constructor(
@@ -36,10 +39,12 @@ export class AdminComponent implements OnInit {
     this.userService.loadUserProfile();
     this.userService.getUserProfile().subscribe({
       next: (userData) => {
+        // Correspondance stricte avec le modèle User Laravel
         this.id = userData?.id;
-        this.name = userData?.name;
+        this.name = userData?.nom_user || userData?.name || '';
         this.role = userData?.role;
         this.photo = this.getFullImageUrl(userData?.photo);
+        
         // Charge les projets seulement si l'id est bien défini
         if (this.id) {
           this.getAllProjects();
@@ -70,7 +75,24 @@ export class AdminComponent implements OnInit {
     this.projetService.getProjects().subscribe({
       next: (projets) => {
         // Filtrer les projets assignés à l'admin connecté
-        this.projects = (projets || []).filter((project: any) => String(project.admin_id) === String(this.id));
+        this.projects = (projets || []).filter((project: any) => String(project.admin_id) === String(this.id)).map((project: any) => ({
+          // Correspondance stricte avec le modèle TblProjet Laravel
+          id: project.id,
+          titre_projet: project.titre_projet || '',
+          descript_projet: project.descript_projet || '',
+          tbl_niveau_id: project.tbl_niveau_id || '',
+          tbl_categorie_id: project.tbl_categorie_id || '',
+          user_id: project.user_id || '',
+          views: project.views || 0,
+          image: project.image || '',
+          admin_id: project.admin_id || '',
+          status: project.status || '',
+          author: project.user?.nom_user || '',
+          category: project.categorie?.nom_categorie || '',
+          level: project.niveau?.nom_niveau || '',
+          date: project.created_at || '',
+          email: project.user?.email || ''
+        }));
       },
       error: (err) => {
         console.error('Erreur lors du chargement des projets admin:', err);
@@ -131,8 +153,8 @@ export class AdminComponent implements OnInit {
       image: project.image,
       description: project.descript_projet,
       views: project.views,
-      author: project.nom_utilisateur,
-      category: project.nom_categorie,
+      author: project.nom_utilisateur, // se chaamp par exemple
+      category: project.nom_categorie, //ceci egalement
       level: project.niveau,
       type: project.type,
       date: project.created_at,
@@ -155,6 +177,6 @@ export class AdminComponent implements OnInit {
     if (!imagePath) {
       return 'assets/img/default-profile.png';
     }
-    return imagePath.startsWith('http') ? imagePath : `https://backend-acad.onrender.com/${imagePath.replace(/^\/+/, '')}`;
+    return imagePath.startsWith('http') ? imagePath : `http://localhost:8000/${imagePath.replace(/^\/+/, '')}`;
   }
 }

@@ -1,5 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
+import { UserService } from '../../services/user.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { SubmitPopupComponent } from '../user-components/submit-popup/submit-popup.component';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -36,15 +37,24 @@ export class UserDashboardComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog,
-    private projectByIdService: ListingService
+    private projectByIdService: ListingService,
+    private userService: UserService
   ) {}
   collaboratorProjects: any[] = [];
 
   ngOnInit(): void {
     this.token = localStorage.getItem('token');
-    this.name = localStorage.getItem('name');
     this.role = localStorage.getItem('role');
     this.id = localStorage.getItem('id');
+
+    // Always try to load user profile from backend for up-to-date name
+    this.userService.getUserProfile().subscribe(profile => {
+      if (profile && profile.nom_user) {
+        this.name = profile.nom_user;
+      } else {
+        this.name = localStorage.getItem('name') || '';
+      }
+    });
 
     if (!this.token) {
       this.router.navigate(['/home']);
@@ -214,7 +224,7 @@ export class UserDashboardComponent implements OnInit {
     if (!projectImage) return '';
     return projectImage.startsWith('http')
       ? projectImage
-      : `https://backend-acad.onrender.com${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
+      : `http://localhost:8000${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
   }
 
   openDialog(): void {

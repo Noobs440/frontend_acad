@@ -174,6 +174,10 @@ export class SubmitPopupComponent implements OnInit {
           formData.append('tbl_categorie_id', this.creationForm.value.category);
           formData.append('image', this.selectedFile);
           formData.append('type', this.creationForm.value.type);
+          // Ajout de l'admin choisi si présent
+          if (this.selectedAdminId) {
+            formData.append('admin_id', this.selectedAdminId);
+          }
           this.projetService.addProject(formData).subscribe({
             next: value => {
               this.project_id = value.id;

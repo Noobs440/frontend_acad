@@ -1,27 +1,28 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap, catchError, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjetstatusService {
 
-  private apiUrl = 'http://localhost:8000/api/usecases/status';
+  constructor(private http:HttpClient) { }
 
-  constructor(private http: HttpClient) { }
-
-  approveProject(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/approved/pending/${id}`);
+  approveProject(id:number):Observable<any>{
+    return this.http.get<any>(`http://localhost:8000/api/usecases/status/approved/pending/${id}`);
   }
 
-  rejectProject(id: number, reason: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/rejected/pending/${id}`, {
-      motif: reason
-    });
+  rejectProject(id:number, reason:string):Observable<any>{
+    // Utiliser PATCH pour la mise à jour du statut
+    return this.http.patch<any>(`http://localhost:8000/api/usecases/status/rejected/pending/${id}`,
+      { motif: reason }
+    );
   }
 
-  pendingProject(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/pending/${id}`);
+  pendingProject(id:number):Observable<any>{
+    return this.http.get<any>(`http://localhost:8000/api/usecases/status/pending/${id}`);
   }
+
+
 }

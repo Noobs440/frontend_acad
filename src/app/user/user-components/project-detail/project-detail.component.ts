@@ -85,57 +85,95 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
+  // ...existing code...
   ngOnInit(): void {
     this.nom_collab = localStorage.getItem('nom_collab');
     this.user_id = localStorage.getItem('id');
     this.user_role = localStorage.getItem('role');
-    this.user_name = localStorage.getItem('name');
     this.user_token = localStorage.getItem('token');
 
+    // Always try to load user profile from backend for up-to-date name
+    this.userService.getUserProfile().subscribe(profile => {
+      if (profile && profile.nom_user) {
+        this.user_name = profile.nom_user;
+      } else {
+        this.user_name = localStorage.getItem('name') || '';
+      }
+    });
+
+    // Récupérer l'ID du projet depuis l'URL
     this.selectedProjectId = +this.route.snapshot.paramMap.get('id')!;
 
     // Charger la liste des admins dès l'init
     this.fetchAdmins();
 
-    this.route.queryParams.subscribe(params => {
-      this.id = params['id'];
-      this.selectedProjectTitle = params['title'];
-      this.projectStatus = params['status'];
-      this.projectImage = params['image'];
-      this.description = params['description'];
-      this.author = params['author'];
-      this.category = params['category'];
-      this.level = params['level'];
-      this.type = params['type'];
-      this.date = params['date'];
-      this.views = params['views'];
-      this.email = params['email'];
-      // On charge bien le motif de rejet s'il existe
-      this.rejection_reason = params['rejection_reason'] || '';
+    // Charger les infos du projet depuis l'API pour garantir la cohérence des champs
+    this.projetService.getProjectById(this.selectedProjectId).subscribe({
+      next: (project: any) => {
+        // Mapping strict selon la BDD/API Laravel
+        this.id = project.id;
+        this.selectedProjectTitle = project.titre_projet || '';
+        this.projectStatus = project.status || '';
+        this.projectImage = project.image || '';
+        this.description = project.descript_projet || '';
+        this.author = project.nom_user || (project.user && project.user.name) || '';
+        this.category = project.tbl_categorie_id || '';
+        this.level = project.tbl_niveau_id || '';
+        this.type = project.type || '';
+        this.date = project.created_at || '';
+        this.views = project.views || 0;
+        this.email = project.user?.email || '';
+        this.rejection_reason = project.rejection_reason || '';
+      },
+      error: err => {
+        console.error('Erreur lors du chargement du projet', err);
+      }
     });
+
+    // Charger les documents et collaborateurs liés au projet
+    this.documentService.getDocumentsByProject(this.selectedProjectId).subscribe(res => this.documents = res);
+    this.collaborateurService.getCollaborateursByProject(this.selectedProjectId).subscribe(res => this.collaborators = res);
   }
+// ...existing code...
 
   getRejectionReason(): string {
     return this.rejection_reason && this.rejection_reason.trim() !== '' ? this.rejection_reason : 'Aucun motif fourni.';
   }
 
   resubmitProject() {
-    this.projetService.updateProjectStatus(this.id, 'Pending').subscribe({
+    this.projetService.resubmitProject(this.id).subscribe({
       next: () => {
         this.projectStatus = 'Pending';
         this.rejection_reason = '';
         alert('Votre projet a été resoumis avec succès.');
+        this.reloadProject();
       },
       error: err => {
         alert("Erreur lors de la resoumission du projet.");
         console.error(err);
       }
     });
+  }
 
-    this.projetService.countViews(this.id).subscribe();
+  reloadProject() {
+    this.projetService.getProjectById(this.id).subscribe({
+      next: (project: any) => {
+        this.projectStatus = project.status || '';
+        this.rejection_reason = project.rejection_reason || '';
+        this.selectedProjectTitle = project.titre_projet || '';
+        this.projectImage = project.image || '';
+        this.description = project.descript_projet || '';
+        this.author = project.nom_user || (project.user && project.user.name) || '';
+        this.category = project.tbl_categorie_id || '';
+        this.level = project.tbl_niveau_id || '';
+        this.type = project.type || '';
+        this.date = project.created_at || '';
+        this.views = project.views || 0;
+        this.email = project.user?.email || '';
+      }
+    });
     this.documentService.getDocumentsByProject(this.id).subscribe(res => this.documents = res);
     this.collaborateurService.getCollaborateursByProject(this.id).subscribe(res => this.collaborators = res);
-    // (logique superviseur supprimée)
   }
 
   deleteProject(Projectid: any) {
@@ -262,7 +300,7 @@ export class ProjectDetailComponent implements OnInit {
     if (!projectImage) return '';
     return projectImage.startsWith('http')
       ? projectImage
-      : `https://backend-acad.onrender.com${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
+      : `http://localhost:8000${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
   }
   
 }

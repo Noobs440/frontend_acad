@@ -76,8 +76,23 @@
                             <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
                             <span>{{ isExpanded ? 'Show Less' : 'Show More' }}</span>
                           </div>
+
                         </div>
-                      </div>
+                        <div class="service-box mt-4">
+                          <h4>Collaborators Related</h4>
+                          <div class="download-catalog">
+                            <div *ngFor="let collaborator of collaborators | slice:0:(isExpanded ? collaborators.length : 4)" class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <i class="bi bi-person"></i>
+                                <span>{{ collaborator.nom_collab }} {{ collaborator.email_collab }}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div *ngIf="collaborators.length > 4" class="show-more" (click)="toggleExpand()">
+                            <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                            <span>{{ isExpanded ? 'Show Less' : 'Show More' }}</span>
+                          </div>
+                        </div>
 
                           <div class="col-lg-12 mt-4" [@fadeUp]>
 
@@ -100,7 +115,7 @@
 </main><!-- End #main -->
 
 <!-- Modal motif de rejet -->
-<div class="modal" tabindex="-1" [ngClass]="{'show': showRejectModal}" style="display: {{showRejectModal ? 'block' : 'none'}}; background: rgba(0,0,0,0.5); position: fixed; top:0; left:0; width:100vw; height:100vh; z-index:1050;">
+<div class="modal" tabindex="-1" [ngClass]="{'show': showRejectModal}" [ngStyle]="{'display': showRejectModal ? 'block' : 'none', 'background': 'rgba(0,0,0,0.5)', 'position': 'fixed', 'top': '0', 'left': '0', 'width': '100vw', 'height': '100vh', 'z-index': '1050'}">
   <div class="modal-dialog" style="margin-top:10vh;">
     <div class="modal-content">
       <div class="modal-header">
