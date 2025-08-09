@@ -1,3 +1,21 @@
+/* Status badge backgrounds and text colors */
+.status-description {
+  display: inline-block;
+  min-width: 180px;
+  font-size: 0.98rem;
+  font-weight: 500;
+  text-align: left;
+  margin-bottom: 0.5rem;
+}
+
+/* Project creator display */
+.card-text .bi-person-circle {
+  font-size: 1.1rem;
+  vertical-align: middle;
+}
+.card-text .text-primary {
+  font-weight: 600;
+}
 
 
 /*--------------------------------------------------------------

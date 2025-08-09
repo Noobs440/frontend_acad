@@ -11,8 +11,9 @@
     </div><!-- End Logo -->
 
     <div class="search-bar">
-      <form class="search-form d-flex align-items-center">
-        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
+      <form class="search-form d-flex align-items-center" (submit)="$event.preventDefault()">
+        <input type="text" name="query" placeholder="Search" title="Enter search keyword"
+          [value]="searchQuery" (input)="onSearchInputChange($event)" autocomplete="off">
         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
       </form>
     </div><!-- End Search Bar -->
@@ -151,8 +152,7 @@
         </a>
 
         <ul id="components-nav" class="nav-content" [class.collapse]="true" [class.show]="!isProjectsCollapsed">
-
-          <li *ngFor="let project of projects" class="py-1">
+          <li *ngFor="let project of filteredProjects" class="py-1">
             <a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
               [routerLink]="['/admin/dashboard/project-detail', project.id]"
               [queryParams]="getProjectQueryParams(project)"

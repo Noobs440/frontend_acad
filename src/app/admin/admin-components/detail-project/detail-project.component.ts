@@ -11,7 +11,7 @@ import { DocumentService } from '../../../services/document.service';
 @Component({
   selector: 'app-detail-project',
   templateUrl: './detail-project.component.html',
-  styleUrl: './detail-project.component.css',
+  styleUrls: ['./detail-project.component.css'],
   animations: [
     trigger('fadeUp', [
       transition(':enter', [

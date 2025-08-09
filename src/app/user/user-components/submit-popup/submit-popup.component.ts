@@ -289,11 +289,24 @@ export class SubmitPopupComponent implements OnInit {
     }
 
     if (this.formType === 'collaborator' && this.collaboratorForm.valid) {
+      if (!this.project_id) {
+        alert("Projet non créé. Impossible d’ajouter un collaborateur.");
+        this.isLoading = false;
+        return;
+      }
+      // On transmet user_id si disponible et log les données envoyées
+      const userIdToSend = this.user_id && !isNaN(Number(this.user_id)) ? Number(this.user_id) : null;
+      localStorage.setItem('user_id', userIdToSend ? String(userIdToSend) : '');
+      const dataToSend = {
+        nom_collab: this.collaboratorForm.value.name,
+        email_collab: this.collaboratorForm.value.email,
+        user_id: userIdToSend
+      };
+      console.log('Ajout collaborateur - valeurs envoyées:', dataToSend, 'project_id:', this.project_id);
       this.colService.addCollaborateur(
-        this.collaboratorForm.value.name,
-        this.collaboratorForm.value.email,
-        this.project_id,
-        this.user_id
+        dataToSend.nom_collab,
+        dataToSend.email_collab,
+        this.project_id
       ).subscribe({
         next: () => {
           alert("Collaborateur ajouté !");

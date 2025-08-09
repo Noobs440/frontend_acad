@@ -1,3 +1,10 @@
+/* Effet d'ombre au survol pour les cartes et documents */
+.hover-shadow {
+  transition: box-shadow 0.2s;
+}
+.hover-shadow:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
 .tabs .nav-link {
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;

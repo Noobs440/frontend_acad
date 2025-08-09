@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -41,6 +40,8 @@ export class UserDashboardComponent implements OnInit {
     private userService: UserService
   ) {}
   collaboratorProjects: any[] = [];
+  showCollabProjects: boolean = false;
+  showStateProjects: string | null = null;
 
   ngOnInit(): void {
     this.token = localStorage.getItem('token');
@@ -165,13 +166,14 @@ export class UserDashboardComponent implements OnInit {
   }
 
   onStateFilterChange(state: string) {
-    if (this.selectedStateFilter === state) {
-      this.selectedStateFilter = null; // toggle off
-    } else {
-      this.selectedStateFilter = state;
-    }
-    this.currentPage = 1;
-    this.applyFilters();
+    this.showStateProjects = state;
+    this.showCollabProjects = false;
+  }
+
+
+  hideProjectList() {
+    this.showCollabProjects = false;
+    this.showStateProjects = null;
   }
 
   updateDisplayedProjects(filteredProjects?: any[]): void {
@@ -233,6 +235,20 @@ export class UserDashboardComponent implements OnInit {
     dialogConfig.width = '400px';
     dialogConfig.height = '620px';
     this.dialog.open(SubmitPopupComponent, dialogConfig);
+  }
+
+  onCollabCardClick() {
+    this.showCollabProjects = !this.showCollabProjects;
+    if (this.showCollabProjects) {
+      this.showStateProjects = null;
+      // Affichage exclusif : on ne montre que les projets en collaboration
+      this.selectedProject = this.collaboratorProjects.slice(0, this.itemsPerPage);
+      this.totalPages = Math.max(1, Math.ceil(this.collaboratorProjects.length / this.itemsPerPage));
+      this.currentPage = 1;
+    } else {
+      // Si on masque, on réapplique les filtres normaux
+      this.applyFilters();
+    }
   }
 
 }

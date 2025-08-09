@@ -152,8 +152,7 @@ export class DocumentPopupComponent implements OnInit {
         this.colService.addCollaborateur(
           this.collaboratorForm.value.name,
           this.collaboratorForm.value.email,
-          this.id,
-          this.user_id
+          this.id
         ).subscribe({
           next: () => alert("Collaborateur ajouté avec succès."),
           error: err => {

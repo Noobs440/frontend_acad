@@ -108,8 +108,7 @@ export class CollaboratorListComponent implements OnInit {
       this.collaborateurService.addCollaborateur(
         this.currentCollaborator.nom_collab,
         this.currentCollaborator.email_collab,
-        this.currentCollaborator.tbl_projet_id,
-        this.currentCollaborator.user_id
+        this.currentCollaborator.tbl_projet_id
       ).subscribe(() => {
         this.loadCollaborators();
         this.closeModal();
