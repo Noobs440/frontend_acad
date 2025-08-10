@@ -10,6 +10,7 @@ export class FacultyListComponent implements OnInit {
 
   faculties: any[] = [];
   filteredFaculties: any[] = [];
+  universities: any[] = [];
 
   searchTerm = '';
   sortAsc = true;
@@ -26,10 +27,15 @@ export class FacultyListComponent implements OnInit {
     tbl_universite_id: ''
   };
 
+  // Modal suppression
+  showConfirmDeleteModal = false;
+  facultyToDelete: any = null;
+
   constructor(private facultyService: FacultyService) {}
 
   ngOnInit(): void {
     this.loadFaculties();
+    this.loadUniversities();
   }
 
   loadFaculties(): void {
@@ -37,6 +43,17 @@ export class FacultyListComponent implements OnInit {
       this.faculties = data;
       this.applyFilters();
     });
+  }
+
+  loadUniversities(): void {
+    this.facultyService.getUniversities().subscribe(data => {
+      this.universities = data;
+    });
+  }
+
+  getUniversityName(id: number): string {
+    const uni = this.universities.find(u => u.id === id);
+    return uni ? uni.nom_univ : 'Université inconnue';
   }
 
   applyFilters(): void {
@@ -118,10 +135,23 @@ export class FacultyListComponent implements OnInit {
     }
   }
 
-  deleteFaculty(id: number): void {
-    if (confirm('Confirmer la suppression ?')) {
-      this.facultyService.deleteFaculty(id.toString())
-        .subscribe(() => this.loadFaculties());
+  openConfirmDelete(faculty: any): void {
+    this.facultyToDelete = faculty;
+    this.showConfirmDeleteModal = true;
+  }
+
+  confirmDelete(): void {
+    if (this.facultyToDelete) {
+      this.facultyService.deleteFaculty(this.facultyToDelete.id.toString())
+        .subscribe(() => {
+          this.loadFaculties();
+          this.cancelDelete();
+        });
     }
+  }
+
+  cancelDelete(): void {
+    this.showConfirmDeleteModal = false;
+    this.facultyToDelete = null;
   }
 }

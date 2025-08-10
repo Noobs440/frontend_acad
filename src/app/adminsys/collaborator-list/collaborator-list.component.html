@@ -7,7 +7,7 @@
       Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
     </button>
 
-    <button (click)="openAddModal()">Ajouter un collaborateur</button>
+    <button (click)="openAddModal()" disabled>Ajouter un collaborateur</button>
   </div>
 
   <table>
@@ -15,8 +15,8 @@
       <tr>
         <th>Nom</th>
         <th>Email</th>
-        <th>Projet (ID)</th>
-        <th>Utilisateur (ID)</th>
+        <th>Projet</th>
+        <!--<th>Utilisateur (ID)</th>-->
         <th>Actions</th>
       </tr>
     </thead>
@@ -24,11 +24,12 @@
       <tr *ngFor="let collab of filteredCollaborators">
         <td>{{ collab.nom_collab }}</td>
         <td>{{ collab.email_collab }}</td>
-        <td>{{ collab.tbl_projet_id }}</td>
-        <td>{{ collab.user_id }}</td>
+        <td>{{ getProjectName(collab.tbl_projet_id) }}</td>
+        <!--<td>{{ getUserName(collab.user_id) }}</td>-->
+
         <td>
-          <button (click)="openEditModal(collab)">Modifier</button>
-          <button (click)="deleteCollaborator(collab.id)">Supprimer</button>
+          <button (click)="openEditModal(collab)" disabled>Modifier</button>
+          <button (click)="deleteCollaborator(collab.id)" disabled>Supprimer</button>
         </td>
       </tr>
     </tbody>
@@ -58,11 +59,6 @@
       <label>
         Projet (ID):
         <input type="number" [(ngModel)]="currentCollaborator.tbl_projet_id" />
-      </label>
-
-      <label>
-        Utilisateur (ID):
-        <input type="number" [(ngModel)]="currentCollaborator.user_id" />
       </label>
 
       <div class="modal-actions">

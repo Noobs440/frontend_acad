@@ -1,23 +1,43 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { UniversityService } from './university.service';
+import { FiliereService } from './filiere.service';
+import { ProjetService } from './projet.service';
 
-interface DashboardStats {
-  universities: number;
-  filieres: number;
-  projets: number;
-}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminDashboardService {
+  data1: any[] = [];
+  data2: any[] = [];
+  data3: any[] = [];
+  universityCount: number = 0;
+  filiereCount: number = 0;
+  projetCount: number = 0;
 
-  private apiUrl = 'https://ton-backend-render.onrender.com/api/admin/dashboard-stats';
+  constructor(
+    private universiteService: UniversityService, 
+    private filiereService: FiliereService, 
+    private projetService:ProjetService
+  ) {}
 
-  constructor(private http: HttpClient) {}
+  ngOnInit(): void {
+    this.universiteService.getUniversities().subscribe(univ => {
+      this.data1 = univ;
+      this.universityCount = this.data1.length;
+    });
 
-  getDashboardStats(): Observable<DashboardStats> {
-    return this.http.get<DashboardStats>(this.apiUrl);
+    this.filiereService.getFilieres().subscribe(filiere => {
+      this.data2 = filiere;
+      this.filiereCount = this.data2.length;
+    });
+
+    this.projetService.getProjects().subscribe(projet => {
+      this.data3 = projet;
+      this.projetCount = this.data3.length;
+    });
   }
+  
 }

@@ -1,0 +1,85 @@
+<div class="universite-list">
+
+  <div class="controls">
+    <input type="text" placeholder="Recherche par nom" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+    <button (click)="toggleSort()">Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}</button>
+    <button (click)="openAddModal()">Ajouter une université</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Localité</th>
+        <th>Email</th>
+        <th>Boîte Postale</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let univ of filteredUniversites">
+        <td>{{ univ.nom_univ }}</td>
+        <td>{{ univ.localite_univ }}</td>
+        <td>{{ univ.email_univ }}</td>
+        <td>{{ univ.boite_postale }}</td>
+        <td>
+          <button (click)="openEditModal(univ)">Modifier</button>
+          <button (click)="openConfirmDelete(univ)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+    <span>Page {{ currentPage }} / {{ totalPages }}</span>
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  </div>
+
+  <!-- Modal ajout/modification -->
+  <div class="modal-backdrop" *ngIf="isModalOpen">
+    <div class="modal">
+      <h3>{{ isEditMode ? 'Modifier université' : 'Ajouter université' }}</h3>
+
+      <label>Nom :
+        <input type="text" [(ngModel)]="currentUniversite.nom_univ" />
+      </label>
+      <label>Localité :
+        <input type="text" [(ngModel)]="currentUniversite.localite_univ" />
+      </label>
+      <label>Email :
+        <input type="email" [(ngModel)]="currentUniversite.email_univ" />
+      </label>
+      <label>Boîte Postale :
+        <input type="text" [(ngModel)]="currentUniversite.boite_postale" />
+      </label>
+
+      <div class="modal-actions">
+        <button (click)="saveUniversite()">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</button>
+        <button (click)="closeModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmation sauvegarde -->
+  <div class="modal-backdrop" *ngIf="showConfirmSaveModal">
+    <div class="modal">
+      <p>Voulez-vous vraiment {{ isEditMode ? 'enregistrer les modifications' : 'ajouter cette université' }} ?</p>
+      <div class="modal-actions">
+        <button (click)="confirmSave()">Oui</button>
+        <button (click)="cancelSave()">Non</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmation suppression -->
+  <div class="modal-backdrop" *ngIf="showConfirmDeleteModal">
+    <div class="modal">
+      <p>Voulez-vous vraiment supprimer l'université <strong>{{ univToDelete?.nom_univ }}</strong> ?</p>
+      <div class="modal-actions">
+        <button (click)="confirmDelete()">Oui, supprimer</button>
+        <button (click)="cancelDelete()">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>

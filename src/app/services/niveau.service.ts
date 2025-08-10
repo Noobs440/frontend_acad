@@ -12,7 +12,7 @@ export class NiveauService {
 
 
   getNiveaux(): Observable<any[]>{
-    return this.http.get<any[]>('https://backend-acad.onrender.com/api/ressources/niveaux').pipe(
+    return this.http.get<any[]>('http://localhost:8000/api/ressources/niveaux').pipe(
       tap((response)=>console.table(response)),
       catchError((error) =>{
         console.log(error);
@@ -22,14 +22,14 @@ export class NiveauService {
   }
 
   addniveau(code_niv:string ):Observable<any>{
-    return this.http.post<any>('https://backend-acad.onrender.com/api/ressources/niveaux', {code_niv});
+    return this.http.post<any>('http://localhost:8000/api/ressources/niveaux', {code_niv});
   }
 
   deleteniveau(id:string):Observable<any>{
-    return this.http.delete(`https://backend-acad.onrender.com/api/ressources/niveaux/${id}`);
+    return this.http.delete(`http://localhost:8000/api/ressources/niveaux/${id}`);
   }
 
   updateniveau(id:string ,code_niv:string ):Observable<any>{
-    return this.http.put<any>(`https://backend-acad.onrender.com/api/ressources/niveaux/${id}`, {code_niv});
+    return this.http.put<any>(`http://localhost:8000/api/ressources/niveaux/${id}`, {code_niv});
   }
 }

@@ -1,0 +1,55 @@
+<div *ngIf="isLoggedIn" class="floating-chat-container">
+  <!-- Bouton flottant -->
+
+  <button class="chat-toggle-btn" (click)="toggleOpen()" title="Ouvrir/fermer chat" style="position:relative;">
+    <i class="bi bi-chat-dots"></i>
+    <span *ngIf="unreadCount > 0" class="chat-badge">{{ unreadCount }}</span>
+  </button>
+
+  <!-- Fenêtre de chat -->
+  <div class="chat-window" *ngIf="isOpen">
+    <!-- Liste des conversations (commentaires projets) -->
+    <div class="conversations-list">
+      <h4>Conversations - Commentaires projets</h4>
+      <ul>
+        <li *ngFor="let conv of commentConversations"
+            [class.active]="conv.projectId === activeCommentConversation?.projectId"
+            (click)="selectCommentConversation(conv)">
+          <strong>{{ conv.projectTitle }}</strong><br>
+          <small>
+            {{ conv.messages.length > 0 ? conv.messages[conv.messages.length - 1].content : 'Aucun message' }}
+          </small>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Zone de messages -->
+    <div class="chat-box" *ngIf="activeCommentConversation">
+      <h4>Chat - Projet : {{ activeCommentConversation.projectTitle }}</h4>
+
+      <div class="messages">
+        <div *ngFor="let msg of activeCommentConversation.messages" [class.self]="msg.isFromCurrentUser">
+          <div class="author" style="font-size:12px;font-weight:bold;margin-bottom:2px;">
+            {{ msg.authorName || 'Anonyme' }}
+          </div>
+          <p class="message-content">{{ msg.content }}</p>
+          <small class="timestamp">{{ msg.timestamp | date:'shortTime' }}</small>
+        </div>
+      </div>
+
+      <!-- Input pour écrire -->
+      <div class="chat-input">
+        <input type="text"
+               [(ngModel)]="newMessage"
+               (keyup.enter)="sendMessage()"
+               placeholder="Écrire un message..." />
+        <button (click)="sendMessage()">Envoyer</button>
+      </div>
+    </div>
+
+    <!-- Si aucune conversation n'est sélectionnée -->
+    <div *ngIf="!activeCommentConversation" class="no-selection">
+      <p>Sélectionne une conversation à gauche</p>
+    </div>
+  </div>
+</div>

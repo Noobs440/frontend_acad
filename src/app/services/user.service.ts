@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, BehaviorSubject,throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, tap, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 
@@ -45,27 +45,39 @@ export class UserService {
   // 🔐 AUTHENTIFICATION
   // ----------------------
 
-  login(email: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/usecases/auth/connexion`, { email, password }).pipe(
-      tap(response => {
-        if (response?.access_token) {
-          if (typeof localStorage !== 'undefined') {
-            localStorage.setItem('token', response.access_token);
-          }
+login(email: string, password: string): Observable<any> {
+  return this.http.post<any>(`${this.apiUrl}/usecases/auth/connexion`, { email, password }).pipe(
+    tap(response => {
+      if (response?.access_token) {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('token', response.access_token);
         }
-      }),
-      catchError(error => {
-        console.error('Erreur de connexion:', error);
-        throw error;
-        return throwError(() => error); 
-      })
-    );
-  }
+        // Charger le profil et notifier
+        this.loadUserProfile();
+      }
+    }),
+    catchError(error => {
+      console.error('Erreur de connexion:', error);
+      return throwError(() => error);
+    })
+  );
+}
 
 
-  logout(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/deconnexion`, null, this.getAuthHeaders());
-  }
+
+logout(): Observable<any> {
+  return this.http.post(`${this.apiUrl}/auth/deconnexion`, null, this.getAuthHeaders()).pipe(
+    tap(() => {
+      // Effacer le token
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('token');
+      }
+      // Notifier que l'utilisateur est déconnecté
+      this.userSubject.next(null);
+    })
+  );
+}
+
 
   isAuthenticated(): boolean {
     if (typeof localStorage === 'undefined') {
@@ -73,6 +85,16 @@ export class UserService {
     }
     return !!localStorage.getItem('token');
   }
+
+
+
+isUserLoggedIn$() {
+  return this.userSubject.asObservable().pipe(
+    map(user => !!user) // true si un utilisateur est présent
+  );
+}
+
+
 
   // ----------------------
   // 📩 MOT DE PASSE / VÉRIFICATION
@@ -188,4 +210,18 @@ export class UserService {
       })
     );
   }
+
+getCurrentUserId(): number | null {
+  const user = this.userSubject.value;
+  return user ? user.id : null;
+}
+
+getCurrentUserName(): string | null {
+  const user = this.userSubject.value;
+  return user ? user.nom_user || user.name || null : null;
+}
+
+getUserCommentConversations(userId: number): Observable<any[]> {
+  return this.http.get<any[]>(`${this.apiUrl}/user/${userId}/comment-conversations`);
+}
 }

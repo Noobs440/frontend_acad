@@ -24,6 +24,10 @@ export class NiveauListComponent implements OnInit {
     code_niv: ''
   };
 
+  // Pour modal confirmation suppression
+  showConfirmDeleteModal = false;
+  niveauToDelete: any = null;
+
   constructor(private niveauService: NiveauService) {}
 
   ngOnInit(): void {
@@ -107,10 +111,26 @@ export class NiveauListComponent implements OnInit {
     }
   }
 
-  deleteNiveau(id: number): void {
-    if (confirm('Confirmer la suppression ?')) {
-      this.niveauService.deleteniveau(id.toString())
-        .subscribe(() => this.loadNiveaux());
+  // Ouvre modal confirmation suppression
+  openConfirmDelete(niveau: any): void {
+    this.niveauToDelete = niveau;
+    this.showConfirmDeleteModal = true;
+  }
+
+  // Confirme suppression
+  confirmDelete(): void {
+    if (this.niveauToDelete) {
+      this.niveauService.deleteniveau(this.niveauToDelete.id.toString())
+        .subscribe(() => {
+          this.loadNiveaux();
+          this.cancelDelete();
+        });
     }
+  }
+
+  // Annule suppression
+  cancelDelete(): void {
+    this.showConfirmDeleteModal = false;
+    this.niveauToDelete = null;
   }
 }

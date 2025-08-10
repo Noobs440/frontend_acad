@@ -10,6 +10,7 @@ export class FiliereListComponent implements OnInit {
 
   filieres: any[] = [];
   filteredFilieres: any[] = [];
+  faculties: any[] = [];
 
   searchTerm = '';
   sortAsc = true;
@@ -25,10 +26,15 @@ export class FiliereListComponent implements OnInit {
     tbl_faculte_id: ''
   };
 
+  // Modal confirmation suppression
+  showConfirmDeleteModal = false;
+  filiereToDelete: any = null;
+
   constructor(private filiereService: FiliereService) {}
 
   ngOnInit(): void {
     this.loadFilieres();
+    this.loadFaculties();
   }
 
   loadFilieres(): void {
@@ -36,6 +42,18 @@ export class FiliereListComponent implements OnInit {
       this.filieres = data;
       this.applyFilters();
     });
+  }
+
+  loadFaculties(): void {
+    this.filiereService.getFaculties().subscribe(data => {
+      this.faculties = data;
+      this.applyFilters();
+    });
+  }
+
+  getFacultyName(id: number): string {
+    const fac = this.faculties.find(f => f.id === id);
+    return fac ? fac.nom_fac : 'Faculté inconnue';
   }
 
   applyFilters(): void {
@@ -114,10 +132,23 @@ export class FiliereListComponent implements OnInit {
     }
   }
 
-  deleteFiliere(id: number): void {
-    if (confirm('Confirmer la suppression ?')) {
-      this.filiereService.deleteFiliere(id.toString())
-        .subscribe(() => this.loadFilieres());
+  openConfirmDelete(filiere: any): void {
+    this.filiereToDelete = filiere;
+    this.showConfirmDeleteModal = true;
+  }
+
+  confirmDelete(): void {
+    if (this.filiereToDelete) {
+      this.filiereService.deleteFiliere(this.filiereToDelete.id.toString())
+        .subscribe(() => {
+          this.loadFilieres();
+          this.cancelDelete();
+        });
     }
+  }
+
+  cancelDelete(): void {
+    this.showConfirmDeleteModal = false;
+    this.filiereToDelete = null;
   }
 }

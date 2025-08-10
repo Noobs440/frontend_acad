@@ -19,7 +19,7 @@ export class ProjetService {
     return this.http.post(`${this.API_BASE}/projects/${projectId}/assign-supervisor`, { supervisorId });
   }
 
-  private API_BASE = 'https://backend-acad.onrender.com/api';
+  private API_BASE = 'http://localhost:8000/api';
 
   constructor(private http: HttpClient) {}
 
@@ -86,5 +86,24 @@ export class ProjetService {
         return of([]);
       })
     );
+  }
+  getNiveaux(): Observable<any[]>{
+    return this.http.get<any[]>('http://localhost:8000/api/ressources/niveaux').pipe(
+      tap((response)=>console.table(response)),
+      catchError((error) =>{
+        console.log(error);
+        return of([]);
+      })
+    )
+  }
+
+getCategories(): Observable<any[]>{
+    return this.http.get<any[]>('http://localhost:8000/api/ressources/categories').pipe(
+      tap((response)=>console.table(response)),
+      catchError((error) =>{
+        console.log(error);
+        return of([]);
+      })
+    )
   }
 }

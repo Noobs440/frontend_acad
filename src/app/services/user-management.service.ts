@@ -1,0 +1,45 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable, tap, catchError, of } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UserManagementService {
+
+  private API_BASE = 'http://localhost:8000/api/user-management';
+
+  constructor(private http: HttpClient) {}
+
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(this.API_BASE);
+  }
+
+  createUser(user: any): Observable<any> {
+    return this.http.post<any>(this.API_BASE, user);
+  }
+
+  updateUser(id: string, user: any): Observable<any> {
+    return this.http.put<any>(`${this.API_BASE}/${id}`, user);
+  }
+
+  deleteUser(id: string): Observable<any> {
+    return this.http.delete(`${this.API_BASE}/${id}`);
+  }
+
+    getFilieres(): Observable<any[]>{
+      return this.http.get<any[]>('http://localhost:8000/api/ressources/filieres').pipe(
+        tap((response)=>console.table(response)),
+        catchError((error) =>{
+          console.log(error);
+          return of([]);
+        })
+      )
+    }
+    resetPassword(userId: number, newPassword: string) {
+  return this.http.put(`${this.API_BASE}/${userId}/reset-password`, {
+    password: newPassword
+  });
+}
+
+}

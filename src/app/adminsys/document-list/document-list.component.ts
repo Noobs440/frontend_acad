@@ -44,6 +44,11 @@ export class DocumentListComponent implements OnInit {
     });
   }
 
+  encodeURIComponent(value: string): string {
+  return encodeURIComponent(value);
+}
+
+
   applyFilters(): void {
     let temp = this.documents.filter(d =>
       d.nom_doc.toLowerCase().includes(this.searchTerm.toLowerCase())
@@ -108,33 +113,32 @@ export class DocumentListComponent implements OnInit {
   }
 
   saveDocument(): void {
-    if (!this.currentDocument.nom_doc?.trim()) return;
+  if (!this.currentDocument.nom_doc?.trim()) return;
 
-    const formData = new FormData();
-    formData.append('nom_doc', this.currentDocument.nom_doc);
-    formData.append('user_id', this.currentDocument.user_id?.toString() || '');
-    formData.append('tbl_projet_id', this.currentDocument.tbl_projet_id?.toString() || '');
+  const formData = new FormData();
+  formData.append('nom_doc', this.currentDocument.nom_doc);
+  formData.append('tbl_projet_id', this.currentDocument.tbl_projet_id?.toString() || '');
 
-    if (this.selectedFile) {
-      formData.append('lien_doc', this.selectedFile);
-    }
-
-    if (this.isEditMode) {
-      // Add _method PUT for Laravel if needed
-      formData.append('_method', 'PUT');
-      this.documentService.updateDocumentMultipart(this.currentDocument.id, formData)
-        .subscribe(() => {
-          this.loadDocuments();
-          this.closeModal();
-        });
-    } else {
-      this.documentService.addDocumentMultipart(formData)
-        .subscribe(() => {
-          this.loadDocuments();
-          this.closeModal();
-        });
-    }
+  if (this.selectedFile) {
+    formData.append('document', this.selectedFile);
   }
+
+  if (this.isEditMode) {
+    formData.append('_method', 'PUT');
+    this.documentService.updateDocumentMultipart(this.currentDocument.id, formData)
+      .subscribe(() => {
+        this.loadDocuments();
+        this.closeModal();
+      });
+  } else {
+    this.documentService.addDocumentMultipart(formData)
+      .subscribe(() => {
+        this.loadDocuments();
+        this.closeModal();
+      });
+  }
+}
+
 
   deleteDocument(id: number): void {
     if (confirm('Confirmer la suppression ?')) {

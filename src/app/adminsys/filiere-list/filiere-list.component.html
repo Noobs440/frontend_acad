@@ -2,11 +2,9 @@
 
   <div class="controls">
     <input type="text" placeholder="Recherche par nom" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
-
     <button (click)="toggleSort()">
       Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
     </button>
-
     <button (click)="openAddModal()">Ajouter une filière</button>
   </div>
 
@@ -14,17 +12,17 @@
     <thead>
       <tr>
         <th>Nom</th>
-        <th>Faculté (ID)</th>
+        <th>Faculté</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let fil of filteredFilieres">
         <td>{{ fil.nom_fil }}</td>
-        <td>{{ fil.tbl_faculte_id }}</td>
+        <td>{{ getFacultyName(fil.tbl_faculte_id) }}</td>
         <td>
           <button (click)="openEditModal(fil)">Modifier</button>
-          <button (click)="deleteFiliere(fil.id)">Supprimer</button>
+          <button (click)="openConfirmDelete(fil)">Supprimer</button>
         </td>
       </tr>
     </tbody>
@@ -36,9 +34,9 @@
     <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
   </div>
 
-  <!-- Modal -->
-  <div class="modal" *ngIf="isModalOpen">
-    <div class="modal-content">
+  <!-- Modal ajout/modif -->
+  <div class="modal-backdrop" *ngIf="isModalOpen">
+    <div class="modal">
       <h3>{{ isEditMode ? 'Modifier filière' : 'Ajouter filière' }}</h3>
 
       <label>
@@ -47,8 +45,12 @@
       </label>
 
       <label>
-        Faculté (ID):
-        <input type="number" [(ngModel)]="currentFiliere.tbl_faculte_id" />
+        Faculté:
+        <select [(ngModel)]="currentFiliere.tbl_faculte_id">
+          <option *ngFor="let fac of faculties" [value]="fac.id">
+            {{ fac.nom_fac }}
+          </option>
+        </select>
       </label>
 
       <div class="modal-actions">
@@ -56,6 +58,17 @@
           {{ isEditMode ? 'Enregistrer' : 'Ajouter' }}
         </button>
         <button (click)="closeModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmation suppression -->
+  <div class="modal-backdrop" *ngIf="showConfirmDeleteModal">
+    <div class="modal">
+      <p>Voulez-vous vraiment supprimer la filière <strong>{{ filiereToDelete?.nom_fil }}</strong> ?</p>
+      <div class="modal-actions">
+        <button (click)="confirmDelete()">Oui, supprimer</button>
+        <button (click)="cancelDelete()">Annuler</button>
       </div>
     </div>
   </div>

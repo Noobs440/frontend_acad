@@ -1,125 +1,190 @@
+  // Gestion des erreurs de formulaire
+
 import { Component, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { ActivatedRoute } from '@angular/router';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ProjetService } from '../../services/projet.service';
 import { DocumentService } from '../../services/document.service';
 import { ListingService } from '../../services/listing.service';
+import { CommentService } from '../../services/comment.service';
+import { AuthService } from '../../services/auth.service'; // adapte si tu as un service d'auth
+
 @Component({
   selector: 'app-project-detail',
   templateUrl: './project-detail.component.html',
-  styleUrl: './project-detail.component.css',
+  styleUrls: ['./project-detail.component.css'],  // <== corrigé ici
   animations: [
     trigger('fadeUp', [
       state('void', style({ opacity: 0, transform: 'translateY(200px)' })),
       state('*', style({ opacity: 1, transform: 'translateY(0)' })),
       transition('void => *', animate('600ms ease-out')),
     ]),
-
   ],
 })
-export class ProjectDetailComponent implements OnInit{
+export class ProjectDetailComponent implements OnInit {
 
-  projects:any[]=[];
-  documents:any[]=[];
-  selectedProjectId!: number;
+  commentErrors: { name?: string; email?: string; comment?: string } = {};
+
+  projects: any[] = [];
+  documents: any[] = [];
+  comments: any[] = [];
+
   selectedProjectTitle!: string;
-  projectStatus!:string;
-  projectImage!:string;
-  description!:string;
-  views!:number;
-  author!:string;
-  category!:string;
+  projectStatus!: string;
+  projectImage!: string;
+  description!: string;
+  views!: number;
+  author!: string;
+  category!: string;
   level!: string;
-  type!:string;
-  date!:string;
-  email!:string;
-  id!:number;
-  user_id:any;
+  type!: string;
+  date!: string;
+  email!: string;
+  id!: number;
+  user_id: any;
+
+  // Commentaires
+  newComment: string = '';
+  visitorName: string = '';
+  visitorEmail: string = '';
+  currentUser: any = null;
+
+  isExpanded2 = false;
+  isProjectExpanded2 = false;
+  isExpanded = false;
+
   constructor(
-    private route:ActivatedRoute,
+    private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
-    private projetService:ProjetService,
+    private projetService: ProjetService,
     private documentService: DocumentService,
-    private projectByIdService:ListingService
-
-  ){}
-
-  selectedPdf:string="";
-
-  getFullDocumentUrl(lien_doc: string): string {
-    if (!lien_doc) return '#';
-    if (lien_doc.startsWith('http')) return lien_doc;
-    if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
-      return `https://backend-acad.onrender.com/${lien_doc.replace(/^\/+/, '')}`;
-    }
-    return `https://backend-acad.onrender.com/storage/${lien_doc.replace(/^\/+/, '')}`;
-  }
+    private projectByIdService: ListingService,
+    private commentService: CommentService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      this.id = params['id'];
-      this.user_id=params['user_id'];
+      this.id = +params['id']; // le + force en number
+      this.user_id = params['user_id'];
       this.selectedProjectTitle = params['title'];
-      this.projectStatus=params['status'];
-      this.projectImage=params['image'];
-      this.description=params['description'];
-      this.author=params['author'];
-      this.category=params['category'];
-      this.level=params['level'];
-      this.type=params['type'];
-      this.date=params['date'];
-      this.views=params['views'];
-      this.email=params['email']
+      this.projectStatus = params['status'];
+      this.projectImage = params['image'];
+      this.description = params['description'];
+      this.author = params['author'];
+      this.category = params['category'];
+      this.level = params['level'];
+      this.type = params['type'];
+      this.date = params['date'];
+      this.views = +params['views'];
+      this.email = params['email'];
+
+      if (this.id) {
+        this.loadComments(); // charge les commentaires ici, après avoir l'id
+        this.documentService.getDocumentsByProject(this.id).subscribe(response => {
+          this.documents = response;
+        });
+      }
     });
+
     this.projetService.countViews(this.id).subscribe({
-      next:(value)=>{
-        console.log(value)
+      next: value => {
+        console.log(value);
       },
-      error:()=>
-      {}
+      error: () => {},
     });
 
     this.projectByIdService.getApprovedProjectsById(this.user_id).subscribe({
-      next: (data) => {
+      next: data => {
         this.projects = data;
-        //this.totalPages = Math.ceil(this.projects.length / this.itemsPerPage);
-        //this.updateDisplayedProjects();
       },
-      error: () => {
-        //this.isLoading = false;
+      error: () => {},
+    });
+
+    this.currentUser = this.authService.getUser(); // adapte ta méthode ici
+  }
+
+  loadComments(): void {
+    this.commentService.getComments(this.id).subscribe({
+      next: data => {
+        this.comments = data;
       },
-      complete: () => {
-       // this.isLoading = false;
+      error: err => {
+        console.error('Erreur chargement commentaires', err);
+      },
+    });
+  }
+
+  submitComment(): void {
+
+    this.commentErrors = {};
+    let hasError = false;
+
+    if (!this.newComment.trim()) {
+      this.commentErrors.comment = 'Veuillez écrire un commentaire.';
+      hasError = true;
+    }
+
+    if (!this.currentUser) {
+      if (!this.visitorName.trim()) {
+        this.commentErrors.name = 'Veuillez entrer votre nom.';
+        hasError = true;
+      }
+      if (!this.visitorEmail.trim()) {
+        this.commentErrors.email = 'Veuillez entrer votre email.';
+        hasError = true;
+      } else if (!/^\S+@\S+\.\S+$/.test(this.visitorEmail.trim())) {
+        this.commentErrors.email = 'Veuillez entrer un email valide.';
+        hasError = true;
+      }
+    }
+
+    if (hasError) return;
+
+    const payload: any = {
+      content: this.newComment.trim()
+    };
+
+    if (!this.currentUser) {
+      payload.visitor_name = this.visitorName.trim();
+      if (this.visitorEmail.trim()) {
+        payload.visitor_email = this.visitorEmail.trim();
+      }
+    }
+
+    this.commentService.addComment(this.id, payload).subscribe({
+      next: () => {
+        this.newComment = '';
+        this.visitorName = '';
+        this.visitorEmail = '';
+        this.commentErrors = {};
+        this.loadComments();
+      },
+      error: err => {
+        console.error('Erreur ajout commentaire', err);
+        this.commentErrors.comment = 'Erreur lors de l\'ajout du commentaire.';
       }
     });
+  }
+
+  updateProjectDetails(project: any) {
+    this.id = project.id;
+    this.selectedProjectTitle = project.titre_projet || project.title;
+    this.projectStatus = project.status;
+    this.projectImage = project.image;
+    this.description = project.descript_projet || project.description;
+    this.category = project.category;
+    this.type = project.type;
+    this.date = project.date;
+    this.views = project.views;
 
     this.documentService.getDocumentsByProject(this.id).subscribe(response => {
       this.documents = response;
     });
-  }
-  updateProjectDetails(project:any){
-    this.id = project.id;
-      //this.user_id=params['user_id'];
-      this.selectedProjectTitle = project.title;
-      this.projectStatus=project.status;
-      this.projectImage=project.image;
-      this.description=project.description;
-      //this.author=project.author;
-      this.category=project.category;
-      //this.level=project.level;
-      this.type=project.type;
-      this.date=project.date;
-      this.views=project.views;
-      //this.email=params['email'];
 
-      this.documentService.getDocumentsByProject(this.id).subscribe(response => {
-        this.documents = response;
-      });
+    this.loadComments();
   }
-  isExpanded2 = false;
-  isProjectExpanded2 = false;
-  // Other component properties
 
   toggleExpand2() {
     this.isExpanded2 = !this.isExpanded2;
@@ -129,21 +194,27 @@ export class ProjectDetailComponent implements OnInit{
     this.isProjectExpanded2 = !this.isProjectExpanded2;
   }
 
-
-  isExpanded = false;
-
   toggleExpand() {
     this.isExpanded = !this.isExpanded;
   }
 
-    getFullImageUrl(projectImage: string): string {
+  getFullImageUrl(projectImage: string): string {
     if (!projectImage) {
       return '';
     }
-    return projectImage.startsWith('http') ? projectImage : `https://backend-acad.onrender.com/${projectImage.replace(/^\/+/, '')}`;
-  }
-  getFullDocument(documentPath:string){
-    return `${'https://backend-acad.onrender.com'}${documentPath}`;
+    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
   }
 
+  getFullDocumentUrl(lien_doc: string): string {
+    if (!lien_doc) return '#';
+    if (lien_doc.startsWith('http')) return lien_doc;
+    if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
+      return `http://localhost:8000/${lien_doc.replace(/^\/+/, '')}`;
+    }
+    return `http://localhost:8000/storage/${lien_doc.replace(/^\/+/, '')}`;
+  }
+
+  getFullDocument(documentPath: string) {
+    return `http://localhost:8000${documentPath}`;
+  }
 }

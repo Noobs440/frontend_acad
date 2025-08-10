@@ -46,6 +46,10 @@ import { CounterDirective } from './home-components/stats/counter.directive';
 import { SafeUrlPipe } from './safe-url.pipe';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
 import { HelpComponent } from './user/user-components/help/help.component';
+import { FloatingChatComponent } from './floating-chat/floating-chat.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './auth.interceptor';
+
 
 
 
@@ -84,13 +88,13 @@ export function HttpLoaderFactory(http: HttpClient) {
     SafeUrlPipe,
     ConfirmDialogComponent,
     EditEmailComponent,
-    
+    FloatingChatComponent,
   ],
   imports: [
 
      ProfileComponent,
     EditNameComponent,
-    
+    HttpClientModule,
     EditPasswordComponent,
     EditPhotoComponent,
     MatIconModule,
@@ -115,7 +119,12 @@ export function HttpLoaderFactory(http: HttpClient) {
   providers: [
     provideClientHydration(),
     provideHttpClient(withFetch()),
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+      {
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true
+  }
   ],
   bootstrap: [AppComponent]
 })

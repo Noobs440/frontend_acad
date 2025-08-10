@@ -8,12 +8,18 @@ import { FacultyListComponent } from './faculty-list/faculty-list.component';
 import { FiliereListComponent } from './filiere-list/filiere-list.component';
 import { NiveauListComponent } from './niveau-list/niveau-list.component';
 import { IndexComponent } from './index/index.component'; 
+import { ProjectListComponent } from './project-list/project-list.component';
+import { UniversiteListComponent } from './universite-list/universite-list.component';
+import { UserManagementComponent } from './user-management/user-management.component';
 
 const routes: Routes = [
   {
     path: '',
     component: AdminsysComponent,
     children: [
+      {path: 'users', component: UserManagementComponent },
+      {path: 'universites', component: UniversiteListComponent },
+      {path: 'projets', component: ProjectListComponent },
       { path: 'niveaux', component: NiveauListComponent },
       { path: 'filieres', component: FiliereListComponent },
       { path: 'facultes', component: FacultyListComponent },

@@ -2,11 +2,9 @@
 
   <div class="controls">
     <input type="text" placeholder="Recherche par nom" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
-
     <button (click)="toggleSort()">
       Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
     </button>
-
     <button (click)="openAddModal()">Ajouter une faculté</button>
   </div>
 
@@ -15,7 +13,7 @@
       <tr>
         <th>Nom</th>
         <th>Email</th>
-        <th>Université (ID)</th>
+        <th>Université</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -23,10 +21,10 @@
       <tr *ngFor="let fac of filteredFaculties">
         <td>{{ fac.nom_fac }}</td>
         <td>{{ fac.email_fac }}</td>
-        <td>{{ fac.tbl_universite_id }}</td>
+        <td>{{ getUniversityName(fac.tbl_universite_id) }}</td>
         <td>
           <button (click)="openEditModal(fac)">Modifier</button>
-          <button (click)="deleteFaculty(fac.id)">Supprimer</button>
+          <button (click)="openConfirmDelete(fac)">Supprimer</button>
         </td>
       </tr>
     </tbody>
@@ -38,9 +36,9 @@
     <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
   </div>
 
-  <!-- Modal -->
-  <div class="modal" *ngIf="isModalOpen">
-    <div class="modal-content">
+  <!-- Modal ajout/modif -->
+  <div class="modal-backdrop" *ngIf="isModalOpen">
+    <div class="modal">
       <h3>{{ isEditMode ? 'Modifier faculté' : 'Ajouter faculté' }}</h3>
 
       <label>
@@ -54,13 +52,28 @@
       </label>
 
       <label>
-        Université (ID):
-        <input type="number" [(ngModel)]="currentFaculty.tbl_universite_id" />
+        Université :
+        <select [(ngModel)]="currentFaculty.tbl_universite_id">
+          <option *ngFor="let uni of universities" [value]="uni.id">
+            {{ uni.nom_univ }}
+          </option>
+        </select>
       </label>
 
       <div class="modal-actions">
         <button (click)="saveFaculty()">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</button>
         <button (click)="closeModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmation suppression -->
+  <div class="modal-backdrop" *ngIf="showConfirmDeleteModal">
+    <div class="modal">
+      <p>Voulez-vous vraiment supprimer la faculté <strong>{{ facultyToDelete?.nom_fac }}</strong> ?</p>
+      <div class="modal-actions">
+        <button (click)="confirmDelete()">Oui, supprimer</button>
+        <button (click)="cancelDelete()">Annuler</button>
       </div>
     </div>
   </div>

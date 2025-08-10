@@ -7,7 +7,7 @@
       Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
     </button>
 
-    <button (click)="openAddModal()">Ajouter un document</button>
+    <button (click)="openAddModal()" disabled>Ajouter un document</button>
   </div>
 
   <table>
@@ -24,13 +24,22 @@
       <tr *ngFor="let doc of filteredDocuments">
         <td>{{ doc.nom_doc }}</td>
         <td>
-          <a href="{{ doc.lien_doc }}" target="_blank" rel="noopener noreferrer">📥 Télécharger</a>
+         <a 
+  [href]="doc.lien_doc" 
+  target="_blank" 
+  rel="noopener noreferrer"
+  [attr.download]="doc.nom_doc + '.pdf'"
+>
+  📥 Télécharger
+</a>
+
         </td>
-        <td>{{ doc.user_id }}</td>
-        <td>{{ doc.tbl_projet_id }}</td>
+        <td>{{ doc.user?.nom_user || '-' }}</td>
+        <td>{{ doc.projet?.titre_projet || '-' }}</td>
+
         <td>
-          <button (click)="openEditModal(doc)">Modifier</button>
-          <button (click)="deleteDocument(doc.id)">Supprimer</button>
+          <button (click)="openEditModal(doc)" disabled>Modifier</button>
+          <button (click)="deleteDocument(doc.id)" disabled>Supprimer</button>
         </td>
       </tr>
     </tbody>
@@ -55,11 +64,6 @@
       <label>
         Fichier:
         <input type="file" (change)="onFileSelected($event)" />
-      </label>
-
-      <label>
-        Utilisateur (ID):
-        <input type="number" [(ngModel)]="currentDocument.user_id" />
       </label>
 
       <label>

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CollaborateurService } from '../../services/collaborateur.service';
+import { ProjetService } from '../../services/projet.service';
+import { UserManagementService } from '../../services/user-management.service';
 
 @Component({
   selector: 'app-collaborator-list',
@@ -16,6 +18,9 @@ export class CollaboratorListComponent implements OnInit {
   pageSize = 5;
   totalPages = 1;
 
+  projects: any[] = [];
+  users: any[] = [];
+
   // Recherche et tri
   searchTerm = '';
   sortAsc = true;
@@ -25,10 +30,16 @@ export class CollaboratorListComponent implements OnInit {
   isEditMode = false;
   currentCollaborator: any = { nom_collab: '', email_collab: '', tbl_projet_id: '', user_id: '' };
 
-  constructor(private collaborateurService: CollaborateurService) { }
+  constructor(
+    private collaborateurService: CollaborateurService,
+    private userService: UserManagementService,
+    private projetService: ProjetService
+  ) { }
 
   ngOnInit(): void {
     this.loadCollaborators();
+    this.loadProjects();
+    this.loadUsers();
   }
 
   loadCollaborators(): void {
@@ -36,6 +47,30 @@ export class CollaboratorListComponent implements OnInit {
       this.collaborators = data;
       this.applyFilters();
     });
+  }
+
+  loadUsers(): void {
+    this.userService.getUsers().subscribe(data => {
+      this.users = data;
+      this.applyFilters();
+    });
+  }
+
+  loadProjects(): void {
+    this.projetService.getProjects().subscribe(data => {
+      this.projects = data;
+      this.applyFilters();
+    });
+  }
+
+  getProjectName(id: number): string {
+    const project = this.projects.find(p => p.id === id);
+    return project ? project.titre_projet : 'Projet inconnu';
+  }
+
+  getUserName(id: number): string {
+    const user = this.users.find(u => u.id === id);
+    return user ? user.nom : 'Utilisateur inconnu';
   }
 
   applyFilters(): void {
@@ -72,7 +107,6 @@ export class CollaboratorListComponent implements OnInit {
     this.applyFilters();
   }
 
-  // Modale
   openAddModal(): void {
     this.isEditMode = false;
     this.currentCollaborator = { nom_collab: '', email_collab: '', tbl_projet_id: '', user_id: '' };

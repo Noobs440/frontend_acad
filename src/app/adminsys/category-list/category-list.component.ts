@@ -11,19 +11,22 @@ export class CategoryListComponent implements OnInit {
   categories: any[] = [];
   filteredCategories: any[] = [];
 
-  // Pagination
   currentPage = 1;
   pageSize = 5;
   totalPages = 1;
 
-  // Recherche et tri
   searchTerm = '';
   sortAsc = true;
 
-  // Modale
   isModalOpen = false;
   isEditMode = false;
-  currentCategory: any = { nom_cat: '', descript_cat: '', icone:'' };
+  currentCategory: any = { nom_cat: '', descript_cat: '', icone: '' };
+
+  selectedFile: File | null = null;
+
+  // Confirmation suppression
+  isDeleteConfirmOpen = false;
+  categoryToDeleteId: number | null = null;
 
   constructor(private categoryService: CategoryService) { }
 
@@ -31,14 +34,9 @@ export class CategoryListComponent implements OnInit {
     this.loadCategories();
   }
 
-selectedFile: File | null = null;
-
-onFileSelected(event: any): void {
-  this.selectedFile = event.target.files[0];
-  console.log('→ Fichier sélectionné :', this.selectedFile);
-}
-
-
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+  }
 
   loadCategories(): void {
     this.categoryService.getCategories().subscribe(data => {
@@ -47,24 +45,23 @@ onFileSelected(event: any): void {
     });
   }
 
- applyFilters(): void {
-  let temp = this.categories.filter(c =>
-    c.nom_cat.toLowerCase().includes(this.searchTerm.toLowerCase())
-  );
+  applyFilters(): void {
+    let temp = this.categories.filter(c =>
+      c.nom_cat.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
 
-  temp.sort((a, b) => {
-    return this.sortAsc
-      ? a.nom_cat.localeCompare(b.nom_cat)
-      : b.nom_cat.localeCompare(a.nom_cat);
-  });
+    temp.sort((a, b) => {
+      return this.sortAsc
+        ? a.nom_cat.localeCompare(b.nom_cat)
+        : b.nom_cat.localeCompare(a.nom_cat);
+    });
 
-  this.totalPages = Math.ceil(temp.length / this.pageSize);
-  this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
+    this.totalPages = Math.ceil(temp.length / this.pageSize);
+    this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
 
-  const start = (this.currentPage - 1) * this.pageSize;
-  this.filteredCategories = temp.slice(start, start + this.pageSize);
-}
-
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.filteredCategories = temp.slice(start, start + this.pageSize);
+  }
 
   onSearchChange(): void {
     this.currentPage = 1;
@@ -82,16 +79,17 @@ onFileSelected(event: any): void {
     this.applyFilters();
   }
 
-  // Modales
   openAddModal(): void {
     this.isEditMode = false;
-    this.currentCategory = { nom_cat: '', descript_cat: '', icone:'' };
+    this.currentCategory = { nom_cat: '', descript_cat: '', icone: '' };
+    this.selectedFile = null;
     this.isModalOpen = true;
   }
 
   openEditModal(category: any): void {
     this.isEditMode = true;
     this.currentCategory = { ...category };
+    this.selectedFile = null;
     this.isModalOpen = true;
   }
 
@@ -99,48 +97,53 @@ onFileSelected(event: any): void {
     this.isModalOpen = false;
   }
 
-saveCategory(): void {
-  console.log('→ Méthode saveCategory() déclenchée');
-  console.log('→ currentCategory:', this.currentCategory);
-  console.log('→ selectedFile:', this.selectedFile);
+  saveCategory(): void {
+    if (!this.currentCategory.nom_cat?.trim() || !this.currentCategory.descript_cat?.trim()) {
+      alert('Veuillez remplir tous les champs.');
+      return;
+    }
 
-  if (!this.currentCategory.nom_cat?.trim() || !this.currentCategory.descript_cat?.trim()) {
-    alert('Veuillez remplir tous les champs.');
-    return;
-  }
+    const formData = new FormData();
+    formData.append('nom_cat', this.currentCategory.nom_cat);
+    formData.append('descript_cat', this.currentCategory.descript_cat);
 
-  const formData = new FormData();
-  formData.append('nom_cat', this.currentCategory.nom_cat);
-  formData.append('descript_cat', this.currentCategory.descript_cat);
+    if (this.selectedFile) {
+      formData.append('icone', this.selectedFile);
+    }
 
-  if (this.selectedFile) {
-    formData.append('icone', this.selectedFile);
-  }
-
-  if (this.isEditMode) {
-    this.categoryService.updateCategoryMultipart(this.currentCategory.id, formData)
-      .subscribe(() => {
-        this.loadCategories();
-        this.closeModal();
-        this.selectedFile = null;
-      });
-  } else {
-    this.categoryService.addCategoryMultipart(formData)
-      .subscribe(() => {
-        this.loadCategories();
-        this.closeModal();
-        this.selectedFile = null;
-      });
-  }
-}
-
-
-
-  deleteCategory(id: number): void {
-    if (confirm('Confirmer la suppression ?')) {
-      this.categoryService.deleteCategory(id.toString())
+    if (this.isEditMode) {
+      this.categoryService.updateCategoryMultipart(this.currentCategory.id, formData)
         .subscribe(() => {
           this.loadCategories();
+          this.closeModal();
+          this.selectedFile = null;
+        });
+    } else {
+      this.categoryService.addCategoryMultipart(formData)
+        .subscribe(() => {
+          this.loadCategories();
+          this.closeModal();
+          this.selectedFile = null;
+        });
+    }
+  }
+
+  openDeleteConfirm(id: number): void {
+    this.categoryToDeleteId = id;
+    this.isDeleteConfirmOpen = true;
+  }
+
+  cancelDelete(): void {
+    this.categoryToDeleteId = null;
+    this.isDeleteConfirmOpen = false;
+  }
+
+  confirmDelete(): void {
+    if (this.categoryToDeleteId !== null) {
+      this.categoryService.deleteCategory(this.categoryToDeleteId.toString())
+        .subscribe(() => {
+          this.loadCategories();
+          this.cancelDelete();
         });
     }
   }

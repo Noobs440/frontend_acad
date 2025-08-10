@@ -1,28 +1,72 @@
 <div class="dashboard-container">
-  <h1>Dashboard Administrateur</h1>
+  <h1>Tableau de bord administrateur</h1>
 
+  <!-- Cartes de stats -->
   <div class="stats-cards">
-    <div class="card">
+    <div class="card stat-card">
+      <i class="fas fa-university"></i>
       <h3>Universités</h3>
       <p>{{ universityCount }}</p>
     </div>
-    <div class="card">
+    <div class="card stat-card">
+      <i class="fas fa-graduation-cap"></i>
       <h3>Filières</h3>
       <p>{{ filiereCount }}</p>
     </div>
-    <div class="card">
+    <div class="card stat-card">
+      <i class="fas fa-project-diagram"></i>
       <h3>Projets</h3>
       <p>{{ projetCount }}</p>
     </div>
+    <div class="card stat-card">
+      <i class="fas fa-folder-open"></i>
+      <h3>Catégories</h3>
+      <p>{{ categoryCount }}</p>
+    </div>
+    <div class="card stat-card">
+      <i class="fas fa-file-alt"></i>
+      <h3>Documents</h3>
+      <p>{{ documentCount }}</p>
+    </div>
+    <div class="card stat-card">
+      <i class="fas fa-users"></i>
+      <h3>Collaborateurs</h3>
+      <p>{{ collaborateurCount }}</p>
+    </div>
+    <!--<div class="card stat-card">
+      <i class="fas fa-user"></i>
+      <h3>Utilisateurs</h3>
+      <p>{{ userCount }}</p>
+    </div> -->
+    <div class="card stat-card">
+      <i class="fas fa-chalkboard-teacher"></i>
+      <h3>Facultés</h3>
+      <p>{{ facultyCount }}</p>
+    </div> 
+    <div class="card stat-card">
+      <i class="fas fa-layer-group"></i>
+      <h3>Niveaux</h3>
+      <p>{{ niveauCount }}</p>
+    </div>
   </div>
 
-  <div class="chart-container">
+  <!-- Graphique -->
+  <div class="chart-section">
+    <h2>Comparaison Statistiques Réelles vs Objectifs</h2>
+    <button (click)="switchType()" style="float:right;margin-bottom:10px;">Changer le type de graphe</button>
     <canvas baseChart
-      [data]="barChartData"
-      [labels]="barChartLabels"
-      [options]="barChartOptions"
-      [legend]="true"
-      chartType="bar">
+      [data]="chartData"
+      [labels]="chartLabels"
+      [options]="chartOptions"
+  [type]="chartType">
     </canvas>
+  </div>
+
+  <!-- Actions rapides -->
+  <div class="quick-actions">
+    <h2>Actions rapides</h2>
+    <button (click)="navigateTo('universites')">Ajouter une université</button>
+    <button (click)="navigateTo('filieres')">Gérer les filières</button>
+    <button (click)="navigateTo('projets')">Ajouter un projet</button>
   </div>
 </div>

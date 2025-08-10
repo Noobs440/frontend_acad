@@ -40,7 +40,7 @@ export class PopCategoryComponent implements OnInit {
   selectedLevel = '';
   searchQuery = '';
 
-  private baseUrl: string = 'https://backend-acad.onrender.com';
+  private baseUrl: string = 'http://localhost:8000';
 
   constructor(
     private acceuilService: AcceuilService,

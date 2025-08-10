@@ -2,11 +2,9 @@
 
   <div class="controls">
     <input type="text" placeholder="Recherche par code" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
-
     <button (click)="toggleSort()">
       Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
     </button>
-
     <button (click)="openAddModal()">Ajouter un niveau</button>
   </div>
 
@@ -22,7 +20,7 @@
         <td>{{ niv.code_niv }}</td>
         <td>
           <button (click)="openEditModal(niv)">Modifier</button>
-          <button (click)="deleteNiveau(niv.id)">Supprimer</button>
+          <button (click)="openConfirmDelete(niv)">Supprimer</button>
         </td>
       </tr>
     </tbody>
@@ -34,9 +32,9 @@
     <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
   </div>
 
-  <!-- Modal -->
-  <div class="modal" *ngIf="isModalOpen">
-    <div class="modal-content">
+  <!-- Modal ajout/modif -->
+  <div class="modal-backdrop" *ngIf="isModalOpen">
+    <div class="modal">
       <h3>{{ isEditMode ? 'Modifier niveau' : 'Ajouter niveau' }}</h3>
 
       <label>
@@ -53,4 +51,14 @@
     </div>
   </div>
 
+  <!-- Modal confirmation suppression -->
+  <div class="modal-backdrop" *ngIf="showConfirmDeleteModal">
+    <div class="modal">
+      <p>Voulez-vous vraiment supprimer le niveau <strong>{{ niveauToDelete?.code_niv }}</strong> ?</p>
+      <div class="modal-actions">
+        <button (click)="confirmDelete()">Oui, supprimer</button>
+        <button (click)="cancelDelete()">Annuler</button>
+      </div>
+    </div>
+  </div>
 </div>

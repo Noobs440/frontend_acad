@@ -1,0 +1,121 @@
+<div class="user-management">
+
+  <div class="controls">
+    <input type="text" placeholder="Recherche par nom ou email" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+
+    <button (click)="toggleSort()">
+      Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
+    </button>
+
+    <button (click)="openAddModal()">Ajouter un superviseur ou utilisateur</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Matricule</th>
+        <th>Filière</th>
+        <th>Rôle</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of filteredUsers">
+        <td>{{ user.nom_user }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.matricule || '-' }}</td>
+        <td>{{ getFiliereName(user.tbl_filiere_id) }}</td>
+        <td>{{ user.role }}</td>
+        <td>
+          <button (click)="openEditModal(user)">Modifier</button>
+          <button (click)="openConfirmDelete(user)">Supprimer</button>
+          <button mat-button color="warn" (click)="openResetPasswordDialog(user)">
+            Réinitialiser le mot de passe
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+    <span>Page {{ currentPage }} / {{ totalPages }}</span>
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  </div>
+
+  <!-- Modal ajout/modification -->
+  <div class="modal-backdrop" *ngIf="isModalOpen">
+    <div class="modal">
+      <h3>{{ isEditMode ? 'Modifier admin' : 'Ajouter admin' }}</h3>
+
+      <label>
+        Nom:
+        <input type="text" [(ngModel)]="currentUser.nom_user" />
+      </label>
+
+      <label>
+        Email:
+        <input type="email" [(ngModel)]="currentUser.email" />
+      </label>
+
+      <label *ngIf="!isEditMode">
+        Mot de passe:
+        <input type="text" [(ngModel)]="currentUser.password" />
+      </label>
+
+      <label>
+        Matricule:
+        <input type="text" [(ngModel)]="currentUser.matricule" />
+      </label>
+
+      <label>
+        Filière:
+        <select [(ngModel)]="currentUser.tbl_filiere_id">
+          <option *ngFor="let fil of filieres" [value]="fil.id">
+            {{ fil.nom_fil }}
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Rôle:
+        <select [(ngModel)]="currentUser.role">
+          <option value="admin">superviseur</option>
+          <option value="user">Étudiant</option>
+        </select>
+      </label>
+
+      <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <div class="modal-actions">
+        <button (click)="askConfirmSave()">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</button>
+        <button (click)="closeModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal confirmation suppression -->
+<div class="modal-backdrop" *ngIf="showConfirmModal">
+  <div class="modal">
+    <p>Voulez-vous vraiment supprimer l'utilisateur <strong>{{ userToDelete?.nom_user }}</strong> ?</p>
+    <div class="modal-actions">
+      <button (click)="confirmDelete()">Oui, supprimer</button>
+      <button (click)="cancelDelete()">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal confirmation enregistrement -->
+<div class="modal-backdrop" *ngIf="showConfirmSaveModal">
+  <div class="modal">
+    <p>Voulez-vous vraiment enregistrer les modifications pour <strong>{{ currentUser?.nom_user }}</strong> ?</p>
+    <div class="modal-actions">
+      <button (click)="confirmSave()">Oui, enregistrer</button>
+      <button (click)="cancelSave()">Annuler</button>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,117 @@
+<div class="project-list">
+
+  <div class="controls">
+    <input type="text" placeholder="Recherche par titre" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+    <button (click)="toggleSort()">Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}</button>
+    <button (click)="openAddModal()" disabled>Ajouter un projet</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Titre</th>
+        <th>Description</th>
+        <th>Image</th>
+        <th>Niveau</th>
+        <th>Catégorie</th>
+        <th>Utilisateur</th>
+        <th>Type</th>
+        <th>Statut</th>
+        <!--<th>Soumis</th>-->
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let project of filteredProjects">
+        <td>{{ project.titre_projet }}</td>
+        <td>{{ project.descript_projet }}</td>
+        <td>
+          <img [src]="project.image" alt="Image projet" width="60" height="60" *ngIf="project.image" />
+        </td>
+        <td>{{ project.niveau }}</td>
+        <td>{{ project.nom_categorie }}</td>
+        <td>{{ project.nom_utilisateur }}</td>
+        <td>{{ project.type }}</td>
+        <td>{{ project.status }}</td>
+        <!--<td>{{ project.soumis ? 'Oui' : 'Non' }}</td>-->
+        <td>
+          <button (click)="openEditModal(project)" disabled>Modifier</button>
+          <button (click)="openConfirmDelete(project)">Supprimer</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
+    <span>Page {{ currentPage }} / {{ totalPages }}</span>
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>
+  </div>
+
+  <!-- Modal ajout/modification -->
+  <div class="modal-backdrop" *ngIf="isModalOpen">
+    <div class="modal">
+      <h3>{{ isEditMode ? 'Modifier projet' : 'Ajouter projet' }}</h3>
+
+      <label>
+        Titre :
+        <input type="text" [(ngModel)]="currentProject.titre_projet" />
+      </label>
+
+      <label>
+        Description :
+        <textarea [(ngModel)]="currentProject.descript_projet"></textarea>
+      </label>
+
+      <label>
+        Niveau (ID) :
+        <input type="number" [(ngModel)]="currentProject.tbl_niveau_id" />
+      </label>
+
+      <label>
+        Catégorie (ID) :
+        <input type="number" [(ngModel)]="currentProject.tbl_categorie_id" />
+      </label>
+
+      <label>
+        Utilisateur (ID) :
+        <textarea [(ngModel)]="currentProject.user_id" readonly></textarea>
+      </label>
+
+      <label>
+        Image :
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+      </label>
+
+      <div class="modal-actions">
+        <button (click)="saveProject()">
+          {{ isEditMode ? 'Enregistrer' : 'Ajouter' }}
+        </button>
+        <button (click)="closeModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmation sauvegarde -->
+  <div class="modal-backdrop" *ngIf="showConfirmSaveModal">
+    <div class="modal">
+      <p>Voulez-vous vraiment {{ isEditMode ? 'enregistrer les modifications' : 'ajouter ce projet' }} ?</p>
+      <div class="modal-actions">
+        <button (click)="confirmSave()">Oui</button>
+        <button (click)="cancelSave()">Non</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal confirmation suppression -->
+  <div class="modal-backdrop" *ngIf="showConfirmDeleteModal">
+    <div class="modal">
+      <p>Voulez-vous vraiment supprimer le projet <strong>{{ projectToDelete?.titre_projet }}</strong> ?</p>
+      <div class="modal-actions">
+        <button (click)="confirmDelete()">Oui, supprimer</button>
+        <button (click)="cancelDelete()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+</div>

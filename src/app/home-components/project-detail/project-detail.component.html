@@ -7,11 +7,11 @@
           <div class="con1 container section-title" [@fadeUp]>
             <h2 class="conp"> Project Detail</h2>
             <h5 class="text-white">Here we give you all informations and documents related to a project.</h5>
-          </div><!-- End Section Title -->
+          </div>
         </div>
       </div>
     </div>
-  </div><!-- End Page Title -->
+  </div>
 
   <!-- Service Details Section -->
   <section id="service-details" class="service-details section">
@@ -48,16 +48,20 @@
           <div class="service-box">
             <h4>Other Projects</h4>
             <div class="services-list">
-              <a  style="cursor:pointer;" *ngFor="let project of projects | slice:0:(isProjectExpanded2 ? projects.length : 4)">
+              <div class="services-list">
+  <a style="cursor:pointer;" *ngFor="let project of projects | slice:0:(isProjectExpanded2 ? projects.length : 4)">
+    <i class="bi bi-arrow-right-circle"></i>
+    <span (click)="updateProjectDetails(project)">{{project.titre}}</span>
+  </a>
+</div>
 
-                <i  class="bi bi-arrow-right-circle"></i><span (click)="updateProjectDetails(project)">{{project.titre}}</span>
-              </a>
+
             </div>
             <div *ngIf="projects.length > 4" class="show-more" (click)="toggleProjectExpand2()">
               <i class="bi" [ngClass]="isProjectExpanded2 ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
               <span>{{ isProjectExpanded2 ? 'Show Less' : 'Show More' }}</span>
             </div>
-          </div><!-- End Services List -->
+          </div>
 
           <div class="help-box d-flex flex-column justify-content-center align-items-center">
             <i class="bi bi-headset help-icon"></i>
@@ -67,6 +71,36 @@
           </div>
         </div>
       </div>
+
+      <!-- Section Commentaires -->
+      <section class="comments-section mt-5">
+        <h3>Commentaires</h3>
+
+        <div *ngIf="comments.length === 0" class="no-comments">Aucun commentaire pour le moment.</div>
+
+        <div *ngFor="let comment of comments" class="comment">
+          <p><strong>{{ comment.user?.name || comment.visitor_name || 'Anonyme' }} :</strong></p>
+          <p>{{ comment.content }}</p>
+          <small>{{ comment.created_at | date:'short' }}</small>
+          <hr />
+        </div>
+
+        <div class="add-comment">
+          <h4>Ajouter un commentaire</h4>
+
+
+          <div *ngIf="!currentUser" class="visitor-info mb-3">
+            <input type="text" placeholder="Votre nom" [(ngModel)]="visitorName" />
+            <div *ngIf="commentErrors.name" class="text-danger" style="font-size: 13px; margin-bottom: 4px;">{{ commentErrors.name }}</div>
+            <input type="email" placeholder="Votre email (optionnel)" [(ngModel)]="visitorEmail" />
+            <div *ngIf="commentErrors.email" class="text-danger" style="font-size: 13px; margin-bottom: 4px;">{{ commentErrors.email }}</div>
+          </div>
+
+          <textarea rows="3" placeholder="Votre commentaire..." [(ngModel)]="newComment"></textarea>
+          <div *ngIf="commentErrors.comment" class="text-danger" style="font-size: 13px; margin-bottom: 4px;">{{ commentErrors.comment }}</div>
+          <button (click)="submitComment()">Envoyer</button>
+        </div>
+      </section>
     </div>
-  </section><!-- /Service Details Section -->
+  </section>
 </main>

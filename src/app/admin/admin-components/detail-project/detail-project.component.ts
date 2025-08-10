@@ -67,14 +67,14 @@ export class DetailProjectComponent {
     if (!projectImage) {
       return '';
     }
-    return projectImage.startsWith('http') ? projectImage : `https://backend-acad.onrender.com/${projectImage.replace(/^\/+/, '')}`;
+    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
   }
   getFullDocumentUrl(lien_doc: string): string {
     if (!lien_doc) return '#';
     // Ajoute /storage/ devant le nom du fichier
     return lien_doc.startsWith('http')
       ? lien_doc
-      : `https://backend-acad.onrender.com/storage/${lien_doc.replace(/^\/+/, '')}`;
+      : `http://localhost:8000/storage/${lien_doc.replace(/^\/+/, '')}`;
   }
 
   actionCellRenderer() {

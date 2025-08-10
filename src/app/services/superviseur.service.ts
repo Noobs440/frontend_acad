@@ -13,7 +13,7 @@ export interface Superviseur {
 })
 export class SuperviseurService {
 
-  private apiBaseUrl = 'https://backend-acad.onrender.com/api/ressources/superviseurs';
+  private apiBaseUrl = 'http://localhost:8000/api/ressources/superviseurs';
 
   constructor(private http: HttpClient) {}
 
@@ -45,7 +45,7 @@ export class SuperviseurService {
 
   // Ajouter un superviseur à un projet avec envoi d'email (endpoint spécifique)
   addSuperviseurToProject(projectId: number, data: { nom: string; email: string }): Observable<any> {
-    const url = `https://backend-acad.onrender.com/api/superviseurs/add-to-project/${projectId}`;
+    const url = `http://localhost:8000/api/superviseurs/add-to-project/${projectId}`;
     return this.http.post<any>(url, data).pipe(
       tap(response => console.log('Superviseur ajouté au projet avec succès :', response)),
       catchError(error => {
