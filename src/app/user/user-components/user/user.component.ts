@@ -118,7 +118,12 @@ export class UserComponent implements OnInit {
   loadProjects(): void {
     this.projectByIdService.getProjectsById(this.id).subscribe({
       next: (data) => {
-        this.projects = data ?? [];
+        // Trie par plus récent (suppose champ created_at ou date similaire)
+        this.projects = (data ?? []).sort((a, b) => {
+          const dateA = new Date(a.created_at || a.date || 0).getTime();
+          const dateB = new Date(b.created_at || b.date || 0).getTime();
+          return dateB - dateA;
+        });
         this.applyCombinedFilter();
       },
       error: (err) => {

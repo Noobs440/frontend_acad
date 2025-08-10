@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 import { ProjectDetailComponent } from './user-components/project-detail/project-detail.component';
+import { FormsModule } from '@angular/forms';
 
 
 const routes: Routes = [
@@ -12,7 +13,7 @@ const routes: Routes = [
   ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  imports: [RouterModule.forChild(routes), FormsModule],
+  exports: [RouterModule, FormsModule]
 })
 export class UserRoutingModule { }

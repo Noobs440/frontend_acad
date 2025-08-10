@@ -38,26 +38,30 @@
             </span>
           </a>
 
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications p-3" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
-            <li class="d-flex justify-content-between align-items-center mb-2">
-              <strong>Notifications ({{ notifications.length }})</strong>
-              <button class="btn btn-sm btn-link" (click)="markAllNotificationAsRead()">Tout marquer comme lu</button>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications p-3 shadow-lg border-0" style="min-width: 340px; max-width: 400px; max-height: 420px; overflow-y: auto; background: #f8fafd;">
+            <li class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+              <span class="fw-bold text-primary"><i class="bi bi-bell me-1"></i> Notifications ({{ notifications.length }})</span>
+              <button class="btn btn-sm btn-outline-primary px-2 py-0" (click)="markAllNotificationAsRead()">Tout marquer comme lu</button>
             </li>
 
             <li *ngIf="notifications.length === 0" class="text-center text-muted py-3">
               Aucune notification
             </li>
 
-            <li *ngFor="let notification of notifications" class="dropdown-item border rounded mb-2 p-2">
-              <div>
-                <h6 class="mb-1">{{ notification.data.project_title }}</h6>
-                <small class="text-primary fw-bold">{{ notification.data.status }}</small>
-                <p class="mb-1">{{ notification.data.message }}</p>
-                <small class="text-muted">{{ notification.created_at | date:'medium' }}</small>
-              </div>
-              <button class="btn btn-outline-primary btn-sm mt-2" (click)="markNotificationAsRead(notification.id)">
-                Marquer comme lu
-              </button>
+            <li *ngFor="let notification of notifications" class="dropdown-item notification-item mb-2 p-2 rounded-3 position-relative bg-white border border-1 shadow-sm">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="badge bg-info text-dark me-2" style="font-size:0.85em;">{{ notification.data.status }}</span>
+                  <h6 class="mb-0 fw-semibold text-dark flex-grow-1">{{ notification.data.project_title }}</h6>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <small class="text-muted fst-italic">{{ notification.created_at | date:'medium' }}</small>
+                  <button class="btn btn-outline-primary btn-sm px-2 py-0" (click)="markNotificationAsRead(notification.id)">
+                    <i class="bi bi-check2-circle"></i> Lu
+                  </button>
+                </div>
+                <div>
+                  <p class="mb-1 text-secondary small">{{ notification.data.message }}</p>
+                </div>
             </li>
           </ul>
         </li>

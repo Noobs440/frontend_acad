@@ -1,3 +1,4 @@
+ 
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
@@ -17,13 +18,8 @@ import { UserService } from '../../../services/user.service';
   styleUrls: ['./project-detail.component.css']
 })
 export class ProjectDetailComponent implements OnInit {
-supervisors = [
-  { id: 101, name: 'Adriene Sonfack', email: 'adrienesonfack@gmail.com' },
-  { id: 102, name: 'Marie Martin', email: 'marie.martin@email.com' },
-  { id: 103, name: 'Ali Ben', email: 'ali.ben@email.com' },
-  { id: 104, name: 'Nouvel Enseignant', email: 'nouvel.enseignant@email.com' }
-];
-  selectedSupervisorId: number | null = null;
+  admins: any[] = [];
+  selectedAdminId: string | null = null;
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<any>;
 
   collaborators: any[] = [];
@@ -32,6 +28,7 @@ supervisors = [
   selectedProjectId = 0;
   selectedProjectTitle = '';
   projectStatus = '';
+  rejection_reason: string = '';
   projectImage = '';
   description = '';
   views = 0;
@@ -64,63 +61,119 @@ supervisors = [
     private userService: UserService,
   ) {}
 
-  fetchSupervisors() {
-    this.userService.getSupervisors().subscribe({
-      next: (supervisors: any[]) => {
-        this.supervisors = supervisors;
+  fetchAdmins() {
+    this.userService.getAdmins().subscribe({
+      next: (admins: any[]) => {
+        this.admins = admins;
       },
       error: err => {
-        console.error('Erreur lors du chargement des superviseurs', err);
+        console.error('Erreur lors du chargement des admins', err);
       }
     });
   }
 
-  addSupervisorToProject(supervisorId: string) {
-    if (!supervisorId) return;
-    this.projetService.assignSupervisorToProject(this.id, supervisorId as string).subscribe({
+  addAdminToProject(adminId: string) {
+    if (!adminId) return;
+    this.projetService.assignAdminToProject(this.id, adminId).subscribe({
       next: () => {
-        this.openCompleteDialog('Superviseur assigné avec succès.');
+        this.openCompleteDialog('Admin assigné avec succès.');
       },
       error: err => {
-        console.error("Erreur lors de l'assignation du superviseur", err);
-        alert("Erreur lors de l'assignation du superviseur.");
+        console.error("Erreur lors de l'assignation de l'admin", err);
+        alert("Erreur lors de l'assignation de l'admin.");
       }
     });
   }
 
+  // ...existing code...
   ngOnInit(): void {
     this.nom_collab = localStorage.getItem('nom_collab');
     this.user_id = localStorage.getItem('id');
     this.user_role = localStorage.getItem('role');
-    this.user_name = localStorage.getItem('name');
     this.user_token = localStorage.getItem('token');
 
-    this.selectedProjectId = +this.route.snapshot.paramMap.get('id')!;
-
-    this.route.queryParams.subscribe(params => {
-      this.id = params['id'];
-      this.selectedProjectTitle = params['title'];
-      this.projectStatus = params['status'];
-      this.projectImage = params['image'];
-      this.description = params['description'];
-      this.author = params['author'];
-      this.category = params['category'];
-      this.level = params['level'];
-      this.type = params['type'];
-      this.date = params['date'];
-      this.views = params['views'];
-      this.email = params['email'];
+    // Always try to load user profile from backend for up-to-date name
+    this.userService.getUserProfile().subscribe(profile => {
+      if (profile && profile.nom_user) {
+        this.user_name = profile.nom_user;
+      } else {
+        this.user_name = localStorage.getItem('name') || '';
+      }
     });
 
-    this.projetService.countViews(this.id).subscribe();
+    // Récupérer l'ID du projet depuis l'URL
+    this.selectedProjectId = +this.route.snapshot.paramMap.get('id')!;
 
+    // Charger la liste des admins dès l'init
+    this.fetchAdmins();
+
+    // Charger les infos du projet depuis l'API pour garantir la cohérence des champs
+    this.projetService.getProjectById(this.selectedProjectId).subscribe({
+      next: (project: any) => {
+        // Mapping strict selon la BDD/API Laravel
+        this.id = project.id;
+        this.selectedProjectTitle = project.titre_projet || '';
+        this.projectStatus = project.status || '';
+        this.projectImage = project.image || '';
+        this.description = project.descript_projet || '';
+        this.author = project.nom_user || (project.user && project.user.name) || '';
+        this.category = project.tbl_categorie_id || '';
+        this.level = project.tbl_niveau_id || '';
+        this.type = project.type || '';
+        this.date = project.created_at || '';
+        this.views = project.views || 0;
+        this.email = project.user?.email || '';
+        this.rejection_reason = project.rejection_reason || '';
+      },
+      error: err => {
+        console.error('Erreur lors du chargement du projet', err);
+      }
+    });
+
+    // Charger les documents et collaborateurs liés au projet
+    this.documentService.getDocumentsByProject(this.selectedProjectId).subscribe(res => this.documents = res);
+    this.collaborateurService.getCollaborateursByProject(this.selectedProjectId).subscribe(res => this.collaborators = res);
+  }
+// ...existing code...
+
+  getRejectionReason(): string {
+    return this.rejection_reason && this.rejection_reason.trim() !== '' ? this.rejection_reason : 'Aucun motif fourni.';
+  }
+
+  resubmitProject() {
+    this.projetService.resubmitProject(this.id).subscribe({
+      next: () => {
+        this.projectStatus = 'Pending';
+        this.rejection_reason = '';
+        alert('Votre projet a été resoumis avec succès.');
+        this.reloadProject();
+      },
+      error: err => {
+        alert("Erreur lors de la resoumission du projet.");
+        console.error(err);
+      }
+    });
+  }
+
+  reloadProject() {
+    this.projetService.getProjectById(this.id).subscribe({
+      next: (project: any) => {
+        this.projectStatus = project.status || '';
+        this.rejection_reason = project.rejection_reason || '';
+        this.selectedProjectTitle = project.titre_projet || '';
+        this.projectImage = project.image || '';
+        this.description = project.descript_projet || '';
+        this.author = project.nom_user || (project.user && project.user.name) || '';
+        this.category = project.tbl_categorie_id || '';
+        this.level = project.tbl_niveau_id || '';
+        this.type = project.type || '';
+        this.date = project.created_at || '';
+        this.views = project.views || 0;
+        this.email = project.user?.email || '';
+      }
+    });
     this.documentService.getDocumentsByProject(this.id).subscribe(res => this.documents = res);
     this.collaborateurService.getCollaborateursByProject(this.id).subscribe(res => this.collaborators = res);
-
-    // Charger la liste des superviseurs
-    // this.fetchSupervisors();
-
-    this.actionCellRenderer();
   }
 
   deleteProject(Projectid: any) {
@@ -136,12 +189,12 @@ supervisors = [
   }
 
   submitProject() {
-    if (!this.selectedSupervisorId) {
-      alert("Veuillez choisir un superviseur avant de soumettre le projet !");
+    if (!this.selectedAdminId) {
+      alert("Veuillez choisir un admin avant de soumettre le projet !");
       return;
     }
-    this.submitService.submitProject(this.id, this.selectedSupervisorId).subscribe({
-      next: () => alert("Votre projet a été soumis"),
+    this.projetService.assignAdminToProject(this.id, this.selectedAdminId).subscribe({
+      next: () => alert("Votre projet a été soumis à l'admin choisi"),
       error: err => alert("Votre projet doit contenir au moins un document"),
       complete: () => this.Submitted = true
     });
@@ -182,36 +235,6 @@ supervisors = [
       data: { message },
       disableClose: false
     });
-  }
-
-  onClose(): void {
-    this.dialog.closeAll();
-  }
-
-  getFullImageUrl(projectImage: string): string {
-    if (!projectImage) return '';
-    return projectImage.startsWith('http')
-      ? projectImage
-      : `http://localhost:8000${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
-  }
-
-  actionCellRenderer(): string {
-    let status = this.projectStatus;
-    let actionButtons = `<i class="view-button fas fa-eye text-primary" style="..."></i>`;
-
-    if (status === 'Pending') {
-      actionButtons += `<i class="fas fa-check text-success" style="..."></i>
-                        <i class="fas fa-trash-alt text-danger" style="..."></i>`;
-    } else if (status === 'Approved') {
-      actionButtons += `<i class="fas fa-times text-danger" style="..."></i>`;
-    }
-
-    return actionButtons;
-  }
-
-  confirmDeleteDocument(document: any) {
-    const confirmed = window.confirm(`Voulez-vous vraiment supprimer le document "${document.nom_doc}" ?`);
-    if (confirmed) this.deleteDocumentByid(document.id);
   }
 
   deleteDocumentByid(id: string) {
@@ -263,4 +286,21 @@ supervisors = [
       });
     });
   }
+
+   confirmDeleteDocument(document: any) {
+    const confirmed = window.confirm(`Voulez-vous vraiment supprimer le document "${document.nom_doc}" ?`);
+    if (confirmed) this.deleteDocumentByid(document.id);
+  }
+
+  onClose(): void {
+    this.dialog.closeAll();
+  }
+
+  getFullImageUrl(projectImage: string): string {
+    if (!projectImage) return '';
+    return projectImage.startsWith('http')
+      ? projectImage
+      : `http://localhost:8000${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
+  }
+  
 }

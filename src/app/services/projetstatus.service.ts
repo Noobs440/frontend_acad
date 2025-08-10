@@ -13,8 +13,11 @@ export class ProjetstatusService {
     return this.http.get<any>(`http://localhost:8000/api/usecases/status/approved/pending/${id}`);
   }
 
-  rejectProject(id:number):Observable<any>{
-    return this.http.get<any>(`http://localhost:8000/api/usecases/status/rejected/pending/${id}`);
+  rejectProject(id:number, reason:string):Observable<any>{
+    // Utiliser PATCH pour la mise à jour du statut
+    return this.http.patch<any>(`http://localhost:8000/api/usecases/status/rejected/pending/${id}`,
+      { motif: reason }
+    );
   }
 
   pendingProject(id:number):Observable<any>{

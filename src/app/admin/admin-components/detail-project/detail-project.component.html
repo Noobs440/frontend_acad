@@ -1,96 +1,293 @@
+
 <main id="main" class="main">
   <div class="pagetitle">
-      <h1>Admin Dashboard</h1>
-      <nav>
-          <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a [routerLink]="['/home']">Home</a></li>
-              <li class="breadcrumb-item "><a [routerLink]="['/admin/dashboard']">Admin Dashboard</a></li>
-              <li class="breadcrumb-item active">{{ selectedProjectTitle }}</li>
-          </ol>
-      </nav>
-  </div><!-- End Page Title -->
+    <h1>Admin Dashboard</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink]="['/home']">Home</a></li>
+        <li class="breadcrumb-item"><a [routerLink]="['/admin/dashboard']">Admin Dashboard</a></li>
+        <li class="breadcrumb-item active">{{ selectedProjectTitle }}</li>
+      </ol>
+    </nav>
+  </div>
 
   <section class="section dashboard">
-      <div class="row gap-5">
-          <div class="col-lg-12">
-              <!-- Tab Section -->
-              <div class="tabs">
-                  <ul class="nav nav-tabs" id="myTab" role="tablist">
-                      <li class="nav-item" role="presentation">
-                          <button class="nav-link active" id="actions-tab" data-bs-toggle="tab" data-bs-target="#actions" type="button" role="tab" aria-controls="actions" aria-selected="true">
-                              Actions
-                          </button>
-                      </li>
-                  </ul>
-                  <div class="tab-content" id="myTabContent">
-                      <div class="tab-pane fade show active" id="actions" role="tabpanel" aria-labelledby="actions-tab">
-                          <div class="actions mt-3" *ngIf="projectStatus=='Approved'">
-                              <button class="btn btn-view" (click)="onView()"><i class="fas fa-eye"></i> View</button>
-                              <button class="btn btn-del" (click)="onRestore()"><i class="fas fa-trash-alt"></i> Restore</button>
-                          </div>
-                          <div class="actions mt-3" *ngIf="projectStatus=='Pending'">
-                            <button class="btn btn-view" (click)="onView()"><i class="fas fa-eye"></i> View</button>
-                            <button class="btn btn-val" (click)="onValidate()"><i class="fas fa-check"></i> Approve</button>
-                            <button class="btn btn-del" (click)="onDelete()"><i class="fas fa-trash-alt"></i> Delete</button>
-                          </div>
-                          <div class="actions mt-3" *ngIf="projectStatus=='Rejected'">
-
-                            <button class="btn btn-val" (click)="onRestore()"><i class="fas fa-check"></i> Restore</button>
-                          </div>
-                      </div>
-                  </div>
-              </div><!-- End Tabs Section -->
-
-              <!-- Service Details Section -->
-              <section id="service-details" class="service-details section">
-                  <div class="con1 container">
-                      <div class="row ">
-                        <div class="col-lg-6 ps-lg-5">
-                          <img [src]="getFullImageUrl(projectImage)" alt="" class="img-fluid services-img">
-                          <h3>{{selectedProjectTitle}} ({{type}})</h3>
-                          <p>
-                             {{description}}
-                          </p>
-                          <ul>
-                            <li><i class="bi bi-person-circle"></i><span class="font-bold">{{author}}</span></li>
-                            <li><i class="fas fa-graduation-cap"></i> <span>{{level}}</span></li>
-                            <li><i class="fas fa-eye"></i> <span>{{views}} Views {{projectStatus}}</span></li>
-                          </ul>
-                          <p>
-                          </p>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="service-box">
-                          <h4>Documents Related</h4>
-                          <div class="download-catalog">
-                            <a *ngFor="let document of documents | slice:0:(isExpanded ? documents.length : 4)"
-                               [href]="getFullDocumentUrl(document.lien_doc)" target="_blank" rel="noopener">
-                              <i class="bi bi-filetype-pdf"></i><span>{{ document.nom_doc }}</span>
-                            </a>
-                          </div>
-                          <div *ngIf="documents.length > 4" class="show-more" (click)="toggleExpand()">
-                            <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-                            <span>{{ isExpanded ? 'Show Less' : 'Show More' }}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                          <div class="col-lg-12 mt-4" [@fadeUp]>
-
-
-
-                            <div class="help-box d-flex flex-column justify-content-center align-items-center">
-                              <i class="bi bi-headset help-icon"></i>
-                              <h4>Contact Author</h4>
-                              <p class="d-flex align-items-center mt-2 mb-0"><i class="bi bi-telephone me-2"></i> <span>+589 55488 55</span></p>
-                              <p class="d-flex align-items-center mt-1 mb-0"><i class="bi bi-envelope me-2"></i> <a href="mailto:contact@example.com">{{email}}</a></p>
-                            </div>
-
-                          </div>
-                      </div>
-                  </div>
-              </section><!-- /Service Details Section -->
-          </div>
+    <div class="project-detail-container">
+      <!-- Colonne gauche : image et infos projet -->
+      <div class="project-detail-left">
+        <img [src]="getFullImageUrl(projectImage)" alt="Project image" class="project-detail-img" />
+        <h3 class="project-title">{{ selectedProjectTitle }} <span class="type-badge">({{ type }})</span></h3>
+        <p class="project-desc">{{ description }}</p>
+        <ul class="project-meta">
+          <li><i class="bi bi-person-circle"></i> <span class="font-bold">{{ author }}</span></li>
+          <li><i class="fas fa-graduation-cap"></i> <span>{{ level }}</span></li>
+          <li><i class="fas fa-eye"></i> <span>{{ views }} Views - {{ projectStatus }}</span></li>
+        </ul>
+        <div class="contact-box">
+          <h4>Contact Author</h4>
+          <p><i class="bi bi-telephone me-2"></i> <span>+589 55488 55</span></p>
+          <p><i class="bi bi-envelope me-2"></i> <a href="mailto:{{ email }}">{{ email }}</a></p>
+        </div>
       </div>
+
+      <!-- Colonne droite : actions, documents, collaborateurs -->
+      <div class="project-detail-right">
+        <div class="actions-box">
+          <ng-container *ngIf="projectStatus=='Approved'">
+            <button class="btn btn-view" (click)="onView()"><i class="fas fa-eye"></i> View</button>
+            <button class="btn btn-del" (click)="onRestore()"><i class="fas fa-trash-alt"></i> Restore</button>
+          </ng-container>
+          <ng-container *ngIf="projectStatus=='Pending'">
+            <button class="btn btn-view" (click)="onView()"><i class="fas fa-eye"></i> View</button>
+            <button class="btn btn-val" (click)="onValidate()"><i class="fas fa-check"></i> Approve</button>
+            <button class="btn btn-del" (click)="openRejectModal()"><i class="fas fa-trash-alt"></i> Delete</button>
+          </ng-container>
+          <ng-container *ngIf="projectStatus=='Rejected'">
+            <div class="alert alert-danger mb-2">
+              <strong>Motif du rejet :</strong>
+              <span>{{ getRejectionReason() }}</span>
+            </div>
+            <button class="btn btn-val" (click)="onRestore()"><i class="fas fa-check"></i> Restore</button>
+          </ng-container>
+        </div>
+
+        <div class="service-box">
+          <h4>Documents</h4>
+          <div class="download-catalog">
+            <a *ngFor="let document of documents | slice:0:(isExpanded ? documents.length : 4)"
+               [href]="getFullDocumentUrl(document.lien_doc)" target="_blank" rel="noopener"
+               class="document-item d-flex justify-content-between align-items-center">
+              <div>
+                <i class="bi bi-filetype-pdf"></i>
+                <span class="document-link">{{ document.nom_doc }}</span>
+              </div>
+            </a>
+          </div>
+          <div *ngIf="documents.length > 4" class="show-more" (click)="toggleExpand()">
+            <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+            <span>{{ isExpanded ? 'Show Less' : 'Show More' }}</span>
+          </div>
+        </div>
+
+        <div class="service-box">
+          <h4>Collaborators</h4>
+          <div class="download-catalog">
+            <div *ngFor="let collaborator of collaborators | slice:0:(isExpanded ? collaborators.length : 4)"
+                 class="d-flex justify-content-between align-items-center">
+              <div>
+                <i class="bi bi-person"></i>
+                <span>{{ collaborator.nom_collab }} {{ collaborator.email_collab }}</span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="collaborators.length > 4" class="show-more" (click)="toggleExpand()">
+            <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+            <span>{{ isExpanded ? 'Show Less' : 'Show More' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
-</main><!-- End #main -->
+</main>
+
+<style>
+.project-detail-container {
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+  justify-content: center;
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+.project-detail-left {
+  flex: 1 1 340px;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 18px rgba(6,187,204,0.10);
+  padding: 2.2rem 2rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.project-detail-img {
+  width: 100%;
+  max-width: 320px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 1rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 2px 8px rgba(6,187,204,0.08);
+}
+.project-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.7rem;
+  text-align: center;
+}
+.type-badge {
+  font-size: 1rem;
+  color: #06BBCC;
+  font-weight: 500;
+}
+.project-desc {
+  font-size: 1.08rem;
+  color: #444;
+  margin-bottom: 1.1rem;
+  text-align: center;
+}
+.project-meta {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.2rem 0;
+  font-size: 1.05rem;
+}
+.project-meta li {
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.contact-box {
+  background: #f8f9fa;
+  border-radius: 0.7rem;
+  padding: 1rem 1.2rem;
+  margin-top: 1.2rem;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(6,187,204,0.06);
+}
+.project-detail-right {
+  flex: 1 1 340px;
+  max-width: 480px;
+  background: #fff;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 18px rgba(6,187,204,0.10);
+  padding: 2.2rem 2rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+}
+.actions-box {
+  background: #f6fafd;
+  border-radius: 0.7rem;
+  padding: 1.2rem 1.2rem 1rem 1.2rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 2px 8px rgba(6,187,204,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.actions-box .btn {
+  margin-bottom: 0.3rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  min-width: 160px;
+  font-weight: 500;
+}
+.actions-box .btn-view {
+  background: #06BBCC;
+  color: #fff;
+  border: none;
+}
+.actions-box .btn-val {
+  background: #198754;
+  color: #fff;
+  border: none;
+}
+.actions-box .btn-del {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+}
+.actions-box .btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.service-box {
+  background: #f8f9fa;
+  border-radius: 0.7rem;
+  padding: 1.2rem 1.2rem 1rem 1.2rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 2px 8px rgba(6,187,204,0.06);
+}
+.service-box h4 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+.download-catalog {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.document-item {
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1rem;
+  box-shadow: 0 1px 4px rgba(6,187,204,0.04);
+  transition: box-shadow 0.2s;
+  font-size: 1.01rem;
+}
+.document-item:hover {
+  box-shadow: 0 4px 12px rgba(6,187,204,0.10);
+}
+.document-link {
+  color: #06BBCC;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.show-more {
+  color: #06BBCC;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 0.7rem;
+  text-align: right;
+}
+@media (max-width: 1100px) {
+  .project-detail-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2rem;
+  }
+  .project-detail-left, .project-detail-right {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+@media (max-width: 700px) {
+  .project-detail-container {
+    padding: 0 0.5rem;
+  }
+  .project-detail-left, .project-detail-right {
+    padding: 1.2rem 0.5rem 1rem 0.5rem;
+  }
+  .project-detail-img {
+    max-width: 100vw;
+    height: 120px;
+  }
+}
+</style>
+
+<!-- Modal motif de rejet -->
+<div class="modal" tabindex="-1" [ngClass]="{'show': showRejectModal}" [ngStyle]="{'display': showRejectModal ? 'block' : 'none', 'background': 'rgba(0,0,0,0.5)', 'position': 'fixed', 'top': '0', 'left': '0', 'width': '100vw', 'height': '100vh', 'z-index': '1050'}">
+  <div class="modal-dialog" style="margin-top:10vh;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Motif du rejet</h5>
+        <button type="button" class="btn-close" (click)="closeRejectModal()"></button>
+      </div>
+      <div class="modal-body">
+        <label for="motif">Veuillez fournir le motif du rejet :</label>
+        <textarea id="motif" [(ngModel)]="rejectReason" class="form-control" rows="3" required></textarea>
+        <div *ngIf="rejectError" class="text-danger mt-2">Le motif est obligatoire.</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeRejectModal()">Annuler</button>
+        <button type="button" class="btn btn-danger" (click)="confirmReject()">Rejeter</button>
+      </div>
+    </div>
+  </div>
+</div>

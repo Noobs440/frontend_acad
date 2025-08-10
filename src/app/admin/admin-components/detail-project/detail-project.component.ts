@@ -1,5 +1,9 @@
+ 
 import { Component, Input } from '@angular/core';
+import { CollaborateurService } from '../../../services/collaborateur.service';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { ActivatedRoute } from '@angular/router';
+import { ProjetService } from '../../../services/projet.service';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
 import { Router } from '@angular/router';
 import { DocumentService } from '../../../services/document.service';
@@ -7,7 +11,18 @@ import { DocumentService } from '../../../services/document.service';
 @Component({
   selector: 'app-detail-project',
   templateUrl: './detail-project.component.html',
-  styleUrl: './detail-project.component.css'
+  styleUrls: ['./detail-project.component.css'],
+  animations: [
+    trigger('fadeUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('300ms', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('300ms', style({ opacity: 0, transform: 'translateY(20px)' }))
+      ])
+    ])
+  ]
 })
 export class DetailProjectComponent {
   documents: any[]=[];
@@ -25,38 +40,89 @@ export class DetailProjectComponent {
   date!:string;
   email!:string;
   id!:number;
-  constructor(private route: ActivatedRoute,private router:Router,private documentService:DocumentService, private projetStatusService:ProjetstatusService) {}
+  rejection_reason: string = '';
+  collaborators: any[] = [];
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private documentService: DocumentService,
+    private projetService: ProjetService,
+    private projetStatusService: ProjetstatusService,
+    private collaborateurService: CollaborateurService
+  ) {}
 
   ngOnInit(): void {
+    this.selectedProjectId = +this.route.snapshot.paramMap.get('id')!;
+    this.reloadProject();
+  }
 
-     // Accessing the route parameters
-     this.selectedProjectId = +this.route.snapshot.paramMap.get('id')!;
-
-     // Accessing the query parameters
-     this.route.queryParams.subscribe(params => {
-       this.id = params['id'];
-       this.selectedProjectTitle = params['title'];
-       this.projectStatus=params['status'];
-       this.projectImage=params['image'];
-       this.description=params['description']
-       this.author=params['author']
-       this.category=params['category'];
-       this.level=params['level'];
-       this.type=params['type'];
-       this.date=params['date'];
-       this.views=params['views'];
-       this.email=params['email']
-     });
-
-     this.documentService.getDocumentsByProject(this.selectedProjectId).subscribe(response => {
-      console.log('Documents reçus pour le projet', this.selectedProjectId, ':', response);
+  reloadProject() {
+    this.projetService.getProjectById(this.selectedProjectId).subscribe({
+      next: (project: any) => {
+        this.id = project.id;
+        this.selectedProjectTitle = project.titre_projet || '';
+        this.projectStatus = project.status || '';
+        this.projectImage = project.image || '';
+        this.description = project.descript_projet || '';
+        this.author = project.nom_user || (project.user && project.user.name) || '';
+        this.category = project.tbl_categorie_id || '';
+        this.level = project.tbl_niveau_id || '';
+        this.type = project.type || '';
+        this.date = project.created_at || '';
+        this.views = project.views || 0;
+        this.email = project.user?.email || '';
+        this.rejection_reason = project.rejection_reason || '';
+      }
+    });
+    this.documentService.getDocumentsByProject(this.selectedProjectId).subscribe(response => {
       this.documents = response;
     });
-
-     this.actionCellRenderer();
+    this.collaborateurService.getCollaborateursByProject(this.selectedProjectId).subscribe(response => {
+      this.collaborators = response;
+    });
+    this.actionCellRenderer();
   }
 
   isExpanded = false;
+
+  showRejectModal = false;
+  rejectReason: string = '';
+  rejectError: boolean = false;
+
+  openRejectModal() {
+    this.rejectReason = '';
+    this.rejectError = false;
+    this.showRejectModal = true;
+  }
+
+  closeRejectModal() {
+    this.showRejectModal = false;
+    this.rejectError = false;
+    this.rejectReason = '';
+  }
+
+  confirmReject() {
+    if (!this.rejectReason || this.rejectReason.trim().length === 0) {
+      this.rejectError = true;
+      return;
+    }
+    this.rejectError = false;
+    this.showRejectModal = false;
+    this.projetStatusService.rejectProject(this.selectedProjectId, this.rejectReason).subscribe({
+      next: value => {
+        alert(`Le projet a été rejeté pour le motif: ${this.rejectReason}. Un email a été envoyé à ${this.author}, l'auteur du projet.`);
+        this.reloadProject();
+      },
+      error: err => {
+        alert(`Le projet n'a pas été rejeté, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
+        console.error(err);
+      },
+      complete: () => {
+        this.router.navigate(['/admin']);
+        console.log("Succès");
+      }
+    });
+  }
 
   toggleExpand() {
     this.isExpanded = !this.isExpanded;
@@ -104,14 +170,14 @@ export class DetailProjectComponent {
   onValidate(): void {
     if (this.projectStatus === "Pending") {
       const userConfirmed = confirm("souhaitez vous approuver ce projet ? ");
-
       if (userConfirmed) {
         this.projetStatusService.approveProject(this.selectedProjectId).subscribe({
           next: value => {
-            alert(`Le projet a été approuve et un email a été envoyé à ${this.author}, l'auteur du projet.`);
+            alert(`Le projet a été approuvé et un email a été envoyé à ${this.author}, l'auteur du projet.`);
+            this.reloadProject();
           },
           error: err => {
-            alert(`Le projet n'a pas été approuve, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
+            alert(`Le projet n'a pas été approuvé, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
             console.error(err);
           },
           complete: () => {
@@ -124,39 +190,18 @@ export class DetailProjectComponent {
   }
 
 
-  onDelete(): void {
-    if (this.projectStatus === "Pending") {
-      const userConfirmed = confirm("Souhaitez-vous rejeter ce projet ?");
-
-      if (userConfirmed) {
-        this.projetStatusService.rejectProject(this.selectedProjectId).subscribe({
-          next: value => {
-            alert(`Le projet a été rejeté et un email a été envoyé à ${this.author}, l'auteur du projet.`);
-          },
-          error: err => {
-            alert(`Le projet n'a pas été rejeté, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
-            console.error(err);
-          },
-          complete: () => {
-            this.router.navigate(['/admin']);
-            console.log("Succès");
-          }
-        });
-      }
-    }
-  }
 
   onRestore():void{
     if (this.projectStatus === "Approved" || this.projectStatus === "Rejected") {
       const userConfirmed = confirm("Souhaitez-vous restaure  ce projet a l'etat d'attente ?");
-
       if (userConfirmed) {
         this.projetStatusService.pendingProject(this.selectedProjectId).subscribe({
           next: value => {
-            alert(`Le projet a été restaurer et un email a été envoyé à ${this.author}, l'auteur du projet.`);
+            alert(`Le projet a été restauré et un email a été envoyé à ${this.author}, l'auteur du projet.`);
+            this.reloadProject();
           },
           error: err => {
-            alert(`Le projet n'a pas été restaurer, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
+            alert(`Le projet n'a pas été restauré, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
             console.error(err);
           },
           complete: () => {
@@ -168,4 +213,7 @@ export class DetailProjectComponent {
     }
   }
 
+   getRejectionReason(): string {
+    return this.rejection_reason && this.rejection_reason.trim() !== '' ? this.rejection_reason : 'Aucun motif fourni.';
+  }
 }

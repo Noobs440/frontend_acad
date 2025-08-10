@@ -3,12 +3,7 @@
     <i class="fas fa-times text-lg"></i>
   </button>
 
-  <!-- Navigation boutons exemple -->
-  <div class="flex justify-center gap-2 mb-4">
-    <button (click)="setFormType('document')" class="px-3 py-1 rounded" [class.bg-blue-200]="formType==='document'">Document</button>
-    <button (click)="setFormType('collaborator')" class="px-3 py-1 rounded" [class.bg-blue-200]="formType==='collaborator'">Collaborateur</button>
-    <button (click)="setFormType('supervisor')" class="px-3 py-1 rounded" [class.bg-blue-200]="formType==='supervisor'">Superviseur</button>
-  </div>
+  
 
   <!-- ====== Document Form ====== -->
   <h2 *ngIf="formType === 'document'" class="mb-2 text-3xl font-bold text-center text-customBlue poppins-bold">

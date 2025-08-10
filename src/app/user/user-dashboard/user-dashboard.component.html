@@ -1,6 +1,7 @@
 <main id="main" class="main">
   <div class="pagetitle">
-    <h1>{{ name | uppercase }}</h1>
+    <h1>{{ name |
+     uppercase }}</h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a [routerLink]="['/home']">Home</a></li>
@@ -16,7 +17,8 @@
 
   
   <section class="section dashboard">
-<!-- 🔍 Barre de filtre centrée et sur une seule ligne -->
+
+
 <div class="filter-container d-flex justify-content-center mb-4">
   <div class="filter-bar d-flex align-items-center gap-3">
     <input
@@ -51,6 +53,127 @@
 
 
 
+    <div class="dashboard-cards-bar mb-4">
+      <!-- Cartes par statut -->
+      <ng-container *ngFor="let state of projectStates; let i = index">
+        <ng-container *ngIf="projectStates.indexOf(state) === i">
+          <div class="dashboard-card status-card" [ngClass]="{'active': selectedStateFilter === state}" (click)="onStateFilterChange(state)">
+            <div class="card-body d-flex align-items-center">
+              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center me-3"
+                [ngStyle]="{
+                  'background-color':
+                    state === 'Approved' ? '#d1e7dd' :
+                    state === 'Pending' ? '#fff3cd' :
+                    state === 'Rejected' ? '#f8d7da' :
+                    '#e2e3e5'
+                }"
+                style="width:48px;height:48px;">
+                <img class="status-icon" src="assets/img/icon/images.png" alt="{{state}} icon" style="width:32px;" />
+              </div>
+              <div>
+                <h5 class="card-title mb-1">{{ state | titlecase }}</h5>
+                <span class="h4 fw-bold text-dark">{{ stateCounts[state] || 0 }}</span>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+      <!-- Carte Projets en collaboration (unique, à la fin) -->
+      <div class="dashboard-card collab-card" [ngClass]="{'active': showCollabProjects}" (click)="onCollabCardClick()">
+        <div class="card-body d-flex align-items-center">
+          <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-warning bg-opacity-25 me-3" style="width:48px;height:48px;">
+            <i class="bi bi-people-fill text-warning" style="font-size:2rem;"></i>
+          </div>
+          <div>
+            <h5 class="card-title mb-1">Projets en collaboration</h5>
+            <span class="h4 fw-bold text-dark">{{ collaboratorProjects.length }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+<style>
+.dashboard-cards-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  justify-content: center;
+  align-items: stretch;
+}
+.dashboard-card {
+  min-width: 240px;
+  max-width: 300px;
+  flex: 1 1 240px;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  transition: box-shadow 0.2s, transform 0.2s;
+  cursor: pointer;
+  margin-bottom: 0;
+  display: flex;
+  align-items: stretch;
+}
+.dashboard-card.active {
+  box-shadow: 0 4px 16px rgba(6,187,204,0.18);
+  border: 2px solid #06BBCC;
+  transform: translateY(-4px) scale(1.03);
+}
+.dashboard-card .card-body {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1rem 1.2rem;
+}
+.dashboard-card .card-icon {
+  min-width: 48px;
+  min-height: 48px;
+  max-width: 48px;
+  max-height: 48px;
+}
+.dashboard-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+.dashboard-card .h4 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+@media (max-width: 1200px) {
+  .dashboard-cards-bar {
+    gap: 0.7rem;
+  }
+  .dashboard-card {
+    min-width: 150px;
+    max-width: 180px;
+    font-size: 0.95rem;
+  }
+}
+@media (max-width: 900px) {
+  .dashboard-cards-bar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .dashboard-card {
+    min-width: 120px;
+    max-width: 150px;
+    font-size: 0.9rem;
+  }
+}
+@media (max-width: 600px) {
+  .dashboard-cards-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .dashboard-card {
+    min-width: 100%;
+    max-width: 100%;
+    font-size: 0.95rem;
+  }
+}
+</style>
+
     <div class="container">
       <div class="row">
         <div *ngIf="isLoading" class="container d-flex projects p-4 justify-content-center align-items-center">
@@ -59,37 +182,32 @@
           </div>
         </div>
 
-        <div class="col-md-6 col-lg-3 mb-4" *ngFor="let project of selectedProject">
-          <a
-            [routerLink]="['/user/dashboard/project-detail', project.id]"
-            [queryParams]="getProjectQueryParams(project)"
-            class="card text-decoration-none h-100"
-            style="cursor: pointer;"
-            title="Voir les détails du projet {{ project.titre }}"
-          >
-            <img
-              [src]="getFullImageUrl(project.image)"
-              alt="Image du projet {{ project.titre }}"
-              class="card-img-top"
-              style="height: 180px; object-fit: cover;"
-            />
-            <div class="card-body">
-              <h5 class="card-title">{{ project.titre }}</h5>
-              <span
-                class="badge category-badge me-2"
-                [style.backgroundColor]="project.couleur_categorie || '#6c757d'"
-              >
+
+<!-- Affichage des projets en collaboration si la carte est active -->
+<div *ngIf="showCollabProjects" class="container mt-3">
+  <div class="row">
+    <div class="col-12 mb-2 mt-4 d-flex justify-content-between align-items-center">
+      <h5 class="fw-bold text-primary">Projets en collaboration ({{ collaboratorProjects.length }})</h5>
+      <button class="btn btn-outline-secondary btn-sm" (click)="hideProjectList()">Masquer</button>
+    </div>
+    <ng-container *ngIf="collaboratorProjects.length; else noCollab">
+      <div class="project-card-grid" *ngIf="collaboratorProjects.length">
+        <div class="project-card-item" *ngFor="let project of selectedProject">
+          <a [routerLink]="['/user/dashboard/project-detail', project.id]" class="card project-card-custom text-decoration-none">
+            <img [src]="getFullImageUrl(project.image)" alt="Image du projet {{ project.titre }}" class="card-img-top" />
+            <div class="card-body p-3">
+              <h5 class="card-title">{{ project.titre || project.titre_projet }}
+                <span class="badge bg-warning text-dark ms-2">Collaborateur</span>
+              </h5>
+              <span class="badge category-badge me-2" [style.backgroundColor]="project.couleur_categorie || '#6c757d'">
                 {{ project.nom_categorie }}
               </span>
-              <span
-                class="badge status-badge"
-                [ngClass]="{
-                  'badge-not-submitted': project.status === 'Not Submitted',
-                  'badge-pending': project.status === 'Pending',
-                  'badge-approved': project.status === 'Approved',
-                  'badge-rejected': project.status === 'Rejected'
-                }"
-              >
+              <span class="badge status-badge" [ngClass]="{
+                'badge-not-submitted': project.status === 'Not Submitted',
+                'badge-pending': project.status === 'Pending',
+                'badge-approved': project.status === 'Approved',
+                'badge-rejected': project.status === 'Rejected'
+              }">
                 {{ project.status | titlecase }}
               </span>
               <p class="card-text mt-2">
@@ -101,34 +219,172 @@
           </a>
         </div>
       </div>
+      <!-- Pagination -->
+      <nav *ngIf="totalPages > 1" aria-label="Pagination projets collaboration" class="d-flex justify-content-center mt-3">
+        <ul class="pagination">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link" (click)="onPageChange(currentPage - 1)" style="cursor:pointer;">&laquo;</a>
+          </li>
+          <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="currentPage === (i+1)">
+            <a class="page-link" (click)="onPageChange(i+1)" style="cursor:pointer;">{{ i+1 }}</a>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a class="page-link" (click)="onPageChange(currentPage + 1)" style="cursor:pointer;">&raquo;</a>
+          </li>
+        </ul>
+      </nav>
+    </ng-container>
+    <ng-template #noCollab>
+      <div class="col-12"><p class="text-muted">Aucun projet en collaboration.</p></div>
+    </ng-template>
+  </div>
+</div>
 
-      <!-- 📄 Pagination -->
-      <div
-        class="pagination-controls d-flex justify-content-center align-items-center mt-4"
-        *ngIf="totalPages > 1"
-      >
-        <button
-          (click)="onPageChange(currentPage - 1)"
-          [disabled]="currentPage === 1"
-          class="btn btn-outline-primary me-3"
-          aria-label="Page précédente"
-        >
-          <i class="fas fa-chevron-left"></i> Previous
-        </button>
-        <span>Page {{ currentPage }} sur {{ totalPages }}</span>
-        <button
-          (click)="onPageChange(currentPage + 1)"
-          [disabled]="currentPage === totalPages"
-          class="btn btn-outline-primary ms-3"
-          aria-label="Page suivante"
-        >
-          Next <i class="fas fa-chevron-right"></i>
-        </button>
-      </div>
+<!-- Affichage exclusif des projets par statut -->
+<div *ngIf="showStateProjects" class="container mt-3">
+  <div class="row">
+    <div class="col-12 mb-2 mt-4 d-flex justify-content-between align-items-center">
+      <h5 class="fw-bold text-primary">Projets {{ showStateProjects | titlecase }} ({{ groupedProjects[showStateProjects]?.length || 0 }})</h5>
+      <button class="btn btn-outline-secondary btn-sm" (click)="hideProjectList()">Masquer</button>
     </div>
-  </section>
-</main>
+    <ng-container *ngIf="groupedProjects[showStateProjects]?.length; else noState">
+      <div class="project-card-grid" *ngIf="groupedProjects[showStateProjects]?.length">
+        <div class="project-card-item" *ngFor="let project of groupedProjects[showStateProjects]">
+          <a [routerLink]="['/user/dashboard/project-detail', project.id]" class="card project-card-custom text-decoration-none">
+            <img [src]="getFullImageUrl(project.image)" alt="Image du projet {{ project.titre }}" class="card-img-top" />
+            <div class="card-body p-3">
+              <h5 class="card-title">{{ project.titre }}
+                <span *ngIf="project.readonly" class="badge bg-warning text-dark ms-2">Collaborateur</span>
+              </h5>
+              <span class="badge category-badge me-2" [style.backgroundColor]="project.couleur_categorie || '#6c757d'">
+                {{ project.nom_categorie }}
+              </span>
+              <span class="badge status-badge" [ngClass]="{
+                'badge-not-submitted': project.status === 'Not Submitted',
+                'badge-pending': project.status === 'Pending',
+                'badge-approved': project.status === 'Approved',
+                'badge-rejected': project.status === 'Rejected'
+              }">
+                {{ project.status | titlecase }}
+              </span>
+              <p class="card-text mt-2">
+                <small class="text-muted fw-bold">
+                  Par {{ project.nom_utilisateur }} le {{ project.created_at | date: 'mediumDate' }}
+                </small>
+              </p>
+            </div>
+          </a>
+        </div>
+      </div>
+<style>
+.project-card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.1rem 1.2rem;
+  justify-items: center;
+  align-items: stretch;
+  margin-bottom: 1.2rem;
+}
+.project-card-item {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+.project-card-custom {
+  width: 100%;
+  min-width: 240px;
+  max-width: 320px;
+  min-height: 280px;
+  max-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 0 4px 18px rgba(6,187,204,0.10);
+  border-radius: 1.1rem;
+  transition: box-shadow 0.2s, transform 0.2s;
+  background: #fff;
+  border: none;
+  margin: 0;
+}
+.project-card-custom:hover {
+  box-shadow: 0 8px 32px rgba(6,187,204,0.18);
+  transform: translateY(-4px) scale(1.03);
+  z-index: 2;
+}
+.project-card-custom .card-img-top {
+  height: 120px;
+  object-fit: cover;
+  border-top-left-radius: 1.1rem;
+  border-top-right-radius: 1.1rem;
+}
+.project-card-custom .card-body {
+  padding: 1rem 1.2rem 0.7rem 1.2rem;
+}
+@media (max-width: 1200px) {
+  .project-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 700px) {
+  .project-card-grid {
+    grid-template-columns: 1fr;
+  }
+  .project-card-custom {
+    min-width: 90vw;
+    max-width: 98vw;
+  }
+}
+</style>
+    </ng-container>
+    <ng-template #noState>
+      <div class="col-12"><p class="text-muted">Aucun projet pour cet état.</p></div>
+    </ng-template>
+  </div>
+</div>
+
+<!-- ...le reste du dashboard (filtres, upload, etc.) ne s'affiche que si aucune vue exclusive n'est active -->
+<div *ngIf="!showCollabProjects && !showStateProjects">
+  <!-- ...existing dashboard code (filtres, upload, etc.)... -->
+</div>
+
+  <!-- Zone de commentaires projet (overlay) -->
+  <div *ngIf="activeCommentProject" class="comment-overlay">
+    <div class="comment-modal">
+      <button class="btn btn-sm btn-danger float-end" (click)="closeCommentZone()">Fermer</button>
+      <app-comment-zone [projectId]="activeCommentProject.id"></app-comment-zone>
+    </div>
+    <div class="comment-backdrop" (click)="closeCommentZone()"></div>
+  </div>
+
+
 
 <a href="#" class="back-to-top d-flex align-items-center justify-content-center" aria-label="Retour en haut">
   <i class="bi bi-arrow-up-short"></i>
 </a>
+<style>
+.comment-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.comment-modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  min-width: 400px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.comment-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 1999;
+}
+</style>

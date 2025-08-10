@@ -9,7 +9,8 @@ import { CategoryService } from '../../../services/category.service';
 import { NiveauService } from '../../../services/niveau.service';
 import { DocumentService } from '../../../services/document.service';
 import { CollaborateurService } from '../../../services/collaborateur.service';
-import { SuperviseurService } from '../../../services/superviseur.service';
+// import supprimé : plus de superviseur
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-submit-popup',
@@ -18,10 +19,13 @@ import { SuperviseurService } from '../../../services/superviseur.service';
   providers: [DatePipe]
 })
 export class SubmitPopupComponent implements OnInit {
+  adminAdded: boolean = false;
+  admins: any[] = [];
+  selectedAdminId: string | null = null;
   creationForm!: FormGroup;
   documentForm!: FormGroup;
   collaboratorForm!: FormGroup;
-  supervisorForm!: FormGroup;
+  adminForm!: FormGroup;
 
   selectedFile!: File;
   selectedFileD!: File;
@@ -54,7 +58,7 @@ export class SubmitPopupComponent implements OnInit {
   niveaux_id: any[] = [];
 
   constructor(
-    private supService: SuperviseurService,
+    // private supService: SuperviseurService, // plus de superviseur
     private colService: CollaborateurService,
     private documentService: DocumentService,
     private dialogRef: MatDialogRef<SubmitPopupComponent>,
@@ -64,7 +68,8 @@ export class SubmitPopupComponent implements OnInit {
     private projetService: ProjetService,
     private route: ActivatedRoute,
     private categoryService: CategoryService,
-    private niveauService: NiveauService
+    private niveauService: NiveauService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
@@ -77,6 +82,7 @@ export class SubmitPopupComponent implements OnInit {
       summary: ['', Validators.required],
     });
 
+        this.adminAdded = false; // Initialize adminAdded
     this.documentForm = this.fb.group({
       title: ['', Validators.required],
       file: ['', Validators.required],
@@ -87,10 +93,9 @@ export class SubmitPopupComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
     });
 
-    this.supervisorForm = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]]
-    });
+  this.adminForm = this.fb.group({
+    admin: [null, Validators.required]
+  });
 
     this.route.queryParams.subscribe(params => {
       this.token = params['token'];
@@ -125,6 +130,18 @@ export class SubmitPopupComponent implements OnInit {
     this.projetService.getProjects().subscribe(data => {
       this.projet = data;
     });
+
+    // Récupération des admins (users avec le rôle admin)
+    this.userService.getAdmins().subscribe({
+      next: (admins) => {
+        this.admins = admins;
+        console.log('Admins récupérés:', admins);
+        console.log('IDs admins:', admins.map((a: any) => a.id));
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération des admins', err);
+      }
+    });
   }
 
   get creationFormControl() {
@@ -139,11 +156,62 @@ export class SubmitPopupComponent implements OnInit {
     return this.collaboratorForm.controls;
   }
 
-  get supervisorFormControl() {
-    return this.supervisorForm.controls;
+  get adminFormControl() {
+    return this.adminForm.controls;
   }
 
   nextStep() {
+    // Si on passe à l'étape 4 (document), on ne peut avancer que si le projet est créé
+    if (this.currentStep === 3) {
+      if (!this.project_id) {
+        // On tente de créer le projet si ce n'est pas déjà fait
+        if (this.creationForm.valid && this.selectedFile) {
+          const formData = new FormData();
+          formData.append('titre_projet', this.creationForm.value.title);
+          formData.append('descript_projet', this.creationForm.value.summary);
+          formData.append('tbl_niveau_id', this.creationForm.value.niveau);
+          formData.append('user_id', this.user_id);
+          formData.append('tbl_categorie_id', this.creationForm.value.category);
+          formData.append('image', this.selectedFile);
+          formData.append('type', this.creationForm.value.type);
+          // Ajout de l'admin choisi si présent
+          if (this.selectedAdminId) {
+            formData.append('admin_id', this.selectedAdminId);
+          }
+          this.projetService.addProject(formData).subscribe({
+            next: value => {
+              this.project_id = value.id;
+              alert("Projet créé avec succès !");
+              this.formType = 'document';
+              this.currentStep++;
+            },
+            error: err => {
+              console.error('Erreur backend:', err.error);
+              if (err.error && err.error.errors) {
+                for (const key in err.error.errors) {
+                  if (err.error.errors.hasOwnProperty(key)) {
+                    console.error(`Champ: ${key} - Message: ${err.error.errors[key]}`);
+                  }
+                }
+              }
+              this.ErrorMessage = "Erreur lors de la création du projet.";
+            },
+            complete: () => {
+              this.isLoading = false;
+              this.creationForm.reset();
+              this.submitted = false;
+            }
+          });
+        } else {
+          alert("Veuillez remplir tous les champs du projet et sélectionner une image avant de continuer.");
+        }
+        return;
+      } else {
+        this.formType = 'document';
+        this.currentStep++;
+      }
+      return;
+    }
     if (this.currentStep < 6) {
       this.currentStep++;
     }
@@ -181,37 +249,7 @@ export class SubmitPopupComponent implements OnInit {
     this.isLoading = true;
     this.submitted = true;
 
-    if (this.formType === 'project' && this.creationForm.valid && this.selectedFile) {
-      const formData = new FormData();
-      formData.append('titre_projet', this.creationForm.value.title);
-      formData.append('descript_projet', this.creationForm.value.summary);
-      formData.append('tbl_niveau_id', this.creationForm.value.niveau);
-      formData.append('user_id', this.user_id);
-      formData.append('tbl_categorie_id', this.creationForm.value.category);
-      formData.append('image', this.selectedFile);
-      formData.append('type', this.creationForm.value.type);
-
-      this.projetService.addProject(formData).subscribe({
-        next: value => {
-          this.project_id = value.id;
-          alert("Projet créé avec succès !");
-        },
-        error: err => {
-          console.error(err);
-          this.ErrorMessage = "Erreur lors de la création du projet.";
-        },
-        complete: () => {
-          this.isLoading = false;
-          this.creationForm.reset();
-          this.formType = 'document';
-          this.currentStep++;
-          this.submitted = false;
-        }
-      });
-    } else if (this.formType === 'project') {
-      this.ErrorMessage = "Erreur lors de la création. Vérifiez les champs.";
-      this.isLoading = false;
-    }
+    // La création du projet se fait désormais dans nextStep()
 
     if (this.formType === 'document' && this.documentForm.valid && this.selectedFileD) {
       const formData = new FormData();
@@ -220,13 +258,27 @@ export class SubmitPopupComponent implements OnInit {
       formData.append('tbl_projet_id', this.project_id);
       formData.append('document', this.selectedFileD);
 
+      console.log('Ajout document - valeurs envoyées:', {
+        nom_doc: this.documentForm.value.title,
+        user_id: this.user_id,
+        tbl_projet_id: this.project_id,
+        document: this.selectedFileD ? this.selectedFileD.name : null
+      });
+
       this.documentService.addDocument(formData).subscribe({
         next: () => {
           alert("Document ajouté avec succès !");
           this.saveD = true;
         },
         error: err => {
-          console.error(err);
+          console.error('Erreur backend document:', err.error);
+          if (err.error && err.error.errors) {
+            for (const key in err.error.errors) {
+              if (err.error.errors.hasOwnProperty(key)) {
+                console.error(`Champ: ${key} - Message: ${err.error.errors[key]}`);
+              }
+            }
+          }
           alert("Erreur lors de l'ajout du document.");
         },
         complete: () => {
@@ -237,11 +289,24 @@ export class SubmitPopupComponent implements OnInit {
     }
 
     if (this.formType === 'collaborator' && this.collaboratorForm.valid) {
+      if (!this.project_id) {
+        alert("Projet non créé. Impossible d’ajouter un collaborateur.");
+        this.isLoading = false;
+        return;
+      }
+      // On transmet user_id si disponible et log les données envoyées
+      const userIdToSend = this.user_id && !isNaN(Number(this.user_id)) ? Number(this.user_id) : null;
+      localStorage.setItem('user_id', userIdToSend ? String(userIdToSend) : '');
+      const dataToSend = {
+        nom_collab: this.collaboratorForm.value.name,
+        email_collab: this.collaboratorForm.value.email,
+        user_id: userIdToSend
+      };
+      console.log('Ajout collaborateur - valeurs envoyées:', dataToSend, 'project_id:', this.project_id);
       this.colService.addCollaborateur(
-        this.collaboratorForm.value.name,
-        this.collaboratorForm.value.email,
-        this.project_id,
-        this.user_id
+        dataToSend.nom_collab,
+        dataToSend.email_collab,
+        this.project_id
       ).subscribe({
         next: () => {
           alert("Collaborateur ajouté !");
@@ -258,24 +323,36 @@ export class SubmitPopupComponent implements OnInit {
       });
     }
 
-    if (this.formType === 'supervisor' && this.supervisorForm.valid) {
-      this.supService.addSuperviseur(
-        this.supervisorForm.value.name,
-        this.supervisorForm.value.email
-      ).subscribe({
-        next: () => {
-          alert("Superviseur ajouté !");
-          this.saveS = true;
-          this.supervisorForm.reset();
+    if (this.formType === 'admin' && this.adminForm.valid) {
+      // Soumission stricte du projet à l'admin sélectionné
+      const adminId = this.adminForm.value.admin;
+      if (!adminId) {
+        alert("Veuillez sélectionner un administrateur avant de soumettre le projet.");
+        this.isLoading = false;
+        return;
+      }
+      if (!this.project_id) {
+        alert("Projet non créé. Impossible de soumettre à un admin.");
+        this.isLoading = false;
+        return;
+      }
+      this.projetService.assignAdminToProject(this.project_id, adminId).subscribe({
+        next: (response) => {
+          this.adminAdded = true;
+          console.log('Réponse backend assignation admin:', response);
+          alert('Projet soumis à l\'administrateur avec succès !');
+          this.dialogRef.close();
+          window.location.reload();
         },
         error: err => {
-          console.error(err);
-          alert("Erreur lors de l'ajout du superviseur.");
+          console.error('Erreur backend assignation admin:', err);
+          this.adminAdded = false;
+          alert('Erreur lors de la soumission à l\'administrateur.');
         },
         complete: () => {
           this.isLoading = false;
         }
       });
     }
-  }
+}
 }

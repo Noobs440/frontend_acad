@@ -1,0 +1,50 @@
+<div class="comment-zone">
+  <form [formGroup]="commentForm" (ngSubmit)="submitComment()" class="comment-form">
+    <textarea formControlName="content" placeholder="Ajouter un commentaire..."></textarea>
+    <input type="file" (change)="onFileChange($event)" />
+    <button type="submit" [disabled]="loading">Envoyer</button>
+  </form>
+
+  <div *ngIf="loading">Chargement...</div>
+  <div *ngFor="let comment of comments" class="comment-block">
+    <div class="comment-header">
+      <img [src]="comment.user?.photo || 'assets/default-user.png'" class="avatar" />
+      <span class="username">{{ comment.user?.nom_user }}</span>
+      <span class="date">{{ comment.created_at | date:'short' }}</span>
+      <button *ngIf="comment.user_id === userId" (click)="deleteComment(comment.id)">Supprimer</button>
+    </div>
+    <div class="comment-content">
+      <span>{{ comment.content }}</span>
+      <a *ngIf="comment.file_path" [href]="comment.file_path" target="_blank">Fichier joint</a>
+    </div>
+    <div class="comment-actions">
+      <button (click)="react(comment.id, 'like')">👍 {{ getReactionCount(comment, 'like') }}</button>
+      <button (click)="react(comment.id, 'love')">❤️ {{ getReactionCount(comment, 'love') }}</button>
+      <button (click)="comment.replying = !comment.replying">Répondre</button>
+    </div>
+    <div *ngIf="comment.replying" class="reply-form">
+      <form [formGroup]="commentForm" (ngSubmit)="submitComment(comment.id)">
+        <textarea formControlName="content" placeholder="Votre réponse..."></textarea>
+        <input type="file" (change)="onFileChange($event)" />
+        <button type="submit">Envoyer</button>
+      </form>
+    </div>
+    <div class="replies" *ngIf="comment.replies?.length">
+      <div *ngFor="let reply of comment.replies" class="reply-block">
+        <div class="comment-header">
+          <img [src]="reply.user?.photo || 'assets/default-user.png'" class="avatar" />
+          <span class="username">{{ reply.user?.nom_user }}</span>
+          <span class="date">{{ reply.created_at | date:'short' }}</span>
+        </div>
+        <div class="comment-content">
+          <span>{{ reply.content }}</span>
+          <a *ngIf="reply.file_path" [href]="reply.file_path" target="_blank">Fichier joint</a>
+        </div>
+        <div class="comment-actions">
+          <button (click)="react(reply.id, 'like')">👍 {{ getReactionCount(reply, 'like') }}</button>
+          <button (click)="react(reply.id, 'love')">❤️ {{ getReactionCount(reply, 'love') }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

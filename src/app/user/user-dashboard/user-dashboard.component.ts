@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from '../../services/user.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { SubmitPopupComponent } from '../user-components/submit-popup/submit-popup.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ListingService } from '../../services/listing.service';
-
 
 @Component({
   selector: 'app-user-dashboard',
@@ -11,12 +11,17 @@ import { ListingService } from '../../services/listing.service';
   styleUrls: ['./user-dashboard.component.css']
 })
 export class UserDashboardComponent implements OnInit {
+
+  projectStates: string[]  = ['Not Submitted', 'Pending', 'Approved', 'Rejected'];
+  stateCounts: {[key:string]: number} = {};
+  selectedStateFilter: string | null = null;
+
   token!: string | null;
   name!: string | null;
   role!: string | null;
   id!: string | null;
-
   projects: any[] = [];
+  groupedProjects: { [key: string]: any[] } = {};
   selectedProject: any[] = [];
   isLoading = false;
   currentPage = 1;
@@ -25,19 +30,32 @@ export class UserDashboardComponent implements OnInit {
 
   searchQuery: string = '';
   selectedTypeFilter: string = 'all';
+  activeCommentProject: any = null;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog,
-    private projectByIdService: ListingService
+    private projectByIdService: ListingService,
+    private userService: UserService
   ) {}
+  collaboratorProjects: any[] = [];
+  showCollabProjects: boolean = false;
+  showStateProjects: string | null = null;
 
   ngOnInit(): void {
     this.token = localStorage.getItem('token');
-    this.name = localStorage.getItem('name');
     this.role = localStorage.getItem('role');
     this.id = localStorage.getItem('id');
+
+    // Always try to load user profile from backend for up-to-date name
+    this.userService.getUserProfile().subscribe(profile => {
+      if (profile && profile.nom_user) {
+        this.name = profile.nom_user;
+      } else {
+        this.name = localStorage.getItem('name') || '';
+      }
+    });
 
     if (!this.token) {
       this.router.navigate(['/home']);
@@ -45,6 +63,34 @@ export class UserDashboardComponent implements OnInit {
     }
 
     this.loadProjects();
+    this.loadCollaboratorProjects();
+  }
+
+  loadCollaboratorProjects() {
+    if (!this.id) return;
+    this.projectByIdService.getProjectsByCollaboratorId(this.id).subscribe({
+      next: (data) => {
+        // On ne garde que les projets où il n'est pas déjà créateur
+        const userProjectIds = new Set(this.projects.map(p => p.id));
+        this.collaboratorProjects = (data ?? []).filter((p: any) => !userProjectIds.has(p.id));
+        // On fusionne pour l'affichage
+        this.projects = this.projects.concat(this.collaboratorProjects);
+        this.groupProjectsByStateAndDate();
+        this.computeStateCounts();
+        this.applyFilters();
+      },
+      error: () => {
+        this.collaboratorProjects = [];
+      }
+    });
+  }
+
+  openCommentZone(project: any) {
+    this.activeCommentProject = project;
+  }
+
+  closeCommentZone() {
+    this.activeCommentProject = null;
   }
 
   loadProjects() {
@@ -53,6 +99,8 @@ export class UserDashboardComponent implements OnInit {
     this.projectByIdService.getProjectsById(this.id).subscribe({
       next: (data) => {
         this.projects = data ?? [];
+        this.groupProjectsByStateAndDate();
+        this.computeStateCounts();
         this.applyFilters();
         this.isLoading = false;
       },
@@ -64,26 +112,68 @@ export class UserDashboardComponent implements OnInit {
     });
   }
 
+  groupProjectsByStateAndDate() {
+    this.groupedProjects = {};
+    for (const state of this.projectStates) {
+      // Filtrer les projets par état
+      const projectsOfState = this.projects
+        .filter((p: any) => p.status === state)
+        .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      this.groupedProjects[state] = projectsOfState;
+    }
+  }
+
+  computeStateCounts() {
+    this.stateCounts = {};
+    for (const state of this.projectStates) {
+      this.stateCounts[state] = this.projects.filter((p: any) => p.status === state).length;
+    }
+  }
+
   applyFilters(): void {
     const query = this.searchQuery.toLowerCase().trim();
-
-    const filtered = this.projects.filter(project => {
-      const matchesSearch =
-        project.titre?.toLowerCase().includes(query) ||
-        project.type?.toLowerCase().includes(query);
-
-      const matchesType =
-        this.selectedTypeFilter === 'all' ||
-        project.type?.toLowerCase() === this.selectedTypeFilter.toLowerCase();
-
-      return matchesSearch && matchesType;
-    });
-
+    let filtered: any[] = [];
+    // Si un état est sélectionné, ne montrer que ce groupe, sinon tous les groupes concaténés
+    if (this.selectedStateFilter) {
+      filtered = (this.groupedProjects[this.selectedStateFilter] || []).filter(project => {
+        const matchesSearch =
+          project.titre?.toLowerCase().includes(query) ||
+          project.type?.toLowerCase().includes(query);
+        const matchesType =
+          this.selectedTypeFilter === 'all' ||
+          project.type?.toLowerCase() === this.selectedTypeFilter.toLowerCase();
+        return matchesSearch && matchesType;
+      });
+    } else {
+      // Parcourir tous les groupes dans l'ordre des états
+      for (const state of this.projectStates) {
+        const group = (this.groupedProjects[state] || []).filter(project => {
+          const matchesSearch =
+            project.titre?.toLowerCase().includes(query) ||
+            project.type?.toLowerCase().includes(query);
+          const matchesType =
+            this.selectedTypeFilter === 'all' ||
+            project.type?.toLowerCase() === this.selectedTypeFilter.toLowerCase();
+          return matchesSearch && matchesType;
+        });
+        filtered = filtered.concat(group);
+      }
+    }
     this.totalPages = Math.max(1, Math.ceil(filtered.length / this.itemsPerPage));
     this.currentPage = Math.min(this.currentPage, this.totalPages);
     this.currentPage = Math.max(this.currentPage, 1);
-
     this.updateDisplayedProjects(filtered);
+  }
+
+  onStateFilterChange(state: string) {
+    this.showStateProjects = state;
+    this.showCollabProjects = false;
+  }
+
+
+  hideProjectList() {
+    this.showCollabProjects = false;
+    this.showStateProjects = null;
   }
 
   updateDisplayedProjects(filteredProjects?: any[]): void {
@@ -144,15 +234,21 @@ export class UserDashboardComponent implements OnInit {
     dialogConfig.disableClose = true;
     dialogConfig.width = '400px';
     dialogConfig.height = '620px';
+    this.dialog.open(SubmitPopupComponent, dialogConfig);
+  }
 
-
-    dialogConfig.disableClose = true;
-    dialogConfig.width='400px';
-    dialogConfig.height='620px';
-
-    this.dialog.open(SubmitPopupComponent,dialogConfig );
-
-
+  onCollabCardClick() {
+    this.showCollabProjects = !this.showCollabProjects;
+    if (this.showCollabProjects) {
+      this.showStateProjects = null;
+      // Affichage exclusif : on ne montre que les projets en collaboration
+      this.selectedProject = this.collaboratorProjects.slice(0, this.itemsPerPage);
+      this.totalPages = Math.max(1, Math.ceil(this.collaboratorProjects.length / this.itemsPerPage));
+      this.currentPage = 1;
+    } else {
+      // Si on masque, on réapplique les filtres normaux
+      this.applyFilters();
+    }
   }
 
 }
