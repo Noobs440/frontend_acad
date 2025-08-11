@@ -50,7 +50,7 @@
 
     
     <div class="mt-4 text-left">
-      <a (click)="this.showPasswordReset = true;" class="cursor-pointer block mb-2 -mt-5 text-sm text-black font-bold">{{ 'forgotPassword' | translate }}</a>
+      <a (click)="showPasswordReset = true; showVerification = false; showResetPasswordForm = false; showSuccessMessage = false;" class="cursor-pointer block mb-2 -mt-5 text-sm text-black font-bold">{{ 'forgotPassword' | translate }}</a>
     </div>
     <div class="mt-2 flex gap-1">
       <p class="text-sm text-black font-bold">{{ 'noAccount' | translate }}</p>
@@ -58,7 +58,52 @@
     </div>
   </div>
 
-  <!-- Reset Password Form -->
+  <!-- Étape 1 : Demande d'email pour reset -->
+  <div *ngIf="showPasswordReset && !showVerification && !showResetPasswordForm && !showSuccessMessage">
+    <h2 class="mb-2 text-customBlue text-2xl font-bold text-center">{{ 'forgotPasswordTitle' | translate }}</h2>
+    <form [formGroup]="resetRequestForm" (ngSubmit)="onSendVerificationCode()">
+      <div class="mb-2">
+        <label class="block mb-1 text-sm font-medium text-gray-700" for="resetEmail">{{ 'emailLabel' | translate }}</label>
+        <input placeholder="{{ 'emailPlaceholder' | translate }}" formControlName="email" type="email" id="resetEmail" name="resetEmail"
+               [ngClass]="{'custom-outline': (resetRequestFormControl['email'].touched || submitted) && resetRequestFormControl['email'].errors}"
+               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-customBlue">
+        <span class="text-danger text-sm" *ngIf="(submitted || resetRequestFormControl['email'].touched) && resetRequestFormControl['email'].errors?.['required']">{{ 'emailRequiredError' | translate }}</span>
+        <span class="text-danger" *ngIf="resetRequestFormControl['email'].touched && resetRequestFormControl['email'].errors?.['email']">{{ 'emailInvalidError' | translate }}</span>
+      </div>
+      <button [disabled]="isLoading || resetRequestForm.invalid" type="submit"
+              class="disabled:bg-gray-300 disabled:cursor-not-allowed w-full px-4 py-2 text-white rounded-md flex items-center justify-center bg-customBlue hover:bg-customBlue">
+        <span *ngIf="!isLoading">{{ 'sendCodeButton' | translate }}</span>
+        <mat-spinner *ngIf="isLoading" [diameter]="24"></mat-spinner>
+      </button>
+    </form>
+    <div class="mt-2 text-center">
+      <a (click)="showPasswordReset = false" class="cursor-pointer text-sm text-customBlue hover:underline">{{ 'backToLogin' | translate }}</a>
+    </div>
+  </div>
+
+  <!-- Étape 2 : Saisie du code de vérification -->
+  <div *ngIf="showVerification && !showResetPasswordForm && !showSuccessMessage">
+    <h2 class="mb-2 text-customBlue text-2xl font-bold text-center">{{ 'verificationTitle' | translate }}</h2>
+    <form [formGroup]="verificationForm" (ngSubmit)="onVerifyCode()">
+      <div class="mb-2">
+        <label class="block mb-1 text-sm font-medium text-gray-700" for="verificationCode">{{ 'verificationCodeLabel' | translate }}</label>
+        <input placeholder="{{ 'verificationCodePlaceholder' | translate }}" formControlName="verificationCode" type="text" id="verificationCode" name="verificationCode"
+               [ngClass]="{'custom-outline': (verificationFormControl['verificationCode'].touched || submitted) && verificationFormControl['verificationCode'].errors}"
+               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-customBlue">
+        <span class="text-danger text-sm" *ngIf="(submitted || verificationFormControl['verificationCode'].touched) && verificationFormControl['verificationCode'].errors?.['required']">{{ 'verificationCodeRequiredError' | translate }}</span>
+      </div>
+      <button [disabled]="isLoading || verificationForm.invalid" type="submit"
+              class="disabled:bg-gray-300 disabled:cursor-not-allowed w-full px-4 py-2 text-white rounded-md flex items-center justify-center bg-customBlue hover:bg-customBlue">
+        <span *ngIf="!isLoading">{{ 'verifyCodeButton' | translate }}</span>
+        <mat-spinner *ngIf="isLoading" [diameter]="24"></mat-spinner>
+      </button>
+    </form>
+    <div class="mt-2 text-center">
+      <a (click)="showVerification = false; showPasswordReset = true;" class="cursor-pointer text-sm text-customBlue hover:underline">{{ 'backToEmail' | translate }}</a>
+    </div>
+  </div>
+
+  <!-- Étape 3 : Nouveau mot de passe -->
   <div *ngIf="showResetPasswordForm && !showSuccessMessage">
     <h2 class="mb-2 text-customBlue text-2xl font-bold text-center">{{ 'resetPasswordTitle' | translate }}</h2>
     <form [formGroup]="resetForm" (ngSubmit)="onResetPassword()">
@@ -96,5 +141,12 @@
     </form>
   </div>
 
-  <!-- Le reste (password reset request, code, success) ne change pas -->
+  <!-- Étape 4 : Succès -->
+  <div *ngIf="showSuccessMessage">
+    <h2 class="mb-2 text-customBlue text-2xl font-bold text-center">{{ 'resetSuccessTitle' | translate }}</h2>
+    <p class="text-green-600 text-center">{{ successMessage }}</p>
+    <div class="mt-4 text-center">
+      <a (click)="showSuccessMessage = false; showPasswordReset = false; showVerification = false; showResetPasswordForm = false;" class="cursor-pointer text-sm text-customBlue hover:underline">{{ 'backToLogin' | translate }}</a>
+    </div>
+  </div>
 </div>
