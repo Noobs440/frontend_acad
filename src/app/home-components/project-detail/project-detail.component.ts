@@ -65,28 +65,15 @@ export class ProjectDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      this.id = +params['id']; // le + force en number
-      this.user_id = params['user_id'];
-      this.selectedProjectTitle = params['title'];
-      this.projectStatus = params['status'];
-      this.projectImage = params['image'];
-      this.description = params['description'];
-      this.author = params['author'];
-      this.category = params['category'];
-      this.level = params['level'];
-      this.type = params['type'];
-      this.date = params['date'];
-      this.views = +params['views'];
-      this.email = params['email'];
 
-      if (this.id) {
-        this.loadComments(); // charge les commentaires ici, après avoir l'id
-        this.documentService.getDocumentsByProject(this.id).subscribe(response => {
-          this.documents = response;
-        });
-      }
-    });
+    // Use only route param for id
+    this.id = +this.route.snapshot.paramMap.get('id')!;
+    if (this.id) {
+      this.loadComments();
+      this.documentService.getDocumentsByProject(this.id).subscribe(response => {
+        this.documents = response;
+      });
+    }
 
     this.projetService.countViews(this.id).subscribe({
       next: value => {

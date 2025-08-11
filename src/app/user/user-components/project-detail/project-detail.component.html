@@ -10,12 +10,8 @@
             <li class="breadcrumb-item">
               <a [routerLink]="['/home']">Home</a>
             </li>
-            <li
-              [routerLink]="['/', 'user', 'dashboard']"
-              [queryParams]="{ id: user_id, name: user_name, token: user_token }"
-              class="breadcrumb-item"
-            >
-              <a>{{ user_name }} Dashboard</a>
+            <li class="breadcrumb-item">
+              <a [routerLink]="['/user/dashboard']">{{ user_name }} Dashboard</a>
             </li>
             <li class="breadcrumb-item active">{{ selectedProjectTitle }}</li>
           </ol>

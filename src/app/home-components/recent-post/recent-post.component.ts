@@ -50,23 +50,7 @@ export class RecentPostComponent implements OnInit {
     });
 
   }
-  getProjectQueryParams(project: any) {
-    return {
-      title: project.titre_projet,
-      status: project.status,
-      image: project.image,
-      description: project.descript_projet,
-      views:project.views,
-      author:project.nom_utilisateur,
-      category: project.nom_categorie,
-      level: project.niveau,
-      type: project.type,
-      date:project.created_at,
-      email:project.email,
-      id:project.id,
-      user_id:project.user_id
-    };
-  }
+
 
   chunkPosts(): void {
     const chunkSize = 8;

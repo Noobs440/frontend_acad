@@ -86,31 +86,17 @@ export class ProjectsComponent implements OnInit {
       this.niveaux = niveaux;
     });
 
-    this.route.queryParams.subscribe(params => {
-      if (params['search']) {
-        this.searchQuery = params['search'];
-        this.searchProjects();
-      }
-    });
+
+    // If search value is in localStorage, use it
+    const storedSearch = localStorage.getItem('searchValue');
+    if (storedSearch) {
+      this.searchQuery = storedSearch;
+      this.searchProjects();
+      localStorage.removeItem('searchValue');
+    }
   }
 
-  getProjectQueryParams(project: any) {
-    return {
-      title: project.titre_projet,
-      status: project.status,
-      image: project.image,
-      description: project.descript_projet,
-      views:project.views,
-      author:project.nom_utilisateur,
-      category: project.nom_categorie,
-      level: project.niveau,
-      type: project.type,
-      date:project.created_at,
-      email:project.email,
-      id:project.id,
-      user_id:project.user_id
-    };
-  }
+
 
   applyFilters() {
     this.filteredPosts = this.data;

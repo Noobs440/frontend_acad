@@ -351,7 +351,6 @@
   <div *ngIf="activeCommentProject" class="comment-overlay">
     <div class="comment-modal">
       <button class="btn btn-sm btn-danger float-end" (click)="closeCommentZone()">Fermer</button>
-      <app-comment-zone [projectId]="activeCommentProject.id"></app-comment-zone>
     </div>
     <div class="comment-backdrop" (click)="closeCommentZone()"></div>
   </div>

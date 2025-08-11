@@ -173,21 +173,7 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  getProjectQueryParams(project: any): any {
-    return {
-      title: project.titre_projet,
-      status: project.status,
-      image: project.image,
-      description: project.descript_projet,
-      views: project.views,
-      author: project.nom_utilisateur, // se chaamp par exemple
-      category: project.nom_categorie, //ceci egalement
-      level: project.niveau,
-      type: project.type,
-      date: project.created_at,
-      email: project.email
-    };
-  }
+
 
   updateProjectStatus(projectId: number, newStatus: string): void {
     this.projetService.updateProjectStatus(projectId, newStatus).subscribe({

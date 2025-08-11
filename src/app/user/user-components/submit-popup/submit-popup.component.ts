@@ -97,13 +97,11 @@ export class SubmitPopupComponent implements OnInit {
     admin: [null, Validators.required]
   });
 
-    this.route.queryParams.subscribe(params => {
-      this.token = params['token'];
-      this.name = params['name'];
-      this.role = params['role'];
-      this.id = params['id'];
-      this.user_id = params['id'];
-    });
+  this.token = localStorage.getItem('token') || '';
+  this.name = localStorage.getItem('name') || '';
+  this.role = localStorage.getItem('role') || '';
+  this.id = localStorage.getItem('id') || '';
+  this.user_id = localStorage.getItem('id') || '';
 
     this.today = this.datePipe.transform(new Date(), 'dd-MM-yyyy') || '';
 

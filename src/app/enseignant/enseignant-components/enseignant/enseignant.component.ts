@@ -46,12 +46,7 @@ export class EnseignantComponent implements OnInit {
     this.getEtudiants(); // Nouveau
     this.getCours(); // Nouveau
     this.loadNotifications();
-    this.route.queryParams.subscribe(params => {
-      this.token = params['token'];
-      this.name = params['name'];
-      this.role = params['role'];
-      this.id = params['id'];
-    });
+
   }
 
   // Fonctions pour basculer les listes
@@ -134,41 +129,10 @@ export class EnseignantComponent implements OnInit {
     }
   }
 
-  getProjectQueryParams(project: any): any {
-    return {
-      title: project.titre_projet,
-      status: project.status,
-      image: project.image,
-      description: project.descript_projet,
-      views: project.views,
-      author: project.nom_utilisateur,
-      category: project.nom_categorie,
-      level: project.niveau,
-      type: project.type,
-      date: project.created_at,
-      email: project.email
-    };
-  }
+
 
   // Ajoutez cette fonction pour les étudiants si nécessaire
-  getEtudiantQueryParams(etudiant: any): any {
-    return {
-      id: etudiant.id,
-      nom: etudiant.nom,
-      prenom: etudiant.prenom
-      // Ajoutez d'autres paramètres selon vos besoins
-    };
-  }
 
-  // Ajoutez cette fonction pour les cours si nécessaire
-  getCoursQueryParams(cours: any): any {
-    return {
-      id: cours.id,
-      titre: cours.titre,
-      description: cours.description
-      // Ajoutez d'autres paramètres selon vos besoins
-    };
-  }
 
   updateProjectStatus(projectId: number, newStatus: string): void {
     this.projetService.updateProjectStatus(projectId, newStatus).subscribe(() => {

@@ -77,7 +77,7 @@
           </div>
           <p class="categories-category bg-blue-600" [ngClass]="category.badge"><i class="fas fa-robot"></i> {{ category.nom_cat }}</p>
           <h2 class="title">
-            <a [routerLink]="['/home/projects-listing']" [queryParams]="{search:category.nom_cat}">{{ category.descript_cat }}</a>
+            <a [routerLink]="['/home/projects-listing']">{{ category.descript_cat }}</a>
           </h2>
           <div class="d-flex align-items-center">
             <div class="categories-meta">

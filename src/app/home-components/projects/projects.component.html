@@ -86,7 +86,7 @@
           </div>
           <p class="project-category">{{ post.nom_categorie }}</p>
           <h2 class="title">
-            <a [routerLink]="['/home/project-detail', post.id]" [queryParams]="getProjectQueryParams(post)">{{ post.titre_projet }}</a>
+            <a [routerLink]="['/home/project-detail', post.id]">{{ post.titre_projet }}</a>
           </h2>
           <div class="d-flex align-items-center">
             <!-- <img [src]="getFullImageUrl(post.image_utilisateur)" alt="" class="img-fluid user-avatar"> -->

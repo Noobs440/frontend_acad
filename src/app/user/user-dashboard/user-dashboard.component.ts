@@ -204,23 +204,7 @@ export class UserDashboardComponent implements OnInit {
     this.applyFilters();
   }
 
-  getProjectQueryParams(project: any) {
-    return {
-      id: project.id,
-      user_id: project.user_id,
-      title: project.titre,
-      status: project.status,
-      image: project.image,
-      description: project.description,
-      views: project.views,
-      author: project.nom_utilisateur,
-      category: project.nom_categorie,
-      level: project.niveau,
-      type: project.type,
-      date: project.created_at,
-      email: project.email
-    };
-  }
+
 
   getFullImageUrl(projectImage: string): string {
     if (!projectImage) return '';

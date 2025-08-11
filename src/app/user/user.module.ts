@@ -16,7 +16,6 @@ import { CollaborateurEditPopupComponent } from './collaborateur-edit-popup/coll
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { CommentZoneModule } from '../comment-zone/comment-zone.module';
 import { MatDialogModule } from '@angular/material/dialog'; 
 
 
@@ -40,7 +39,6 @@ import { MatDialogModule } from '@angular/material/dialog';
     ReactiveFormsModule,
     MatProgressSpinnerModule,
     MatDialogModule,
-    CommentZoneModule
   ]
 })
 export class UserModule { }

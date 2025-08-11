@@ -52,6 +52,6 @@ export class TableComponent implements OnInit, AfterViewInit {
   }
 
   showDetail(element: Project) {
-    this.router.navigate(['/enseignant/dashboard/project-detail', element.sn], { queryParams: { title: element.title } });
+    this.router.navigate(['/enseignant/dashboard/project-detail', element.sn]);
   }
 }

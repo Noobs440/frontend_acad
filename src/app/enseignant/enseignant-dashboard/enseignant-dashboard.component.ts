@@ -154,7 +154,7 @@ export class EnseignantDashboardComponent {
   showDetail(selectedRow: any) {
     this.selectedProjectId = selectedRow.sn;
     this.selectedProjectTitle = selectedRow.title;
-    this.router.navigate(['/enseignant/dashboard/project-detail', this.selectedProjectId], { queryParams: { title: this.selectedProjectTitle } });
+  this.router.navigate(['/enseignant/dashboard/project-detail', this.selectedProjectId]);
   }
 
 }

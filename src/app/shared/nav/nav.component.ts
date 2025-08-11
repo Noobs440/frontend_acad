@@ -25,9 +25,7 @@ export class NavComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      this.status = params['status'] || '';
-    });
+
   }
 
   switchLanguage(language: string): void {

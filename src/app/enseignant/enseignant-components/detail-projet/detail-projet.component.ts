@@ -36,25 +36,13 @@ export class DetailProjetComponent {
 
   ngOnInit(): void {
 
-     // Accessing the route parameters
+
+     // Use only route param for id
      this.selectedProjectId = +this.route.snapshot.paramMap.get('id')!;
-
-     // Accessing the query parameters
-     this.route.queryParams.subscribe(params => {
-       this.id = params['id'];
-       this.selectedProjectTitle = params['title'];
-       this.projectStatus=params['status'];
-       this.projectImage=params['image'];
-       this.description=params['description']
-       this.author=params['author']
-       this.category=params['category'];
-       this.level=params['level'];
-       this.type=params['type'];
-       this.date=params['date'];
-       this.views=params['views'];
-       this.email=params['email']
-     });
-
+     this.id = this.selectedProjectId;
+     // Fetch all project details from backend using id
+     // Example: fetch project details and assign to component properties
+     // this.projetService.getProjectById(this.id).subscribe(project => { ... });
      this.documentService.getDocumentsByProject(this.id).subscribe(response => {
       this.documents = response;
     });

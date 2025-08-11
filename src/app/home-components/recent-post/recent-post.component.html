@@ -35,7 +35,7 @@
       <div *ngFor="let chunk of chunkedPosts; let i = index" class="carousel-item" [class.active]="i === 0">
         <div class="row gy-4">
           <div *ngFor="let post of chunk" class="col-xl-3 col-md-6" [@fadeUp]>
-            <article [routerLink]="['/home/project-detail', post.id]" [queryParams]="getProjectQueryParams(post)">
+            <article [routerLink]="['/home/project-detail', post.id]">
               <div class="project-img">
                 <img [src]="getFullImageUrl(post.image)" alt="" class="img-fluid">
               </div>

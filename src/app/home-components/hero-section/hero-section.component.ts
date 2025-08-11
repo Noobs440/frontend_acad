@@ -118,7 +118,8 @@ export class HeroSectionComponent {
   }
 
   onSubmitSearch() {
-    this.router.navigate(['/home/projects-listing'], { queryParams: { search: this.searchValue } });
+    localStorage.setItem('searchValue', this.searchValue);
+    this.router.navigate(['/home/projects-listing']);
   }
 
 

@@ -65,22 +65,7 @@ export class AgTabComponent implements OnInit {
     this.selectedProjectId = params.data.id; // Utilisation de l'ID du backend
     this.selectedProjectTitle = params.data.titre_projet;
 
-    const queryParams = {
-      title: params.data.titre_projet,
-      status: params.data.status,
-      image: params.data.image,
-      description: params.data.descript_projet,
-      views: params.data.views,
-      author: params.data.nom_utilisateur,
-      category: params.data.nom_categorie,
-      level: params.data.niveau,
-      type: params.data.type,
-      date: params.data.created_at,
-      email: params.data.email,
-      id: params.data.id,
-    };
-
-    this.router.navigate(['/enseignant/dashboard/projet-detail', this.selectedProjectId], { queryParams });
+  this.router.navigate(['/enseignant/dashboard/projet-detail', this.selectedProjectId]);
   }
 
   updateProjectStatus(projectId: number, status: string) {
