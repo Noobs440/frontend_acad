@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { LoginPopupComponent } from '../../home-components/modals/login-popup/login-popup.component';
 import { MatDialog } from '@angular/material/dialog';
+import { LogoutConfirmDialogComponent } from '../logout-confirm-dialog/logout-confirm-dialog.component';
 
 @Component({
   selector: 'app-nav',
@@ -49,7 +50,14 @@ export class NavComponent implements OnInit {
     return this.router.url === routeFragment;
   }
   logout(): void {
-    localStorage.clear();
-    window.location.href = '/home';
+    const dialogRef = this.dialog.open(LogoutConfirmDialogComponent, {
+      width: '350px'
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        localStorage.clear();
+        this.router.navigate(['/home']);
+      }
+    });
   }
 }

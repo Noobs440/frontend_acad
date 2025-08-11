@@ -1,3 +1,5 @@
+import { MatDialog } from '@angular/material/dialog';
+import { LogoutConfirmDialogComponent } from '../../../shared/logout-confirm-dialog/logout-confirm-dialog.component';
 import {
   Component,
   OnInit,
@@ -62,7 +64,8 @@ export class UserComponent implements OnInit {
     private userService: UserService,
     private renderer: Renderer2,
     private el: ElementRef,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -211,16 +214,20 @@ export class UserComponent implements OnInit {
   }
 
   deconnexion(): void {
-    const result = confirm('Voulez-vous vous déconnecter ?');
-    if (result) {
-      this.userService.logout().subscribe({
-        next: () => alert('Déconnexion effectuée'),
-        error: err => console.log(err),
-        complete: () => {
-          localStorage.clear();
-          this.router.navigate(['/home']);
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(LogoutConfirmDialogComponent, {
+      width: '350px'
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.userService.logout().subscribe({
+          next: () => {},
+          error: err => console.log(err),
+          complete: () => {
+            localStorage.clear();
+            this.router.navigate(['/home']);
+          }
+        });
+      }
+    });
   }
 }

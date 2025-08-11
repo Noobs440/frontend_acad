@@ -47,6 +47,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CounterDirective } from './home-components/stats/counter.directive';
 import { SafeUrlPipe } from './safe-url.pipe';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
+import { LogoutConfirmDialogComponent } from './shared/logout-confirm-dialog/logout-confirm-dialog.component';
 import { HelpComponent } from './user/user-components/help/help.component';
 import { FloatingChatComponent } from './floating-chat/floating-chat.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -90,7 +91,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     CounterDirective,
     CounterDirective,
     SafeUrlPipe,
-    ConfirmDialogComponent,
+  ConfirmDialogComponent,
+  LogoutConfirmDialogComponent,
     EditEmailComponent,
     FloatingChatComponent,
   ],

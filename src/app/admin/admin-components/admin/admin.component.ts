@@ -3,6 +3,8 @@ import { ProjetService } from '../../../services/projet.service';
 import { NotificationService } from '../../../services/notification.service';
 import { UserService } from '../../../services/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { LogoutConfirmDialogComponent } from '../../../shared/logout-confirm-dialog/logout-confirm-dialog.component';
 
 @Component({
   selector: 'app-admin',
@@ -30,7 +32,8 @@ export class AdminComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private projetService: ProjetService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private dialog: MatDialog
   ) {}
   isProjectsCollapsed: boolean = true;
   toggleProjects() {
@@ -164,23 +167,26 @@ export class AdminComponent implements OnInit {
   }
 
   deconnexion(): void {
-    const result = confirm('Voulez-vous vous déconnecter?');
-    if (result) {
-      this.userService.logout().subscribe({
-        next: value => {
-          console.log(value);
-          alert('Déconnexion effectuée');
-        },
-        error: err => {
-          console.log(err);
-        },
-        complete: () => {
-          localStorage.removeItem('token');
-          this.router.navigate(['/home']);
-          console.log("Déconnexion réussie");
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(LogoutConfirmDialogComponent, {
+      width: '350px'
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.userService.logout().subscribe({
+          next: value => {
+            console.log(value);
+          },
+          error: err => {
+            console.log(err);
+          },
+          complete: () => {
+            localStorage.removeItem('token');
+            this.router.navigate(['/home']);
+            console.log("Déconnexion réussie");
+          }
+        });
+      }
+    });
   }
 
 
