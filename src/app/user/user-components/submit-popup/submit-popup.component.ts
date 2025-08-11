@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MatDialog } from '@angular/material/dialog';
+import { InfoDialogComponent } from '../../../shared/info-dialog/info-dialog.component';
 import { HttpClient } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
 import { ProjetService } from '../../../services/projet.service';
@@ -69,7 +70,8 @@ export class SubmitPopupComponent implements OnInit {
     private route: ActivatedRoute,
     private categoryService: CategoryService,
     private niveauService: NiveauService,
-    private userService: UserService
+    private userService: UserService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -179,7 +181,10 @@ export class SubmitPopupComponent implements OnInit {
           this.projetService.addProject(formData).subscribe({
             next: value => {
               this.project_id = value.id;
-              alert("Projet créé avec succès !");
+              this.dialog.open(InfoDialogComponent, {
+                width: '350px',
+                data: { title: 'Succès', message: 'Projet créé avec succès !' }
+              });
               this.formType = 'document';
               this.currentStep++;
             },
@@ -201,7 +206,10 @@ export class SubmitPopupComponent implements OnInit {
             }
           });
         } else {
-          alert("Veuillez remplir tous les champs du projet et sélectionner une image avant de continuer.");
+          this.dialog.open(InfoDialogComponent, {
+            width: '350px',
+            data: { title: 'Attention', message: 'Veuillez remplir tous les champs du projet et sélectionner une image avant de continuer.' }
+          });
         }
         return;
       } else {
@@ -265,7 +273,10 @@ export class SubmitPopupComponent implements OnInit {
 
       this.documentService.addDocument(formData).subscribe({
         next: () => {
-          alert("Document ajouté avec succès !");
+          this.dialog.open(InfoDialogComponent, {
+            width: '350px',
+            data: { title: 'Succès', message: 'Document ajouté avec succès !' }
+          });
           this.saveD = true;
         },
         error: err => {
@@ -277,7 +288,10 @@ export class SubmitPopupComponent implements OnInit {
               }
             }
           }
-          alert("Erreur lors de l'ajout du document.");
+          this.dialog.open(InfoDialogComponent, {
+            width: '350px',
+            data: { title: 'Erreur', message: "Erreur lors de l'ajout du document." }
+          });
         },
         complete: () => {
           this.isLoading = false;
@@ -288,7 +302,10 @@ export class SubmitPopupComponent implements OnInit {
 
     if (this.formType === 'collaborator' && this.collaboratorForm.valid) {
       if (!this.project_id) {
-        alert("Projet non créé. Impossible d’ajouter un collaborateur.");
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Erreur', message: "Projet non créé. Impossible d’ajouter un collaborateur." }
+        });
         this.isLoading = false;
         return;
       }
@@ -307,13 +324,19 @@ export class SubmitPopupComponent implements OnInit {
         this.project_id
       ).subscribe({
         next: () => {
-          alert("Collaborateur ajouté !");
+          this.dialog.open(InfoDialogComponent, {
+            width: '350px',
+            data: { title: 'Succès', message: 'Collaborateur ajouté !' }
+          });
           this.saveC = true;
           this.collaboratorForm.reset();
         },
         error: err => {
           console.error(err);
-          alert("Erreur lors de l'ajout du collaborateur.");
+          this.dialog.open(InfoDialogComponent, {
+            width: '350px',
+            data: { title: 'Erreur', message: "Erreur lors de l'ajout du collaborateur." }
+          });
         },
         complete: () => {
           this.isLoading = false;
@@ -325,12 +348,18 @@ export class SubmitPopupComponent implements OnInit {
       // Soumission stricte du projet à l'admin sélectionné
       const adminId = this.adminForm.value.admin;
       if (!adminId) {
-        alert("Veuillez sélectionner un administrateur avant de soumettre le projet.");
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Attention', message: "Veuillez sélectionner un administrateur avant de soumettre le projet." }
+        });
         this.isLoading = false;
         return;
       }
       if (!this.project_id) {
-        alert("Projet non créé. Impossible de soumettre à un admin.");
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Erreur', message: "Projet non créé. Impossible de soumettre à un admin." }
+        });
         this.isLoading = false;
         return;
       }
@@ -338,14 +367,20 @@ export class SubmitPopupComponent implements OnInit {
         next: (response) => {
           this.adminAdded = true;
           console.log('Réponse backend assignation admin:', response);
-          alert('Projet soumis à l\'administrateur avec succès !');
+          this.dialog.open(InfoDialogComponent, {
+            width: '350px',
+            data: { title: 'Succès', message: "Projet soumis à l'administrateur avec succès !" }
+          });
           this.dialogRef.close();
           window.location.reload();
         },
         error: err => {
           console.error('Erreur backend assignation admin:', err);
           this.adminAdded = false;
-          alert('Erreur lors de la soumission à l\'administrateur.');
+          this.dialog.open(InfoDialogComponent, {
+            width: '350px',
+            data: { title: 'Erreur', message: "Erreur lors de la soumission à l'administrateur." }
+          });
         },
         complete: () => {
           this.isLoading = false;

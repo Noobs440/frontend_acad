@@ -1,3 +1,4 @@
+import { InfoDialogComponent } from './shared/info-dialog/info-dialog.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
@@ -93,6 +94,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     SafeUrlPipe,
   ConfirmDialogComponent,
   LogoutConfirmDialogComponent,
+  InfoDialogComponent,
     EditEmailComponent,
     FloatingChatComponent,
   ],

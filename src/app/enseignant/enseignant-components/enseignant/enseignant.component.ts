@@ -1,3 +1,5 @@
+import { MatDialog } from '@angular/material/dialog';
+import { InfoDialogComponent } from '../../../shared/info-dialog/info-dialog.component';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ProjetService } from '../../../services/projet.service';
 import { NotificationService } from '../../../services/notification.service';
@@ -34,7 +36,8 @@ export class EnseignantComponent implements OnInit {
     private projetService: ProjetService,
     private notificationService: NotificationService,
     private etudiantService: EtudiantService, // Nouveau
-    private coursService: CoursService // Nouveau
+    private coursService: CoursService, // Nouveau
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -115,7 +118,10 @@ export class EnseignantComponent implements OnInit {
       this.userService.logout().subscribe({
         next: value => {
           console.log(value);
-          alert('Déconnexion effectuée');
+          this.dialog.open(InfoDialogComponent, {
+            width: '350px',
+            data: { title: 'Succès', message: 'Déconnexion effectuée' }
+          });
         },
         error: err => {
           console.log(err);

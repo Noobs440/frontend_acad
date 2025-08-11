@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RegisterComponent } from '../register-popup/register-popup.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { InfoDialogComponent } from '../../../shared/info-dialog/info-dialog.component';
 import { CustomvalidationService } from '../../../services/customvalidation.service';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
@@ -107,7 +108,10 @@ export class LoginPopupComponent {
         console.error(err);
         this.isLoading = false;
         this.errorMessage = 'Aucun utilisateur trouver avec cette adresse email';
-        alert(this.errorMessage);
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Erreur', message: this.errorMessage }
+        });
       },
       complete: () => {
         this.isLoading = false;
@@ -133,7 +137,10 @@ export class LoginPopupComponent {
         console.error(err);
         this.isLoading = false;
         this.errorMessage = 'Code de vérification invalide.';
-        alert(this.errorMessage);
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Erreur', message: this.errorMessage }
+        });
       },
       complete: () => {
         this.isLoading = false;
@@ -158,7 +165,10 @@ export class LoginPopupComponent {
         console.error(err);
         this.isLoading = true;
         this.errorMessage = 'Erreur lors de l\'envoi du code de vérification.';
-        alert(this.errorMessage);
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Erreur', message: this.errorMessage }
+        });
       },
       complete: () => {
         this.isLoading = false;

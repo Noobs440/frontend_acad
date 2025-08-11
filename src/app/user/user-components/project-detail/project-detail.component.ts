@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
 import { DocumentPopupComponent } from '../document-popup/document-popup.component';
 import { MatDialog } from '@angular/material/dialog';
+import { InfoDialogComponent } from '../../../shared/info-dialog/info-dialog.component';
 import { DocumentService } from '../../../services/document.service';
 import { SubmitProjectService } from '../../../services/submit-project.service';
 import { ProjetService } from '../../../services/projet.service';
@@ -80,7 +81,10 @@ export class ProjectDetailComponent implements OnInit {
       },
       error: err => {
         console.error("Erreur lors de l'assignation de l'admin", err);
-        alert("Erreur lors de l'assignation de l'admin.");
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Erreur', message: "Erreur lors de l'assignation de l'admin." }
+        });
       }
     });
   }
@@ -145,11 +149,17 @@ export class ProjectDetailComponent implements OnInit {
       next: () => {
         this.projectStatus = 'Pending';
         this.rejection_reason = '';
-        alert('Votre projet a été resoumis avec succès.');
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Succès', message: 'Votre projet a été resoumis avec succès.' }
+        });
         this.reloadProject();
       },
       error: err => {
-        alert("Erreur lors de la resoumission du projet.");
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Erreur', message: "Erreur lors de la resoumission du projet." }
+        });
         console.error(err);
       }
     });
@@ -179,7 +189,10 @@ export class ProjectDetailComponent implements OnInit {
   deleteProject(Projectid: any) {
     this.projetService.deleteProject(Projectid).subscribe({
       next: () => this.openCompleteDialog("Project deleted completely."),
-      error: err => alert(err.status),
+      error: err => this.dialog.open(InfoDialogComponent, {
+        width: '350px',
+        data: { title: 'Erreur', message: err.status }
+      }),
       complete: () => this.dialog.closeAll()
     });
   }
@@ -190,12 +203,21 @@ export class ProjectDetailComponent implements OnInit {
 
   submitProject() {
     if (!this.selectedAdminId) {
-      alert("Veuillez choisir un admin avant de soumettre le projet !");
+      this.dialog.open(InfoDialogComponent, {
+        width: '350px',
+        data: { title: 'Attention', message: "Veuillez choisir un admin avant de soumettre le projet !" }
+      });
       return;
     }
     this.projetService.assignAdminToProject(this.id, this.selectedAdminId).subscribe({
-      next: () => alert("Votre projet a été soumis à l'admin choisi"),
-      error: err => alert("Votre projet doit contenir au moins un document"),
+      next: () => this.dialog.open(InfoDialogComponent, {
+        width: '350px',
+        data: { title: 'Succès', message: "Votre projet a été soumis à l'admin choisi" }
+      }),
+      error: err => this.dialog.open(InfoDialogComponent, {
+        width: '350px',
+        data: { title: 'Erreur', message: "Votre projet doit contenir au moins un document" }
+      }),
       complete: () => this.Submitted = true
     });
   }
@@ -245,14 +267,22 @@ export class ProjectDetailComponent implements OnInit {
       },
       error: err => {
         console.error("Erreur lors de la suppression", err);
-        alert("Erreur lors de la suppression du document.");
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Erreur', message: "Erreur lors de la suppression du document." }
+        });
       }
     });
   }
 
   confirmDeleteCollaborator(collaborator: any) {
-    const confirmed = window.confirm(`Supprimer le collaborateur "${collaborator.nom_collab}" ?`);
-    if (confirmed) this.deleteCollaboratorById(collaborator.id);
+    const dialogRef = this.dialog.open(InfoDialogComponent, {
+      width: '350px',
+      data: { title: 'Confirmation', message: `Supprimer le collaborateur "${collaborator.nom_collab}" ?` }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) this.deleteCollaboratorById(collaborator.id);
+    });
   }
 
   deleteCollaboratorById(id: string) {
@@ -263,7 +293,10 @@ export class ProjectDetailComponent implements OnInit {
       },
       error: err => {
         console.error("Erreur suppression collaborateur", err);
-        alert("Erreur lors de la suppression.");
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Erreur', message: "Erreur lors de la suppression." }
+        });
       }
     });
   }
@@ -287,9 +320,14 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
-   confirmDeleteDocument(document: any) {
-    const confirmed = window.confirm(`Voulez-vous vraiment supprimer le document "${document.nom_doc}" ?`);
-    if (confirmed) this.deleteDocumentByid(document.id);
+  confirmDeleteDocument(document: any) {
+    const dialogRef = this.dialog.open(InfoDialogComponent, {
+      width: '350px',
+      data: { title: 'Confirmation', message: `Voulez-vous vraiment supprimer le document "${document.nom_doc}" ?` }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) this.deleteDocumentByid(document.id);
+    });
   }
 
   onClose(): void {

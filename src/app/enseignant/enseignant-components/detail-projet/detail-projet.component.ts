@@ -1,3 +1,5 @@
+import { MatDialog } from '@angular/material/dialog';
+import { InfoDialogComponent } from '../../../shared/info-dialog/info-dialog.component';
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
@@ -32,7 +34,13 @@ export class DetailProjetComponent {
   date!:string;
   email!:string;
   id!:number;
-  constructor(private route: ActivatedRoute,private router:Router,private documentService:DocumentService, private projetStatusService:ProjetstatusService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private documentService: DocumentService,
+    private projetStatusService: ProjetstatusService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
 
@@ -110,30 +118,47 @@ export class DetailProjetComponent {
 
   onDelete(): void {
     if (this.projectStatus === "Pending") {
-      const userConfirmed = confirm("Souhaitez-vous rejeter ce projet ?");
-
+      const dialogRef = this.dialog.open(InfoDialogComponent, {
+        width: '350px',
+        data: { title: 'Confirmation', message: 'Souhaitez-vous rejeter ce projet ?' }
+      });
+      dialogRef.afterClosed().subscribe(userConfirmed => {
+        if (userConfirmed) {
+          // Ajoutez ici la logique de rejet du projet si besoin
+        }
+      });
     }
   }
 
-  onRestore():void{
+  onRestore(): void {
     if (this.projectStatus === "Approved" || this.projectStatus === "Rejected") {
-      const userConfirmed = confirm("Souhaitez-vous restaure  ce projet a l'etat d'attente ?");
-
-      if (userConfirmed) {
-        this.projetStatusService.pendingProject(this.selectedProjectId).subscribe({
-          next: value => {
-            alert(`Le projet a été restaurer et un email a été envoyé à ${this.author}, l'auteur du projet.`);
-          },
-          error: err => {
-            alert(`Le projet n'a pas été restaurer, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
-            console.error(err);
-          },
-          complete: () => {
-            this.router.navigate(['/admin']);
-            console.log("Succès");
-          }
-        });
-      }
+      const dialogRef = this.dialog.open(InfoDialogComponent, {
+        width: '350px',
+        data: { title: 'Confirmation', message: "Souhaitez-vous restaurer ce projet à l'état d'attente ?" }
+      });
+      dialogRef.afterClosed().subscribe(userConfirmed => {
+        if (userConfirmed) {
+          this.projetStatusService.pendingProject(this.selectedProjectId).subscribe({
+            next: value => {
+              this.dialog.open(InfoDialogComponent, {
+                width: '350px',
+                data: { title: 'Succès', message: `Le projet a été restauré et un email a été envoyé à ${this.author}, l'auteur du projet.` }
+              });
+            },
+            error: err => {
+              this.dialog.open(InfoDialogComponent, {
+                width: '350px',
+                data: { title: 'Erreur', message: `Le projet n'a pas été restauré, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.` }
+              });
+              console.error(err);
+            },
+            complete: () => {
+              this.router.navigate(['/admin']);
+              console.log("Succès");
+            }
+          });
+        }
+      });
     }
   }
 
