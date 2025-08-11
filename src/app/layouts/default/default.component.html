@@ -1,6 +1,6 @@
 
 <!--*ngIf="showNav" bgColor="''" -->
-<app-nav  ></app-nav>
+<app-nav *ngIf="showNav" [isLoggedIn]="isLoggedIn" [userName]="userName"></app-nav>
 <main class="main">
 <router-outlet></router-outlet>
 </main>

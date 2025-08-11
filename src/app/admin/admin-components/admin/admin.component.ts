@@ -14,8 +14,9 @@ export class AdminComponent implements OnInit {
   filteredProjects: any[] = [];
   searchQuery: string = '';
   notifications: any[] = [];
-  token!: string;
-  name!: string;
+  token: string | null = null;
+  isLoggedIn: boolean = false;
+  name: string = '';
   surname!: string;
   role!: string;
   id: any;
@@ -37,6 +38,7 @@ export class AdminComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.checkLoginState();
     // Charger le profil utilisateur AVANT de charger les projets
     this.userService.loadUserProfile();
     this.userService.getUserProfile().subscribe({
@@ -61,6 +63,14 @@ export class AdminComponent implements OnInit {
       }
     });
     this.loadNotifications();
+  }
+
+  checkLoginState(): void {
+    this.token = localStorage.getItem('token');
+    this.isLoggedIn = !!this.token;
+    if (!this.isLoggedIn) {
+      this.name = '';
+    }
   }
 
   @ViewChild('toggleSidebarBtn', { static: true }) toggleSidebarBtn!: ElementRef;

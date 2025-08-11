@@ -1,22 +1,36 @@
-import { Component } from '@angular/core';
+
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   isLoading = true;
-
+  isLoggedIn = false;
+  userName: string | null = null;
   sectionClass: string = 'recent-posts section';
-  ngOnInit(): void {
-     this.sectionClass = 'different-class';
 
+  ngOnInit(): void {
+    this.sectionClass = 'different-class';
+    this.checkLoginState();
     setTimeout(() => {
       this.isLoading = false;
-    }, 300); // 30 seconds
+    }, 300);
   }
-   getFullImageUrl(projectImage: string): string {
+
+  checkLoginState() {
+    const token = localStorage.getItem('token');
+    this.isLoggedIn = !!token;
+    if (this.isLoggedIn) {
+      this.userName = localStorage.getItem('name');
+    } else {
+      this.userName = null;
+    }
+  }
+
+  getFullImageUrl(projectImage: string): string {
     if (!projectImage) {
       return '';
     }

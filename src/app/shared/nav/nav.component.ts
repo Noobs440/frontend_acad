@@ -1,3 +1,5 @@
+
+
 import { Component, ElementRef, Input, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -11,6 +13,8 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class NavComponent implements OnInit {
   @Input() bgColor: string = '';
+  @Input() isLoggedIn: boolean = false;
+  @Input() userName: string | null = null;
   status: string = '';
 
   constructor(
@@ -24,9 +28,7 @@ export class NavComponent implements OnInit {
     translate.setDefaultLang('en');
   }
 
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void {}
 
   switchLanguage(language: string): void {
     this.translate.use(language);
@@ -45,5 +47,9 @@ export class NavComponent implements OnInit {
 
   isActive(routeFragment: string): boolean {
     return this.router.url === routeFragment;
+  }
+  logout(): void {
+    localStorage.clear();
+    window.location.href = '/home';
   }
 }
