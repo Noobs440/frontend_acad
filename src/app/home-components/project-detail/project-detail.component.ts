@@ -64,11 +64,25 @@ export class ProjectDetailComponent implements OnInit {
     private authService: AuthService
   ) {}
 
-  ngOnInit(): void {
 
-    // Use only route param for id
+  ngOnInit(): void {
     this.id = +this.route.snapshot.paramMap.get('id')!;
     if (this.id) {
+      // Charger les détails du projet principal
+      this.projetService.getProjectById(this.id).subscribe(project => {
+        this.selectedProjectTitle = project.titre_projet || project.title;
+        this.projectStatus = project.status;
+        this.projectImage = project.image;
+        this.description = project.descript_projet || project.description;
+        this.category = project.category;
+        this.type = project.type;
+        this.date = project.date;
+        this.views = project.views;
+        this.author = project.nom_utilisateur || project.author;
+        this.level = project.niveau || project.level;
+        this.email = project.email || '';
+      });
+
       this.loadComments();
       this.documentService.getDocumentsByProject(this.id).subscribe(response => {
         this.documents = response;
@@ -76,20 +90,19 @@ export class ProjectDetailComponent implements OnInit {
     }
 
     this.projetService.countViews(this.id).subscribe({
-      next: value => {
-        console.log(value);
-      },
+      next: value => { console.log(value); },
       error: () => {},
     });
 
-    this.projectByIdService.getApprovedProjectsById(this.user_id).subscribe({
-      next: data => {
-        this.projects = data;
-      },
-      error: () => {},
-    });
+    this.user_id = localStorage.getItem('id');
+    if (this.user_id && this.user_id !== 'null') {
+      this.projectByIdService.getApprovedProjectsById(this.user_id).subscribe({
+        next: data => { this.projects = data; },
+        error: () => {},
+      });
+    }
 
-    this.currentUser = this.authService.getUser(); // adapte ta méthode ici
+    this.currentUser = this.authService.getUser();
   }
 
   loadComments(): void {
