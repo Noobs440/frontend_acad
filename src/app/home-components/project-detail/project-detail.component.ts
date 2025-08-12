@@ -23,15 +23,39 @@ import { AuthService } from '../../services/auth.service'; // adapte si tu as un
   ],
 })
 export class ProjectDetailComponent implements OnInit {
-  loadComments(): void {
-    this.commentService.getComments(this.id).subscribe({
-      next: data => {
-        this.comments = data;
+  commentsPage = 1;
+  commentsPerPage = 6;
+  commentsLastPage = 1;
+  loadingComments = false;
+
+  loadComments(reset: boolean = false): void {
+    if (reset) {
+      this.commentsPage = 1;
+      this.comments = [];
+    }
+    this.loadingComments = true;
+    this.commentService.getComments(this.id, this.commentsPage, this.commentsPerPage).subscribe({
+      next: (data) => {
+        if (reset) {
+          this.comments = data.comments;
+        } else {
+          this.comments = [...this.comments, ...data.comments];
+        }
+        this.commentsLastPage = data.pagination.last_page;
+        this.loadingComments = false;
       },
       error: err => {
+        this.loadingComments = false;
         console.error('Erreur chargement commentaires', err);
       },
     });
+  }
+
+  loadMoreComments() {
+    if (this.commentsPage < this.commentsLastPage && !this.loadingComments) {
+      this.commentsPage++;
+      this.loadComments();
+    }
   }
 
   commentErrors: { name?: string; email?: string; comment?: string } = {};
@@ -93,7 +117,7 @@ export class ProjectDetailComponent implements OnInit {
         this.email = project.email || '';
       });
 
-      this.loadComments();
+      this.loadComments(true);
       this.documentService.getDocumentsByProject(this.id).subscribe(response => {
         this.documents = response;
       });
@@ -162,7 +186,7 @@ export class ProjectDetailComponent implements OnInit {
         this.visitorName = '';
         this.visitorEmail = '';
         this.commentErrors = {};
-        this.loadComments();
+        this.loadComments(true);
       },
       error: err => {
         console.error('Erreur ajout commentaire', err);

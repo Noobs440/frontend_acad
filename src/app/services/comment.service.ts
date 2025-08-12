@@ -23,13 +23,9 @@ export class CommentService {
 
   constructor(private http: HttpClient) { }
 
-  getComments(projectId: number): Observable<any[]> {
-  return this.http.get<{ received_project_id: string; all_comments: any[] }>(
-    `${this.apiUrl}/projects/${projectId}/comments`
-  ).pipe(
-    map(response => response.all_comments)  // récupère juste la liste dans all_comments
-  );
-}
+  getComments(projectId: number, page: number = 1, perPage: number = 6): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/projects/${projectId}/comments?page=${page}&per_page=${perPage}`);
+  }
 
   addComment(projectId: number, data: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/projects/${projectId}/comments`, data);

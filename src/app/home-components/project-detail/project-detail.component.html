@@ -78,11 +78,16 @@
 
         <div *ngIf="comments.length === 0" class="no-comments">Aucun commentaire pour le moment.</div>
 
+
         <div *ngFor="let comment of comments" class="comment">
           <p><strong>{{ comment.user?.name || comment.visitor_name || 'Anonyme' }} :</strong></p>
           <p>{{ comment.content }}</p>
           <small>{{ comment.created_at | date:'short' }}</small>
           <hr />
+        </div>
+
+        <div class="text-center mt-3" *ngIf="commentsPage < commentsLastPage">
+          <button (click)="loadMoreComments()" [disabled]="loadingComments">Charger plus de commentaires</button>
         </div>
 
         <div class="add-comment">
