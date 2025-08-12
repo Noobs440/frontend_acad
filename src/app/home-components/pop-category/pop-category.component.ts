@@ -19,6 +19,7 @@ import { RechercheService } from '../../services/recherche.service';
   ],
 })
 export class PopCategoryComponent implements OnInit {
+  isLoggedIn = !!localStorage.getItem('token');
   bgColor = 'white';
   noResults = false;
 
@@ -69,33 +70,11 @@ export class PopCategoryComponent implements OnInit {
 
     });
 
-    this.facultyService.getFaculties().subscribe(faculties => {
-      this.faculties = faculties;
-    });
-
-    this.filiereService.getFilieres().subscribe(filieres => {
-      this.filieres = filieres;
-    });
-
-    this.niveauService.getNiveaux().subscribe(niveaux => {
-      this.niveaux = niveaux;
-    });
   }
 
   applyFilters() {
     this.filteredCategories = this.data;
 
-    if (this.selectedFaculty) {
-      this.filteredCategories = this.filteredCategories.filter(category => category.details.faculte === this.selectedFaculty);
-    }
-
-    if (this.selectedLevel) {
-      this.filteredCategories = this.filteredCategories.filter(category => category.details.niveau === this.selectedLevel);
-    }
-
-    if (this.selectedDepartment) {
-      this.filteredCategories = this.filteredCategories.filter(category => category.details.filiere === this.selectedDepartment);
-    }
 
     if (this.searchQuery) {
       this.filteredCategories = this.filteredCategories.filter(category =>
@@ -127,9 +106,6 @@ export class PopCategoryComponent implements OnInit {
   }
 
   clearFilters() {
-    this.selectedFaculty = '';
-    this.selectedLevel = '';
-    this.selectedDepartment = '';
     this.searchQuery = '';
     this.applyFilters();
   }

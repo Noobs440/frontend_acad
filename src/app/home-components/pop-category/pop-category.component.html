@@ -1,3 +1,4 @@
+<app-nav [bgColor]="'#06BBCC'" [isLoggedIn]="isLoggedIn"></app-nav>
 <section id="recent-posts" class="recent-posts section">
   <!-- Section Title -->
   <div class="con1 container section-title" [@fadeUp]>
@@ -8,34 +9,7 @@
   <!-- Filters -->
   <div class="container filters p-4" [@fadeUp]>
     <div class="row align-items-center">
-      <div class="col-md-3">
-        <div class="input-group">
-          <span class="input-group-text"><i class="fas fa-university"></i></span>
-          <select class="custom-select no-focus form-select" [(ngModel)]="selectedFaculty" (change)="applyFilters()">
-            <option disabled selected value="">{{ 'FACULTY' | translate }}</option>
-            <option *ngFor="let faculte of faculties" [value]="faculte.nom_fac">{{ faculte.nom_fac }}</option>
-          </select>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="input-group">
-          <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
-          <select class="custom-select no-focus form-select" [(ngModel)]="selectedDepartment" (change)="applyFilters()">
-            <option disabled selected value="">{{ 'DEPARTMENT' | translate }}</option>
-            <option *ngFor="let filiere of filieres" [value]="filiere.nom_fil">{{ filiere.nom_fil }}</option>
-          </select>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="input-group">
-          <span class="input-group-text"><i class="fas fa-book"></i></span>
-          <select class="no-focus form-select" [(ngModel)]="selectedLevel" (change)="applyFilters()">
-            <option disabled selected value="">{{ 'LEVEL' | translate }}</option>
-            <option *ngFor="let niveau of niveaux" [value]="niveau.code_niv">{{ niveau.code_niv }}</option>
-          </select>
-        </div>
-      </div>
-      <div class="col-md-3">
+      <div class="col-md-12">
         <div class="input-group">
           <input type="text" class="form-control no-focus" placeholder="{{ 'SEARCH_DOMAIN' | translate }}" [(ngModel)]="searchQuery" (input)="applyFilters()">
           <button class="btn btn-outline-secondary" type="button" (click)="clearFilters()"><i class="fas fa-times"></i></button>
