@@ -154,14 +154,12 @@ export class AdminComponent implements OnInit {
 
   markNotificationAsRead(notificationId: number): void {
     this.notificationService.markNotificationAsRead(notificationId).subscribe(() => {
-      console.log('Notification marked as read successfully.');
       this.loadNotifications();
     });
   }
 
   markAllNotificationAsRead(): void {
     this.notificationService.markAllNotificationAsRead().subscribe(() => {
-      console.log('All notifications marked as read successfully.');
       this.loadNotifications();
     });
   }
@@ -176,10 +174,8 @@ export class AdminComponent implements OnInit {
           next: value => {
             // Token supprimé côté service
             this.router.navigate(['/home']);
-            console.log("Déconnexion réussie");
           },
           error: err => {
-            console.log(err);
           }
         });
       }

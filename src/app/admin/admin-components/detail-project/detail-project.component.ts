@@ -133,7 +133,6 @@ export class DetailProjectComponent {
       },
       complete: () => {
         this.router.navigate(['/admin']);
-        console.log("Succès");
       }
     });
   }
@@ -177,8 +176,7 @@ export class DetailProjectComponent {
     return actionButtons;
   }
   onView(): void {
-    // Handle view action
-    console.log('View action');
+  // Handle view action
   }
 
   onValidate(): void {
@@ -212,7 +210,6 @@ export class DetailProjectComponent {
             },
             complete: () => {
               this.router.navigate(['/admin']);
-              console.log("Succès");
             }
           });
         }
@@ -253,7 +250,6 @@ export class DetailProjectComponent {
             },
             complete: () => {
               this.router.navigate(['/admin']);
-              console.log("Succès");
             }
           });
         }

@@ -100,7 +100,7 @@ export class ProjectDetailComponent implements OnInit {
     }
 
     this.projetService.countViews(this.id).subscribe({
-      next: value => { console.log(value); },
+      next: value => {},
       error: () => {},
     });
 

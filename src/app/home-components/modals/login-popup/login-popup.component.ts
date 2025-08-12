@@ -205,7 +205,6 @@ export class LoginPopupComponent {
       this.isLoading = true;
       this.userService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
         next: value => {
-          console.log(value)
           const userRole = value.role;
           const token = value.access_token;
           const name = value.username;
@@ -227,7 +226,6 @@ export class LoginPopupComponent {
           console.error(err);
           this.isLoading = false;
           this.errorMessage = "Addresse email ou mot de passe invalide";
-          console.log('Erreur login, errorMessage:', this.errorMessage);
         },
         complete: () => {
           this.isLoading = false;
@@ -266,7 +264,7 @@ export class LoginPopupComponent {
     });
 
     dialogRef2.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+      // Dialog closed
     });
   }
 
@@ -279,7 +277,7 @@ export class LoginPopupComponent {
     });
 
     dialogRef3.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+      // Dialog closed
     });
   }
 }

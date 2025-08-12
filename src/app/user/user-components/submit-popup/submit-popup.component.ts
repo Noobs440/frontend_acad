@@ -135,8 +135,6 @@ export class SubmitPopupComponent implements OnInit {
     this.userService.getAdmins().subscribe({
       next: (admins) => {
         this.admins = admins;
-        console.log('Admins récupérés:', admins);
-        console.log('IDs admins:', admins.map((a: any) => a.id));
       },
       error: (err) => {
         console.error('Erreur lors de la récupération des admins', err);
@@ -264,12 +262,6 @@ export class SubmitPopupComponent implements OnInit {
       formData.append('tbl_projet_id', this.project_id);
       formData.append('document', this.selectedFileD);
 
-      console.log('Ajout document - valeurs envoyées:', {
-        nom_doc: this.documentForm.value.title,
-        user_id: this.user_id,
-        tbl_projet_id: this.project_id,
-        document: this.selectedFileD ? this.selectedFileD.name : null
-      });
 
       this.documentService.addDocument(formData).subscribe({
         next: () => {
@@ -317,7 +309,6 @@ export class SubmitPopupComponent implements OnInit {
         email_collab: this.collaboratorForm.value.email,
         user_id: userIdToSend
       };
-      console.log('Ajout collaborateur - valeurs envoyées:', dataToSend, 'project_id:', this.project_id);
       this.colService.addCollaborateur(
         dataToSend.nom_collab,
         dataToSend.email_collab,
@@ -366,7 +357,6 @@ export class SubmitPopupComponent implements OnInit {
       this.projetService.assignAdminToProject(this.project_id, adminId).subscribe({
         next: (response) => {
           this.adminAdded = true;
-          console.log('Réponse backend assignation admin:', response);
           this.dialog.open(InfoDialogComponent, {
             width: '350px',
             data: { title: 'Succès', message: "Projet soumis à l'administrateur avec succès !" }
