@@ -37,8 +37,8 @@
       </div>
       <div class="col-md-3">
         <div class="input-group">
-          <input type="text" class="form-control no-focus" placeholder="{{ 'SEARCH_PROJECT' | translate }}" [(ngModel)]="searchQuery">
-          <button class="btn btn-outline-primary" type="button" (click)="searchProjects()"><i class="fas fa-search"></i></button>
+          <input type="text" class="form-control no-focus" placeholder="{{ 'SEARCH_PROJECT' | translate }}" [(ngModel)]="searchQuery" (input)="applyFilters()">
+          <button class="btn btn-outline-primary" type="button" disabled><i class="fas fa-search"></i></button>
           <button class="btn btn-outline-secondary" type="button" (click)="clearFilters()"><i class="fas fa-times"></i></button>
         </div>
       </div>
