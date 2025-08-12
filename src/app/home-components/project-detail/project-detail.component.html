@@ -89,12 +89,18 @@
           <h4>Ajouter un commentaire</h4>
 
 
-          <div *ngIf="!currentUser" class="visitor-info mb-3">
-            <input type="text" placeholder="Votre nom" [(ngModel)]="visitorName" />
-            <div *ngIf="commentErrors.name" class="text-danger" style="font-size: 13px; margin-bottom: 4px;">{{ commentErrors.name }}</div>
-            <input type="email" placeholder="Votre email (optionnel)" [(ngModel)]="visitorEmail" />
-            <div *ngIf="commentErrors.email" class="text-danger" style="font-size: 13px; margin-bottom: 4px;">{{ commentErrors.email }}</div>
-          </div>
+
+          <ng-container *ngIf="!currentUser">
+            <div class="visitor-info mb-3">
+              <input type="text" placeholder="Votre nom" [(ngModel)]="visitorName" />
+              <div *ngIf="commentErrors.name" class="text-danger" style="font-size: 13px; margin-bottom: 4px;">{{ commentErrors.name }}</div>
+              <input type="email" placeholder="Votre email (optionnel)" [(ngModel)]="visitorEmail" />
+              <div *ngIf="commentErrors.email" class="text-danger" style="font-size: 13px; margin-bottom: 4px;">{{ commentErrors.email }}</div>
+            </div>
+          </ng-container>
+          <!-- Si utilisateur connecté, ne rien afficher ici -->
+
+          <!-- Si utilisateur connecté, pas besoin de nom/email -->
 
           <textarea rows="3" placeholder="Votre commentaire..." [(ngModel)]="newComment"></textarea>
           <div *ngIf="commentErrors.comment" class="text-danger" style="font-size: 13px; margin-bottom: 4px;">{{ commentErrors.comment }}</div>

@@ -174,15 +174,12 @@ export class AdminComponent implements OnInit {
       if (result) {
         this.userService.logout().subscribe({
           next: value => {
-            console.log(value);
+            // Token supprimé côté service
+            this.router.navigate(['/home']);
+            console.log("Déconnexion réussie");
           },
           error: err => {
             console.log(err);
-          },
-          complete: () => {
-            localStorage.removeItem('token');
-            this.router.navigate(['/home']);
-            console.log("Déconnexion réussie");
           }
         });
       }

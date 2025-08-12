@@ -1,5 +1,8 @@
  
 import { Component, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { InfoDialogComponent } from '../../../shared/info-dialog/info-dialog.component';
 import { CollaborateurService } from '../../../services/collaborateur.service';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { ActivatedRoute } from '@angular/router';
@@ -48,7 +51,8 @@ export class DetailProjectComponent {
     private documentService: DocumentService,
     private projetService: ProjetService,
     private projetStatusService: ProjetstatusService,
-    private collaborateurService: CollaborateurService
+    private collaborateurService: CollaborateurService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -110,11 +114,21 @@ export class DetailProjectComponent {
     this.showRejectModal = false;
     this.projetStatusService.rejectProject(this.selectedProjectId, this.rejectReason).subscribe({
       next: value => {
-        alert(`Le projet a été rejeté pour le motif: ${this.rejectReason}. Un email a été envoyé à ${this.author}, l'auteur du projet.`);
+        this.dialog.open(InfoDialogComponent, {
+          data: {
+            title: 'Projet rejeté',
+            message: `Le projet a été rejeté pour le motif: ${this.rejectReason}. Un email a été envoyé à ${this.author}, l'auteur du projet.`
+          }
+        });
         this.reloadProject();
       },
       error: err => {
-        alert(`Le projet n'a pas été rejeté, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
+        this.dialog.open(InfoDialogComponent, {
+          data: {
+            title: 'Erreur',
+            message: `Le projet n'a pas été rejeté, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`
+          }
+        });
         console.error(err);
       },
       complete: () => {
@@ -169,23 +183,40 @@ export class DetailProjectComponent {
 
   onValidate(): void {
     if (this.projectStatus === "Pending") {
-      const userConfirmed = confirm("souhaitez vous approuver ce projet ? ");
-      if (userConfirmed) {
-        this.projetStatusService.approveProject(this.selectedProjectId).subscribe({
-          next: value => {
-            alert(`Le projet a été approuvé et un email a été envoyé à ${this.author}, l'auteur du projet.`);
-            this.reloadProject();
-          },
-          error: err => {
-            alert(`Le projet n'a pas été approuvé, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
-            console.error(err);
-          },
-          complete: () => {
-            this.router.navigate(['/admin']);
-            console.log("Succès");
-          }
-        });
-      }
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        data: {
+          title: 'Confirmation',
+          message: 'Souhaitez-vous approuver ce projet ?'
+        }
+      });
+      dialogRef.afterClosed().subscribe(userConfirmed => {
+        if (userConfirmed) {
+          this.projetStatusService.approveProject(this.selectedProjectId).subscribe({
+            next: value => {
+              this.dialog.open(InfoDialogComponent, {
+                data: {
+                  title: 'Projet approuvé',
+                  message: `Le projet a été approuvé et un email a été envoyé à ${this.author}, l'auteur du projet.`
+                }
+              });
+              this.reloadProject();
+            },
+            error: err => {
+              this.dialog.open(InfoDialogComponent, {
+                data: {
+                  title: 'Erreur',
+                  message: `Le projet n'a pas été approuvé, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`
+                }
+              });
+              console.error(err);
+            },
+            complete: () => {
+              this.router.navigate(['/admin']);
+              console.log("Succès");
+            }
+          });
+        }
+      });
     }
   }
 
@@ -193,23 +224,40 @@ export class DetailProjectComponent {
 
   onRestore():void{
     if (this.projectStatus === "Approved" || this.projectStatus === "Rejected") {
-      const userConfirmed = confirm("Souhaitez-vous restaure  ce projet a l'etat d'attente ?");
-      if (userConfirmed) {
-        this.projetStatusService.pendingProject(this.selectedProjectId).subscribe({
-          next: value => {
-            alert(`Le projet a été restauré et un email a été envoyé à ${this.author}, l'auteur du projet.`);
-            this.reloadProject();
-          },
-          error: err => {
-            alert(`Le projet n'a pas été restauré, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`);
-            console.error(err);
-          },
-          complete: () => {
-            this.router.navigate(['/admin']);
-            console.log("Succès");
-          }
-        });
-      }
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        data: {
+          title: 'Confirmation',
+          message: "Souhaitez-vous restaurer ce projet à l'état d'attente ?"
+        }
+      });
+      dialogRef.afterClosed().subscribe(userConfirmed => {
+        if (userConfirmed) {
+          this.projetStatusService.pendingProject(this.selectedProjectId).subscribe({
+            next: value => {
+              this.dialog.open(InfoDialogComponent, {
+                data: {
+                  title: 'Projet restauré',
+                  message: `Le projet a été restauré et un email a été envoyé à ${this.author}, l'auteur du projet.`
+                }
+              });
+              this.reloadProject();
+            },
+            error: err => {
+              this.dialog.open(InfoDialogComponent, {
+                data: {
+                  title: 'Erreur',
+                  message: `Le projet n'a pas été restauré, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`
+                }
+              });
+              console.error(err);
+            },
+            complete: () => {
+              this.router.navigate(['/admin']);
+              console.log("Succès");
+            }
+          });
+        }
+      });
     }
   }
 

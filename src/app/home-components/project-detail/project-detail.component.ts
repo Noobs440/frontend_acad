@@ -23,6 +23,16 @@ import { AuthService } from '../../services/auth.service'; // adapte si tu as un
   ],
 })
 export class ProjectDetailComponent implements OnInit {
+  loadComments(): void {
+    this.commentService.getComments(this.id).subscribe({
+      next: data => {
+        this.comments = data;
+      },
+      error: err => {
+        console.error('Erreur chargement commentaires', err);
+      },
+    });
+  }
 
   commentErrors: { name?: string; email?: string; comment?: string } = {};
 
@@ -105,19 +115,7 @@ export class ProjectDetailComponent implements OnInit {
     this.currentUser = this.authService.getUser();
   }
 
-  loadComments(): void {
-    this.commentService.getComments(this.id).subscribe({
-      next: data => {
-        this.comments = data;
-      },
-      error: err => {
-        console.error('Erreur chargement commentaires', err);
-      },
-    });
-  }
-
   submitComment(): void {
-
     this.commentErrors = {};
     let hasError = false;
 
@@ -126,15 +124,14 @@ export class ProjectDetailComponent implements OnInit {
       hasError = true;
     }
 
+    // Si utilisateur connecté, aucune validation nom/email
     if (!this.currentUser) {
       if (!this.visitorName.trim()) {
         this.commentErrors.name = 'Veuillez entrer votre nom.';
         hasError = true;
       }
-      if (!this.visitorEmail.trim()) {
-        this.commentErrors.email = 'Veuillez entrer votre email.';
-        hasError = true;
-      } else if (!/^\S+@\S+\.\S+$/.test(this.visitorEmail.trim())) {
+      // Email devient optionnel, mais si rempli, doit être valide
+      if (this.visitorEmail.trim() && !/^\S+@\S+\.\S+$/.test(this.visitorEmail.trim())) {
         this.commentErrors.email = 'Veuillez entrer un email valide.';
         hasError = true;
       }
@@ -151,6 +148,12 @@ export class ProjectDetailComponent implements OnInit {
       if (this.visitorEmail.trim()) {
         payload.visitor_email = this.visitorEmail.trim();
       }
+    }
+
+    // Si utilisateur connecté, envoyer directement avec son nom
+    if (this.currentUser) {
+      payload.user_id = this.currentUser.id;
+      payload.user_name = this.currentUser.username;
     }
 
     this.commentService.addComment(this.id, payload).subscribe({
