@@ -1,3 +1,5 @@
+// Ajout pour rendre le chat déplaçable
+import { Renderer2, ElementRef, ViewChild } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../services/user.service';
 // import CommentService if still needed, else remove
@@ -12,6 +14,12 @@ export class FloatingChatComponent implements OnInit {
   isOpen = false;
   isLoggedIn = false;
 
+  // Pour le drag
+  @ViewChild('floatingChatContainer', { static: false }) floatingChatContainer!: ElementRef;
+  isDragging = false;
+  dragOffsetX = 0;
+  dragOffsetY = 0;
+
   commentConversations: any[] = [];
   activeCommentConversation: any = null;
   newMessage = '';
@@ -21,6 +29,7 @@ export class FloatingChatComponent implements OnInit {
   constructor(
     private userService: UserService,
     private chatService: ChatService,
+    private renderer: Renderer2
   ) {}
 
   ngOnInit(): void {
@@ -37,6 +46,37 @@ export class FloatingChatComponent implements OnInit {
       }
     });
     this.userService.loadUserProfile();
+  }
+
+  // Drag & drop handlers
+  onDragStart(event: MouseEvent) {
+    this.isDragging = true;
+    const container = this.floatingChatContainer?.nativeElement;
+    const rect = container.getBoundingClientRect();
+    this.dragOffsetX = event.clientX - rect.left;
+    this.dragOffsetY = event.clientY - rect.top;
+    this.renderer.setStyle(container, 'transition', 'none');
+    event.preventDefault();
+  }
+
+  onDragMove(event: MouseEvent) {
+    if (!this.isDragging) return;
+    const x = event.clientX - this.dragOffsetX;
+    const y = event.clientY - this.dragOffsetY;
+    const container = this.floatingChatContainer?.nativeElement;
+    this.renderer.setStyle(container, 'left', `${x}px`);
+    this.renderer.setStyle(container, 'top', `${y}px`);
+    this.renderer.setStyle(container, 'right', 'auto');
+    this.renderer.setStyle(container, 'bottom', 'auto');
+  }
+
+  onDragEnd() {
+    this.isDragging = false;
+  }
+
+  ngAfterViewInit() {
+    this.renderer.listen('window', 'mousemove', (event) => this.onDragMove(event));
+    this.renderer.listen('window', 'mouseup', () => this.onDragEnd());
   }
 
   toggleOpen() {

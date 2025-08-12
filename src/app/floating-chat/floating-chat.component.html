@@ -1,7 +1,11 @@
-<div *ngIf="isLoggedIn" class="floating-chat-container">
+<div *ngIf="isLoggedIn" class="floating-chat-container" #floatingChatContainer>
   <!-- Bouton flottant -->
 
-  <button class="chat-toggle-btn" (click)="toggleOpen()" title="Ouvrir/fermer chat" style="position:relative;">
+  <button class="chat-toggle-btn"
+          (click)="toggleOpen()"
+          title="Ouvrir/fermer chat"
+          style="position:relative; cursor:move;"
+          (mousedown)="onDragStart($event)">
     <i class="bi bi-chat-dots"></i>
     <span *ngIf="unreadCount > 0" class="chat-badge">{{ unreadCount }}</span>
   </button>

@@ -1,6 +1,17 @@
 
 
     <app-nav [isLoggedIn]="isLoggedIn" [userName]="userName"></app-nav>
+
+        <!-- Bouton retour dashboard -->
+        <div style="width:100%;background:#f8f9fa;padding:10px 0 5px 0;text-align:center;z-index:10001;position:relative;">
+            <button
+                *ngIf="isLoggedIn"
+                [routerLink]="getDashboardLink()"
+                style="background:#06bbcc;color:white;border:none;padding:8px 24px;border-radius:5px;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.08);cursor:pointer;"
+            >
+                Retour au Dashboard
+            </button>
+        </div>
     <app-hero-section></app-hero-section>
     <app-recent-post [prevButtonColor]="'#ff0000'" [nextButtonColor]="'#0000ff'" class="recent-posts section"   [pad]="'0px'" [fColor]="'black'" [bgColor]="'white'"></app-recent-post>
     <app-stats></app-stats>

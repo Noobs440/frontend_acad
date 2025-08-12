@@ -56,7 +56,9 @@ export class NavComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         localStorage.clear();
-        this.router.navigate(['/home']);
+        this.router.navigate(['/home']).then(() => {
+          window.location.reload();
+        });
       }
     });
   }

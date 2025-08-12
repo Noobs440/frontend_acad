@@ -12,6 +12,14 @@ export class HomeComponent implements OnInit {
   userName: string | null = null;
   sectionClass: string = 'recent-posts section';
 
+  getDashboardLink(): string {
+    // On suppose que le rôle est stocké dans le localStorage sous 'role' (ex: 'admin', 'user', 'enseignant')
+    const role = localStorage.getItem('role');
+    if (role === 'admin') return '/admin/dashboard';
+    if (role === 'enseignant') return '/enseignant/dashboard';
+    return '/user/dashboard';
+  }
+
   ngOnInit(): void {
     this.sectionClass = 'different-class';
     this.checkLoginState();
