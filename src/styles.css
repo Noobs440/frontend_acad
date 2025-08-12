@@ -27,3 +27,18 @@
 ::ng-deep .mat-dialog-container .scrollable-content::-webkit-scrollbar-thumb:hover {
   background-color: #495057;
 }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: auto !important;
+  min-height: auto !important;
+}
+
+footer {
+  margin-bottom: 0 !important;
+}
+
+.app-container, main {
+  min-height: auto !important;
+}
