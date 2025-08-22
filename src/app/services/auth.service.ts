@@ -23,6 +23,8 @@ export class AuthService {
       user = { id: 1, username, role: 'admin' };
     } else if (username === 'user' && password === 'User123user') {
       user = { id: 2, username, role: 'user' };
+    } else if (username === 'adminsys' && password === 'adminsys123') {
+      user = { id: 3, username, role: 'adminsys' };
     }
 
     if (user) {

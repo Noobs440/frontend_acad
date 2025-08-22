@@ -1,3 +1,4 @@
+
 import { Component, Input, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { AcceuilService } from './../../services/acceuil.service';
@@ -20,6 +21,11 @@ import { ActivatedRoute } from '@angular/router';
   ],
 })
 export class ProjectsComponent implements OnInit {
+  showGlobalSearch: boolean = false;
+  // Propriétés pour la recherche globale (zone du haut)
+  globalSearchQuery: string = '';
+  globalSearchResults: any[] = [];
+  globalSearchLoading: boolean = false;
   @Input() sectionClass: string = 'recent-posts section';
   @Input() bgColor: string = '#06BBCC';
   @Input() fColor: string = 'white';
@@ -94,32 +100,81 @@ export class ProjectsComponent implements OnInit {
       this.searchProjects();
       localStorage.removeItem('searchValue');
     }
+  // Fermer la recherche globale sur navigation (optionnel)
+  this.route.params.subscribe(() => { this.showGlobalSearch = false; });
+  }
+  triggerGlobalSearch() {
+    if (!this.globalSearchQuery || this.globalSearchQuery.trim() === '') {
+      this.globalSearchResults = [];
+      return;
+    }
+    this.globalSearchLoading = true;
+    this.rechercheService.searchProjects(this.globalSearchQuery).subscribe({
+      next: (response) => {
+        this.globalSearchResults = response.results || [];
+        this.globalSearchLoading = false;
+      },
+      error: () => {
+        this.globalSearchResults = [];
+        this.globalSearchLoading = false;
+      }
+    });
   }
 
-
+  // Fonction utilitaire pour supprimer les accents
+  normalizeString(str: string): string {
+    return str
+      ? str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
+      : '';
+  }
 
   applyFilters() {
-    this.filteredPosts = this.data;
-
+    // 1. Appliquer les filtres (filière, niveau, domaine) en mode "ET"
+    let filtered = this.data;
     if (this.selectedFilliere) {
-      this.filteredPosts = this.filteredPosts.filter(post => post.filiere === this.selectedFilliere);
+      filtered = filtered.filter(post => post.filiere === this.selectedFilliere);
     }
-
     if (this.selectedNiveau) {
-      this.filteredPosts = this.filteredPosts.filter(post => post.niveau === this.selectedNiveau);
+      filtered = filtered.filter(post => post.niveau === this.selectedNiveau);
     }
-
     if (this.selectedDomain) {
-      this.filteredPosts = this.filteredPosts.filter(post => post.nom_categorie === this.selectedDomain);
+      filtered = filtered.filter(post => post.nom_categorie === this.selectedDomain);
     }
 
+    // 2. Appliquer la recherche texte uniquement sur le résultat filtré, ou sur tout si aucun filtre
+    let finalPosts = filtered;
     if (this.searchQuery) {
-      this.filteredPosts = this.filteredPosts.filter(post =>
-        post.titre_projet.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        post.nom_utilisateur.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+      const query = this.normalizeString(this.searchQuery);
+      finalPosts = filtered.filter(post => {
+        // Recherche sur le titre du projet
+        const titreMatch = post.titre_projet && this.normalizeString(post.titre_projet).includes(query);
+        // Recherche sur l'auteur du projet
+        const auteurMatch = post.nom_utilisateur && this.normalizeString(post.nom_utilisateur).includes(query);
+        // Recherche sur la catégorie
+        const categorieMatch = post.nom_categorie && this.normalizeString(post.nom_categorie).includes(query);
+        // Recherche sur le domaine (champ 'domaine' ou 'domain' ou similaire)
+        const domaineMatch = (post.domaine && this.normalizeString(post.domaine).includes(query)) || (post.domain && this.normalizeString(post.domain).includes(query));
+        // Recherche sur la description
+        const descriptionMatch = (post.descript_projet && this.normalizeString(post.descript_projet).includes(query)) || (post.description && this.normalizeString(post.description).includes(query));
+        // Recherche sur les collaborateurs (tableau ou string)
+        let collabMatch = false;
+        if (post.collaborateurs && Array.isArray(post.collaborateurs)) {
+          collabMatch = post.collaborateurs.some((c: any) => {
+            if (typeof c === 'string') {
+              return this.normalizeString(c).includes(query);
+            } else if (c && c.nom) {
+              return this.normalizeString(c.nom).includes(query);
+            }
+            return false;
+          });
+        } else if (post.collaborateurs && typeof post.collaborateurs === 'string') {
+          collabMatch = this.normalizeString(post.collaborateurs).includes(query);
+        }
+        return titreMatch || auteurMatch || categorieMatch || domaineMatch || descriptionMatch || collabMatch;
+      });
     }
 
+    this.filteredPosts = finalPosts;
     this.chunkedPosts = this.chunkArray(this.filteredPosts, this.itemsPerPage);
     this.totalPages = this.chunkedPosts.length;
     this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);

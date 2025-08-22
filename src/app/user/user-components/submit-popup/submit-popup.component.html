@@ -19,6 +19,7 @@
           <i class="fas fa-chevron-circle-left"></i> Step 1 : Project Info <i class="fas fa-chevron-circle-right"></i>
         </h3>
       </div>
+
       <div class="form-group mb-1">
         <label for="title" class="mb-1">Titre</label>
         <input
@@ -26,29 +27,23 @@
           type="text"
           id="title"
           placeholder="Titre"
-          [ngClass]="{ 'custom-outline': (creationFormControl['title'].touched || submitted) && creationFormControl['title'].errors }"
           class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
         />
-        <span class="text-red-600 text-sm" *ngIf="(creationFormControl['title'].touched || submitted) && creationFormControl['title'].errors?.['required']">
-          Titre requis !
-        </span>
       </div>
+
 
       <div class="form-group mb-1">
         <label for="type" class="mb-1">Type Projet</label>
         <select
           formControlName="type"
           id="type"
-          [ngClass]="{ 'custom-outline': (creationFormControl['type'].touched || submitted) && creationFormControl['type'].errors }"
           class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
         >
-          <option value="" disabled selected>Type Projet</option>
+          <option value="" disabled>Type Projet</option>
           <option *ngFor="let projet of projets" [value]="projet">{{ projet }}</option>
         </select>
-        <span class="text-red-600 text-sm" *ngIf="(creationFormControl['type'].touched || submitted) && creationFormControl['type'].errors?.['required']">
-          Choisissez le type de projet !
-        </span>
       </div>
+
 
       <div class="form-group mb-1">
         <label for="file" class="mb-1">Couverture du Projet</label>
@@ -57,22 +52,25 @@
           type="file"
           id="file"
           (change)="onFileSelected($event)"
-          [ngClass]="{ 'custom-outline': (creationFormControl['file'].touched || submitted) && creationFormControl['file'].errors }"
           class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
         />
-        <span class="text-red-600 text-sm" *ngIf="(creationFormControl['file'].touched || submitted) && creationFormControl['file'].errors?.['required']">
-          Couverture projet requis !
-        </span>
       </div>
 
-      <div class="flex mt-1 justify-end">
+      <div class="flex flex-col mt-1 justify-end items-end">
         <button
           type="button"
           (click)="nextStep()"
-          class="mt-1 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark"
+          [disabled]="isLoadingStep1"
+          [ngClass]="{
+            'bg-customBlue hover:bg-customBlue-dark cursor-pointer': creationForm.value.title && creationForm.value.type && selectedFile && !isLoadingStep1,
+            'bg-gray-300 cursor-not-allowed': !creationForm.value.title || !creationForm.value.type || !selectedFile || isLoadingStep1
+          }"
+          class="mt-1 px-4 py-2 text-white rounded-lg flex items-center justify-center transition-colors duration-200"
         >
-          Next <i class="fas fa-chevron-right"></i>
+          <span *ngIf="!isLoadingStep1">Next <i class="fas fa-chevron-right"></i></span>
+          <mat-spinner *ngIf="isLoadingStep1" [diameter]="22"></mat-spinner>
         </button>
+        <span *ngIf="ErrorMessage" class="text-red-600 text-sm mt-2">{{ ErrorMessage }}</span>
       </div>
     </div>
 
@@ -126,9 +124,11 @@
         <button
           type="button"
           (click)="nextStep()"
-          class="px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark"
+          class="px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark flex items-center justify-center"
+          [disabled]="isLoadingStep2"
         >
-          Next <i class="fas fa-chevron-right"></i>
+          <span *ngIf="!isLoadingStep2">Next <i class="fas fa-chevron-right"></i></span>
+          <mat-spinner *ngIf="isLoadingStep2" [diameter]="22"></mat-spinner>
         </button>
       </div>
     </div>
@@ -164,17 +164,23 @@
           Previous
         </button>
         <button
-
-        type="button"
-          (click)="nextStep(); formType='document';"
-          class="px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark"
-          [disabled]="creationForm.invalid"
+          type="button"
+          (click)="nextStep()"
+          class="px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark flex items-center justify-center"
+          [disabled]="isLoadingStep3"
         >
-          Next <i class="fas fa-chevron-right"></i>
+          <span *ngIf="!isLoadingStep3">Next <i class="fas fa-chevron-right"></i></span>
+          <span *ngIf="isLoadingStep3" class="flex items-center"><mat-spinner [diameter]="22"></mat-spinner><span class="ml-2">Création du projet...</span></span>
         </button>
       </div>
 
       <div class="text-red-600 mt-2 text-sm text-center" *ngIf="ErrorMessage">{{ ErrorMessage }}</div>
+
+      <!-- Spinner et message lors du chargement vers l'étape 4 -->
+      <div *ngIf="isLoadingStep3" class="flex flex-col items-center justify-center mt-4">
+        <mat-spinner [diameter]="36"></mat-spinner>
+        <span class="mt-2 text-customBlue font-semibold">Création du projet en cours, veuillez patienter...</span>
+      </div>
     </div>
   </form>
 
@@ -197,12 +203,8 @@
           type="text"
           id="title"
           placeholder="Nom du Document"
-          [ngClass]="{ 'custom-outline': (documentFormControl['title'].touched || submitted) && documentFormControl['title'].errors }"
           class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
         />
-        <span class="text-red-600 text-sm" *ngIf="(documentFormControl['title'].touched || submitted) && documentFormControl['title'].errors?.['required']">
-          Nom du document requis !
-        </span>
       </div>
 
       <div class="form-group mb-1">
@@ -211,29 +213,27 @@
           type="file"
           id="file"
           (change)="onFileSelectedD($event)"
-          [ngClass]="{ 'custom-outline': (documentFormControl['file'].touched || submitted) && documentFormControl['file'].errors }"
           class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
         />
-        <span class="text-red-600 text-sm" *ngIf="(documentFormControl['file'].touched || submitted) && documentFormControl['file'].errors?.['required']">
-          Fichier requis !
-        </span>
       </div>
 
       <div class="flex justify-between mt-3">
         <button
           type="submit"
           class="px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark disabled:bg-gray-300 disabled:cursor-not-allowed"
-          [disabled]="documentForm.invalid"
+          [disabled]="isLoading"
         >
           <span *ngIf="!isLoading"><i class="fas fa-plus"></i> Add</span>
           <mat-spinner *ngIf="isLoading" [diameter]="24"></mat-spinner>
         </button>
         <button
+          type="button"
           (click)="nextStep(); formType='collaborator';"
-          class="mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark"
-          [disabled]="!saveD"
+          class="mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark flex items-center justify-center"
+          [disabled]="isLoadingStep4 || !saveD"
         >
-          Next <i class="fas fa-chevron-right"></i>
+          <span *ngIf="!isLoadingStep4">Next <i class="fas fa-chevron-right"></i></span>
+          <mat-spinner *ngIf="isLoadingStep4" [diameter]="22"></mat-spinner>
         </button>
       </div>
     </div>
@@ -258,12 +258,8 @@
           type="text"
           id="name"
           placeholder="Nom du Collaborateur"
-          [ngClass]="{ 'custom-outline': (collaboratorFormControl['name'].touched || submitted) && collaboratorFormControl['name'].errors }"
           class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
         />
-        <span class="text-red-600 text-sm" *ngIf="(collaboratorFormControl['name'].touched || submitted) && collaboratorFormControl['name'].errors?.['required']">
-          Nom du collaborateur requis !
-        </span>
       </div>
 
       <div class="form-group mb-1">
@@ -273,15 +269,8 @@
           type="email"
           id="email"
           placeholder="Email du Collaborateur"
-          [ngClass]="{ 'custom-outline': (collaboratorFormControl['email'].touched || submitted) && collaboratorFormControl['email'].errors }"
           class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
         />
-        <span class="text-red-600 text-sm" *ngIf="(collaboratorFormControl['email'].touched || submitted) && collaboratorFormControl['email'].errors?.['required']">
-          Adresse Email requis !
-        </span>
-        <span class="text-red-600 text-sm" *ngIf="(collaboratorFormControl['email'].touched || submitted) && collaboratorFormControl['email'].errors?.['email']">
-          Adresse Email invalide !
-        </span>
       </div>
 
       <div class="flex justify-between mt-3">
@@ -294,10 +283,13 @@
           <mat-spinner *ngIf="isLoading" [diameter]="24"></mat-spinner>
         </button>
         <button
+          type="button"
           (click)="nextStep(); formType='admin';"
-          class="mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark"
+          class="mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark flex items-center justify-center"
+          [disabled]="isLoadingStep5"
         >
-          Next <i class="fas fa-chevron-right"></i>
+          <span *ngIf="!isLoadingStep5">Next <i class="fas fa-chevron-right"></i></span>
+          <mat-spinner *ngIf="isLoadingStep5" [diameter]="22"></mat-spinner>
         </button>
       </div>
     </div>
@@ -346,10 +338,11 @@
         <button
           type="button"
           (click)="onSubmit()"
-          class="mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark disabled:bg-gray-300 disabled:cursor-not-allowed"
-          [disabled]="adminForm.invalid || isLoading"
+          class="mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center"
+          [disabled]="isLoadingStep6"
         >
-          Soumettre <i class="fas fa-paper-plane"></i>
+          <span *ngIf="!isLoadingStep6">Soumettre <i class="fas fa-paper-plane"></i></span>
+          <mat-spinner *ngIf="isLoadingStep6" [diameter]="22"></mat-spinner>
         </button>
       </div>
     </div>

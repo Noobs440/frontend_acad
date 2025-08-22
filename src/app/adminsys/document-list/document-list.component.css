@@ -1,12 +1,4 @@
 /* --- Modernisation spécifique pour document-list --- */
-/* --- Modernisation spécifique pour document-list --- */
-  max-width: 900px;
-  margin: 32px auto;
-  background: #f8fafc;
-  border-radius: 18px;
-  box-shadow: 0 4px 24px 0 rgba(52, 152, 219, 0.08), 0 1.5px 4px 0 rgba(44,62,80,0.04);
-
-  /* --- Modernisation spécifique pour document-list --- */
   .document-list {
     max-width: 900px;
     margin: 32px auto;
@@ -242,7 +234,6 @@
       padding: 4px;
     }
   }
-}
 td button:last-child:hover {
   background: #f59e42;
 }

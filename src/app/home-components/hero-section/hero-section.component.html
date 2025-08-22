@@ -1,26 +1,30 @@
+
 <!-- Hero Section -->
 <section id="hero" class="hero section">
   <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-6">
-        <h2 [@fadeUp]>{{ 'WELCOME_MESSAGE' | translate }}</h2>
-        <p [@fadeUp]>{{ 'WELCOME_DESCRIPTION' | translate }}</p>
+    <div class="row justify-content-center align-items-center flex-wrap-reverse">
+      <div class="col-lg-6 col-12 text-center text-lg-start mb-4 mb-lg-0">
+        <h1 class="hero-title" [@fadeUp]>CollabFacultyRise Bienvenue dans le monde de lacollaboration entre Etudiant et Professeurs de l'universite de Dschang</h1>
+        <p class="hero-desc" [@fadeUp]>Tu es jeune Etudiant en Faculte des Science de l'universite de Dschang, Amoureur di digital mais tu ne sais par ou commencer pour te lancer, 
+          CollabFacultyRise est la plateforme qu'il te faut. Nous te proposons des projets de fin d'etude, des exemple de Memoire, article et bien d'autres. 
+          Nous sommes la reference du numerique de la faculter.  
+        </p>
       </div>
-      <div class="col-lg-5">
-        <div class="search-overlay-wrapper">
-          <form (ngSubmit)="onSubmitSearch()" class="sign-up-form d-flex">
-            <input name="searchInput" [(ngModel)]="searchValue" type="text" class="form-control" placeholder="{{ 'SEARCH_PLACEHOLDER' | translate }}" (focus)="showOverlay()">
-            <button type="submit" class="btn"><i class="fas fa-search"></i></button>
+      <div class="col-lg-5 col-12">
+        <div class="search-overlay-wrapper position-relative">
+          <form (ngSubmit)="onSubmitSearch()" class="sign-up-form d-flex align-items-center shadow-sm rounded">
+            <input name="searchInput" [(ngModel)]="searchValue" type="text" class="form-control search-input" placeholder="Recherche sur auteur, nom de projet, domaine..." (focus)="showOverlay()" autocomplete="off" [attr.aria-label]="'SEARCH_PLACEHOLDER' | translate" (keyup.enter)="onSubmitSearch()">
+            <button type="submit" class="btn search-btn" [attr.aria-label]="'Rechercher'" (click)="onSubmitSearch()"><i class="fas fa-search"></i></button>
           </form>
-          <div class="overlay-content custom-scroll" *ngIf="overlayVisible">
-            <div class="col-lg-12">
-              <ul>
-                <label for="">{{ 'PROJECTS_LABEL' | translate }}</label>
-                <li (mousedown)="search(project.titre_projet)" *ngFor="let project of data">
+          <div class="overlay-content custom-scroll shadow-lg rounded" *ngIf="overlayVisible">
+            <div class="col-12 p-2">
+              <ul class="list-unstyled mb-0">
+                <li class="overlay-label">{{ 'PROJECTS_LABEL' | translate }}</li>
+                <li class="overlay-item" (mousedown)="search(project.titre_projet)" *ngFor="let project of data">
                   <i class="fas fa-search"></i> {{ project.titre_projet }}
                 </li>
-                <label for="">{{ 'DOMAINS_LABEL' | translate }}</label>
-                <li (mousedown)="search(category.nom_cat)" *ngFor="let category of data2">
+                <li class="overlay-label mt-2">{{ 'DOMAINS_LABEL' | translate }}</li>
+                <li class="overlay-item" (mousedown)="search(category.nom_cat)" *ngFor="let category of data2">
                   <i class="fas fa-search"></i> {{ category.nom_cat }}
                 </li>
               </ul>
@@ -36,34 +40,18 @@
       </div>
     </div>
     <div class="carousel-container position-relative">
-      <button class="carousel-control-prev" type="button" data-bs-target="#categoryCarousel" data-bs-slide="prev">
+  <button class="carousel-control-prev custom-carousel-btn" type="button" data-bs-target="#categoryCarousel" data-bs-slide="prev" [attr.aria-label]="'PREVIOUS' | translate">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">{{ 'PREVIOUS' | translate }}</span>
       </button>
       <div id="categoryCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner bg-white p-4 rounded">
           <div *ngIf="isLoading" class="container d-flex projects p-4 justify-content-center align-items-center">
-            <div class="spinner-grow text-primary" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner-grow text-secondary" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner-grow text-success" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner-grow text-danger" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner-grow text-warning" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner-grow text-info" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner-grow text-info" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
+            <div class="spinner-grow text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+            <div class="spinner-grow text-secondary" role="status"><span class="visually-hidden">Loading...</span></div>
+            <div class="spinner-grow text-success" role="status"><span class="visually-hidden">Loading...</span></div>
+            <div class="spinner-grow text-danger" role="status"><span class="visually-hidden">Loading...</span></div>
+            <div class="spinner-grow text-warning" role="status"><span class="visually-hidden">Loading...</span></div>
+            <div class="spinner-grow text-info" role="status"><span class="visually-hidden">Loading...</span></div>
           </div>
           <div *ngFor="let chunk of chunkedCategories; let i = index" class="carousel-item" [class.active]="i === 0">
             <div class="row align-items-stretch">
@@ -74,20 +62,19 @@
                   </div>
                   <div>
                     <h3>{{ category.nom_cat }}</h3>
-                    <span>{{ category.projets_count }} {{ 'PROJECTS' | translate }}</span>
+                    <span>{{ category.projets_count }} Projtes</span>
                   </div>
                 </a>
               </div>
             </div>
-            <div class="consultMore">
-              <a [routerLink]="['/home/category']">{{ 'CONSULT_MORE_DOMAINS' | translate }}</a>
+            <div class="consultMore text-center mt-2">
+              <a [routerLink]="['/home/category']" class="consult-link">{{ 'CONSULT_MORE_DOMAINS' | translate }}</a>
             </div>
           </div>
         </div>
       </div>
-      <button class="carousel-control-next" type="button" data-bs-target="#categoryCarousel" data-bs-slide="next">
+  <button class="carousel-control-next custom-carousel-btn" type="button" data-bs-target="#categoryCarousel" data-bs-slide="next" [attr.aria-label]="'NEXT' | translate">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">{{ 'NEXT' | translate }}</span>
       </button>
     </div>
   </div>

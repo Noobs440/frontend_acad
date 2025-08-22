@@ -5,26 +5,29 @@
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
       <div>
         <h1 class="fw-bold text-primary mb-0">{{ user_name | uppercase }} <span class="text-dark">Dashboard</span></h1>
-        <nav>
-          <ol class="breadcrumb bg-white rounded shadow-sm px-3 py-2 mb-0">
-            <li class="breadcrumb-item">
-              <a [routerLink]="['/home']">Home</a>
-            </li>
-            <li class="breadcrumb-item">
-              <a [routerLink]="['/user/dashboard']">{{ user_name }} Dashboard</a>
-            </li>
-            <li class="breadcrumb-item active">{{ selectedProjectTitle }}</li>
-          </ol>
-        </nav>
+  <nav class="breadcrumb-fixed">
+    <ol class="breadcrumb bg-white rounded shadow-sm px-4 py-3 mb-0" style="font-size:1.15rem;">
+      <li class="breadcrumb-item">
+        <a [routerLink]="['/home']" style="font-weight:600; color:#06BBCC;">Home</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a [routerLink]="['/user/dashboard']" style="font-weight:600; color:#06BBCC;">{{ user_name }} Dashboard</a>
+      </li>
+      <li class="breadcrumb-item active" style="font-weight:700; color:#222;">{{ selectedProjectTitle }}</li>
+    </ol>
+  </nav>
       </div>
-      <div class="d-flex flex-wrap gap-2">
-        <button class="btn btn-outline-primary d-flex align-items-center" (click)="openDialog('document')">
+      <div class="d-flex flex-wrap gap-3 mt-2" *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'">
+        <button class="btn btn-action btn-outline-primary d-flex align-items-center px-4 py-2 shadow-lg fs-5 fw-bold"
+                (click)="openDialog('document')">
           <i class="fas fa-plus me-2"></i> Ajouter un document
         </button>
-        <button class="btn btn-outline-success d-flex align-items-center" (click)="openDialog('collaborator')">
+        <button class="btn btn-action btn-outline-success d-flex align-items-center px-4 py-2 shadow-lg fs-5 fw-bold"
+                (click)="openDialog('collaborator')">
           <i class="fas fa-plus me-2"></i> Ajouter un collaborateur
         </button>
-        <button class="btn btn-outline-danger d-flex align-items-center" (click)="openDeleteDialog(deleteDialog)">
+        <button class="btn btn-action btn-outline-danger d-flex align-items-center px-4 py-2 shadow-lg fs-5 fw-bold"
+                (click)="openDeleteDialog(deleteDialog)">
           <i class="fas fa-trash me-2"></i> Supprimer
         </button>
       </div>
@@ -42,21 +45,33 @@
             style="max-height: 320px; object-fit: cover;"
           />
           <div class="card-body">
-            <h3 class="fw-bold text-primary mb-2">{{ selectedProjectTitle }} <span class="badge bg-secondary ms-2">{{ type }}</span></h3>
-            <p class="text-muted">{{ description }}</p>
-            <ul class="list-unstyled mb-0">
-              <li class="mb-2">
-                <i class="bi bi-person-circle me-2"></i>
-                <span class="fw-semibold">{{ author }}</span>
-              </li>
-              <li class="mb-2">
-                <i class="fas fa-graduation-cap me-2"></i>
-                <span>{{ level }}</span>
-              </li>
-              <li>
-                <i class="fas fa-eye me-2"></i>
-                <span>{{ views }} vues - <span class="fw-semibold">{{ projectStatus }}</span></span>
-              </li>
+            <h3 class="project-title" [ngClass]="{'title-ellipsis': !isTitleExpanded}" (click)="isTitleExpanded = !isTitleExpanded" title="Cliquez pour voir le titre complet">
+              <span class="field-label">Titre :</span>
+              <span *ngIf="!isTitleExpanded">{{ selectedProjectTitle || '' }}<span *ngIf="(selectedProjectTitle || '').length > 50">...</span></span>
+              <span *ngIf="isTitleExpanded">{{ selectedProjectTitle }}</span>
+              <span class="type-badge">({{ type }})</span>
+            </h3>
+            <div class="project-desc-block">
+              <span class="field-label">Description :</span>
+              <span *ngIf="!isDescriptionExpanded">
+                <span class="desc-ellipsis">{{ description }}</span>
+                <a *ngIf="description.length > 0" class="desc-toggle" (click)="isDescriptionExpanded = true">Voir plus</a>
+              </span>
+              <span *ngIf="isDescriptionExpanded">
+                {{ description }}
+                <a *ngIf="description.length > 0" class="desc-toggle" (click)="isDescriptionExpanded = false">Voir moins</a>
+              </span>
+            </div>
+            <div *ngIf="!isMetaExpanded">
+              <a class="desc-toggle" (click)="isMetaExpanded = true">Voir plus de détails</a>
+            </div>
+            <ul class="project-meta list-unstyled mb-0" *ngIf="isMetaExpanded">
+              <li class="mb-2"><span class="field-label">Auteur :</span> <i class="bi bi-person-circle me-2"></i> <span class="fw-semibold">{{ author }}</span></li>
+              <li class="mb-2"><span class="field-label">Niveau :</span> <i class="fas fa-graduation-cap me-2"></i> <span>{{ level }}</span></li>
+              <li class="mb-2"><span class="field-label">Type :</span> <span>{{ type }}</span></li>
+              <li class="mb-2"><span class="field-label">Date :</span> <span>{{ date | date:'dd/MM/yyyy' }}</span></li>
+              <li><span class="field-label">Vues :</span> <i class="fas fa-eye me-2"></i> <span>{{ views }}</span> - <span class="fw-semibold">{{ projectStatus }}</span></li>
+              <li><a class="desc-toggle" (click)="isMetaExpanded = false">Masquer les détails</a></li>
             </ul>
             <div *ngIf="projectStatus === 'Rejected'" class="alert alert-danger mt-3 d-flex flex-column flex-md-row align-items-md-center gap-3">
               <div>
@@ -64,9 +79,12 @@
                 <span>{{ getRejectionReason() }}</span>
               </div>
             </div>
-            <div *ngIf="projectStatus === 'Rejected'" class="mt-2 mb-3">
+            <div *ngIf="projectStatus === 'Rejected'" class="mt-2 mb-3 d-flex gap-2">
               <button class="btn btn-lg btn-warning text-white fw-bold px-4 py-2 shadow-sm" (click)="resubmitProject()">
                 <i class="fas fa-redo me-2"></i> Resoumettre le projet
+              </button>
+              <button class="btn btn-lg btn-outline-secondary fw-bold px-4 py-2 shadow-sm" (click)="saveAsDraft()">
+                <i class="fas fa-save me-2"></i> Enregistrer comme brouillon
               </button>
             </div>
             <div *ngIf="(projectStatus === 'Not Submitted') && !Submitted" class="mt-3">
@@ -74,7 +92,7 @@
                 <i class="fas fa-plus"></i> Soumettre
               </button>
             </div>
-            <div class="mt-3">
+            <div class="mt-3" *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'">
               <label for="adminSelect" class="form-label">Choisir un admin :</label>
               <div class="input-group">
                 <select id="adminSelect" class="form-select" [(ngModel)]="selectedAdminId">
@@ -83,8 +101,8 @@
                     {{ admin.nom_user }}
                   </option>
                 </select>
-                <button class="btn btn-primary" 
-                        (click)="selectedAdminId && addAdminToProject(selectedAdminId)" 
+                <button class="btn btn-primary"
+                        (click)="selectedAdminId && addAdminToProject(selectedAdminId)"
                         [disabled]="!selectedAdminId">
                   <i class="fas fa-user-plus"></i> Assigner
                 </button>
@@ -99,7 +117,7 @@
             <h4 class="fw-bold mb-3">Documents liés</h4>
             <div class="download-catalog">
               <a
-                *ngFor="let document of documents | slice:0:(isExpanded ? documents.length : 4)"
+                *ngFor="let document of documents | slice:0:(isDocumentsExpanded ? documents.length : 2)"
                 class="document-item d-flex justify-content-between align-items-center px-2 py-2 rounded-3 mb-2 bg-light border hover-shadow"
                 href="#"
               >
@@ -114,6 +132,7 @@
                   </span>
                 </div>
                 <i
+                  *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'"
                   class="fas fa-trash-alt text-danger ms-2"
                   style="cursor: pointer"
                   (click)="confirmDeleteDocument(document)"
@@ -121,9 +140,9 @@
                 ></i>
               </a>
             </div>
-            <div *ngIf="documents.length > 4" class="show-more text-center mt-2" (click)="toggleExpand()" style="cursor:pointer;">
-              <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-              <span class="ms-1">{{ isExpanded ? 'Afficher moins' : 'Afficher plus' }}</span>
+            <div *ngIf="documents.length > 2" class="show-more text-center mt-2" (click)="isDocumentsExpanded = !isDocumentsExpanded" style="cursor:pointer;">
+              <i class="bi" [ngClass]="isDocumentsExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+              <span class="ms-1">{{ isDocumentsExpanded ? 'Afficher moins' : 'Afficher plus' }}</span>
             </div>
           </div>
         </div>
@@ -132,14 +151,14 @@
             <h4 class="fw-bold mb-3">Collaborateurs liés</h4>
             <div class="download-catalog">
               <div
-                *ngFor="let collaborator of collaborators | slice:0:(isExpanded ? collaborators.length : 4)"
+                *ngFor="let collaborator of collaborators | slice:0:(isCollaboratorsExpanded ? collaborators.length : 2)"
                 class="d-flex justify-content-between align-items-center px-2 py-2 rounded-3 mb-2 bg-light border hover-shadow"
               >
                 <div>
                   <i class="bi bi-person text-secondary me-2"></i>
                   <span>{{ collaborator.nom_collab }} <span class="text-muted">{{ collaborator.email_collab }}</span></span>
                 </div>
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2" *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'">
                   <button
                     (click)="editCollaborator(collaborator)"
                     class="btn btn-sm btn-outline-primary px-2 py-1"
@@ -157,9 +176,9 @@
                 </div>
               </div>
             </div>
-            <div *ngIf="collaborators.length > 4" class="show-more text-center mt-2" (click)="toggleExpand()" style="cursor:pointer;">
-              <i class="bi" [ngClass]="isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-              <span class="ms-1">{{ isExpanded ? 'Afficher moins' : 'Afficher plus' }}</span>
+            <div *ngIf="collaborators.length > 2" class="show-more text-center mt-2" (click)="isCollaboratorsExpanded = !isCollaboratorsExpanded" style="cursor:pointer;">
+              <i class="bi" [ngClass]="isCollaboratorsExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+              <span class="ms-1">{{ isCollaboratorsExpanded ? 'Afficher moins' : 'Afficher plus' }}</span>
             </div>
           </div>
         </div>

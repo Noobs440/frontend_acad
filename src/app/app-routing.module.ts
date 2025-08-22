@@ -19,12 +19,22 @@ import { AdminsysModule } from './adminsys/adminsys.module';
 import { AuthGuard } from './guards/auth.gard';
 import { AdminGuard } from './guards/admin.guard';
 import { UserGuard } from './guards/user.guard';
-import { HelpComponentAdmin } from './admin/admin-components/help/help.component';
+import { AdminsysGuard } from './guards/adminsys.guard';
 import { HelpComponent } from './user/user-components/help/help.component';
+import {AdminsysComponent} from './adminsys/adminsys.component';
 const routes: Routes = [
 
-  { path: 'adminsys', loadChildren: () => import('./adminsys/adminsys.module').then(m => m.AdminsysModule) },
+  
 
+  {
+    path: 'adminsys',
+    component: AdminsysComponent,
+    canActivate: [AdminsysGuard, AuthGuard],
+    children: [
+      { path: '', loadChildren: () => import('./adminsys/adminsys.module').then(m => m.AdminsysModule) }
+    ]
+  },
+  
   {
     path: 'admin',
     component: AdminComponent,
@@ -40,7 +50,7 @@ const routes: Routes = [
 },
 
    { path: 'helpUser', component: HelpComponent },
-   { path: 'helpAdmin', component: HelpComponentAdmin},
+  { path: 'helpAdmin', component: HelpComponent},
   {
     path: 'user',
     component: UserComponent,
@@ -50,7 +60,7 @@ const routes: Routes = [
     canActivate: [UserGuard, AuthGuard]
   },
    { path: 'helpUser', component: HelpComponent },
-   { path: 'helpAdmin', component: HelpComponentAdmin},
+  { path: 'helpAdmin', component: HelpComponent},
   {
       path: 'profile',
       component: ProfileComponent,

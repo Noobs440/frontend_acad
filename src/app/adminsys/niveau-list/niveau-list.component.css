@@ -1,10 +1,12 @@
+th, td {
+th {
 /* Modern Dashboard Styles */
 .dashboard-container {
-  /* Style harmonisé pour tous les composants -list (adminsys) */
   font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
   color: #23272f;
   background: linear-gradient(120deg, #f8fafc 0%, #e8f0fe 100%);
   min-height: 100vh;
+}
 
 /* --- Modernisation spécifique pour niveau-list --- */
 .niveau-list {
@@ -22,10 +24,88 @@
   margin-bottom: 18px;
   align-items: center;
 }
+.controls input[type="text"] {
+  flex-grow: 1;
+  padding: 10px 14px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  transition: border 0.2s;
+}
+.controls input[type="text"]:focus {
+  border: 1.5px solid #6366f1;
+  outline: none;
+}
+.controls button {
+  padding: 10px 18px;
+  border: none;
+  background: linear-gradient(90deg, #6366f1 60%, #60a5fa 100%);
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px 0 rgba(99,102,241,0.10);
+  transition: background 0.2s, transform 0.15s;
+}
+.controls button:hover {
+  background: linear-gradient(90deg, #60a5fa 60%, #6366f1 100%);
+  transform: scale(1.04);
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  background: none;
+  font-size: 1rem;
+}
+th, td {
+  padding: 14px 10px;
+  background: #fff;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px 0 rgba(99,102,241,0.07);
+}
+th {
+  color: #6366f1;
+  font-size: 1.05rem;
+  font-weight: 700;
+  background: #e0e7ff;
+  border-bottom: 2px solid #6366f1;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 18px;
+}
+.pagination button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #6366f1;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.pagination button:disabled {
+  background: #d1d5db;
+  color: #888;
+  cursor: not-allowed;
+}
 .pagination button:hover:not(:disabled) {
   background: #60a5fa;
   transform: scale(1.04);
 }
+
+/* Modal backdrop */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -34,6 +114,8 @@
   display: grid;
   place-items: center;
 }
+
+/* Modal */
 .modal {
   background: #fff;
   border-radius: 14px;
@@ -45,7 +127,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-/* --- Modernisation spécifique pour niveau-list --- */
+}
 .modal label {
   display: flex;
   flex-direction: column;
@@ -63,9 +145,9 @@
   width: 100%;
   box-sizing: border-box;
   transition: border 0.2s;
-/* --- Style harmonisé sur faculty-list --- */
+}
 .modal input:focus,
-/* --- Style harmonisé sur faculty-list --- */
+.modal textarea:focus {
   border: 1.5px solid #6366f1;
   outline: none;
 }
@@ -90,6 +172,24 @@
   background: #60a5fa;
   transform: scale(1.04);
 }
+
+/* Quick actions */
+.quick-actions button {
+  border: none;
+  background: linear-gradient(90deg, #6366f1 60%, #60a5fa 100%);
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px 0 rgba(99,102,241,0.10);
+  transition: background 0.2s, transform 0.15s;
+}
+.quick-actions button:hover {
+  background: linear-gradient(90deg, #60a5fa 60%, #6366f1 100%);
+  transform: scale(1.04);
+}
+
 @media (max-width: 900px) {
   .niveau-list {
     padding: 0 2vw;
@@ -120,6 +220,14 @@
     max-width: 99vw;
     padding: 10px;
   }
+  .stats-cards {
+    flex-direction: column;
+    gap: 18px;
+  }
+  .quick-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 @media (max-width: 600px) {
   .niveau-list {
@@ -135,139 +243,5 @@
     padding: 4px;
   }
 }
-  border: none;
-  background: linear-gradient(90deg, #6366f1 60%, #60a5fa 100%);
-  color: #fff;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 2px 8px 0 rgba(99,102,241,0.10);
-  transition: background 0.2s, transform 0.15s;
 }
-.quick-actions button:hover {
-  background: linear-gradient(90deg, #60a5fa 60%, #6366f1 100%);
-  transform: scale(1.04);
-}
-
-@media (max-width: 900px) {
-  .stats-cards {
-    flex-direction: column;
-    gap: 18px;
-  }
-  .quick-actions {
-    flex-direction: column;
-    gap: 10px;
-  }
-}
-.niveau-list {
-  max-width: 800px;
-  margin: auto;
-  font-family: Arial, sans-serif;
-}
-
-.controls {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-  align-items: center;
-}
-
-.controls input[type="text"] {
-  flex-grow: 1;
-  padding: 6px 8px;
-  font-size: 14px;
-}
-
-.controls button {
-  padding: 6px 12px;
-  cursor: pointer;
-}
-
-/* Table */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-
-th {
-  background-color: #f2f2f2;
-  font-weight: bold;
-}
-
-/* Pagination */
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 10px;
-}
-
-.pagination button {
-  padding: 6px 12px;
-  cursor: pointer;
-}
-
-/* Modal backdrop */
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 1000;
-  display: grid;
-  place-items: center;
-}
-
-/* Modal */
-.modal {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  width: 400px;
-  max-width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-  color: black;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.modal label {
-  display: flex;
-  flex-direction: column;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.modal input,
-.modal textarea {
-  padding: 6px;
-  font-size: 14px;
-  margin-top: 4px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.modal-actions button {
-  padding: 6px 12px;
-  cursor: pointer;
 }

@@ -20,6 +20,12 @@ import { UserService } from '../../../services/user.service';
   providers: [DatePipe]
 })
 export class SubmitPopupComponent implements OnInit {
+  isLoadingStep1 = false;
+  isLoadingStep2 = false;
+  isLoadingStep3 = false;
+  isLoadingStep4 = false;
+  isLoadingStep5 = false;
+  isLoadingStep6 = false;
   adminAdded: boolean = false;
   admins: any[] = [];
   selectedAdminId: string | null = null;
@@ -159,65 +165,113 @@ export class SubmitPopupComponent implements OnInit {
   }
 
   nextStep() {
-    // Si on passe à l'étape 4 (document), on ne peut avancer que si le projet est créé
+    this.submitted = true;
+    if (this.currentStep === 1) {
+      // Vérification manuelle pour UX : si un champ est manquant, afficher un message temporaire
+      if (!this.creationForm.value.title || !this.creationForm.value.type || !this.selectedFile) {
+        this.ErrorMessage = 'Veuillez remplir tous les champs requis (Titre, Type, Couverture).';
+        setTimeout(() => { this.ErrorMessage = ''; }, 3000);
+        return;
+      }
+      this.isLoadingStep1 = true;
+      this.isLoadingStep1 = false;
+      this.currentStep++;
+      return;
+    }
+    if (this.currentStep === 2) {
+      this.isLoadingStep2 = true;
+      if (this.creationForm.get('niveau')?.invalid || this.creationForm.get('category')?.invalid) {
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Attention', message: 'Veuillez remplir tous les champs requis.' }
+        });
+        this.isLoadingStep2 = false;
+        return;
+      }
+      this.isLoadingStep2 = false;
+      this.currentStep++;
+      return;
+    }
     if (this.currentStep === 3) {
-      if (!this.project_id) {
-        // On tente de créer le projet si ce n'est pas déjà fait
-        if (this.creationForm.valid && this.selectedFile) {
-          const formData = new FormData();
-          formData.append('titre_projet', this.creationForm.value.title);
-          formData.append('descript_projet', this.creationForm.value.summary);
-          formData.append('tbl_niveau_id', this.creationForm.value.niveau);
-          formData.append('user_id', this.user_id);
-          formData.append('tbl_categorie_id', this.creationForm.value.category);
-          formData.append('image', this.selectedFile);
-          formData.append('type', this.creationForm.value.type);
-          // Ajout de l'admin choisi si présent
-          if (this.selectedAdminId) {
-            formData.append('admin_id', this.selectedAdminId);
-          }
-          this.projetService.addProject(formData).subscribe({
-            next: value => {
-              this.project_id = value.id;
-              this.dialog.open(InfoDialogComponent, {
-                width: '350px',
-                data: { title: 'Succès', message: 'Projet créé avec succès !' }
-              });
-              this.formType = 'document';
-              this.currentStep++;
-            },
-            error: err => {
-              console.error('Erreur backend:', err.error);
-              if (err.error && err.error.errors) {
-                for (const key in err.error.errors) {
-                  if (err.error.errors.hasOwnProperty(key)) {
-                    console.error(`Champ: ${key} - Message: ${err.error.errors[key]}`);
-                  }
+      if (this.isLoadingStep3) {
+        // Si déjà en chargement, ne rien faire
+        return;
+      }
+      if (this.creationForm.get('summary')?.invalid) {
+        this.ErrorMessage = 'Veuillez remplir la description.';
+        setTimeout(() => { this.ErrorMessage = ''; }, 3000);
+        return;
+      }
+      if (!this.project_id && this.creationForm.valid && this.selectedFile) {
+        this.isLoadingStep3 = true;
+        const formData = new FormData();
+        formData.append('titre_projet', this.creationForm.value.title);
+        formData.append('descript_projet', this.creationForm.value.summary);
+        formData.append('tbl_niveau_id', this.creationForm.value.niveau);
+        formData.append('user_id', this.user_id);
+        formData.append('tbl_categorie_id', this.creationForm.value.category);
+        formData.append('image', this.selectedFile);
+        formData.append('type', this.creationForm.value.type);
+        if (this.selectedAdminId) {
+          formData.append('admin_id', this.selectedAdminId);
+        }
+        this.projetService.addProject(formData).subscribe({
+          next: value => {
+            this.project_id = value.id;
+            this.isLoadingStep3 = false;
+            this.formType = 'document';
+            this.currentStep++;
+          },
+          error: err => {
+            console.error('Erreur backend:', err.error);
+            if (err.error && err.error.errors) {
+              for (const key in err.error.errors) {
+                if (err.error.errors.hasOwnProperty(key)) {
+                  console.error(`Champ: ${key} - Message: ${err.error.errors[key]}`);
                 }
               }
-              this.ErrorMessage = "Erreur lors de la création du projet.";
-            },
-            complete: () => {
-              this.isLoading = false;
-              this.creationForm.reset();
-              this.submitted = false;
             }
-          });
-        } else {
-          this.dialog.open(InfoDialogComponent, {
-            width: '350px',
-            data: { title: 'Attention', message: 'Veuillez remplir tous les champs du projet et sélectionner une image avant de continuer.' }
-          });
-        }
-        return;
-      } else {
+            this.ErrorMessage = "Erreur lors de la création du projet.";
+            setTimeout(() => { this.ErrorMessage = ''; }, 3000);
+            this.isLoadingStep3 = false;
+          }
+        });
+      } else if (this.project_id) {
+        // Si le projet a déjà été créé, on peut avancer
         this.formType = 'document';
         this.currentStep++;
+      } else {
+        this.ErrorMessage = "Veuillez d'abord créer le projet.";
+        setTimeout(() => { this.ErrorMessage = ''; }, 3000);
       }
       return;
     }
-    if (this.currentStep < 6) {
+    if (this.currentStep === 4) {
+      this.isLoadingStep4 = true;
+      this.isLoadingStep4 = false;
+      this.formType = 'collaborator';
       this.currentStep++;
+      return;
+    }
+    if (this.currentStep === 5) {
+      this.isLoadingStep5 = true;
+      this.isLoadingStep5 = false;
+      this.formType = 'admin';
+      this.currentStep++;
+      return;
+    }
+    if (this.currentStep === 6) {
+      this.isLoadingStep6 = true;
+      if (this.adminForm.invalid) {
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Attention', message: 'Veuillez sélectionner un administrateur.' }
+        });
+        this.isLoadingStep6 = false;
+        return;
+      }
+      this.isLoadingStep6 = false;
+      // Soumission finale ici si besoin
     }
   }
 
@@ -239,13 +293,17 @@ export class SubmitPopupComponent implements OnInit {
     this.selectedFile = event.target.files[0];
     if (this.selectedFile) {
       this.creationForm.patchValue({ file: this.selectedFile.name });
+      this.creationForm.get('file')?.markAsTouched();
+      this.creationForm.get('file')?.updateValueAndValidity();
     }
   }
 
   onFileSelectedD(event: any) {
     this.selectedFileD = event.target.files[0];
     if (this.selectedFileD) {
-      this.documentForm.patchValue({ file: this.selectedFileD.name });
+      this.documentForm.patchValue({ file: this.selectedFileD });
+      this.documentForm.get('file')?.markAsTouched();
+      this.documentForm.get('file')?.updateValueAndValidity();
     }
   }
 

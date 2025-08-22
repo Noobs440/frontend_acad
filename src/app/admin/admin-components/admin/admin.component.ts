@@ -1,3 +1,4 @@
+  
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ProjetService } from '../../../services/projet.service';
 import { NotificationService } from '../../../services/notification.service';
@@ -19,6 +20,8 @@ export class AdminComponent implements OnInit {
   token: string | null = null;
   isLoggedIn: boolean = false;
   name: string = '';
+  projectStatuses: string[] = [];
+  selectedProjectStatus: string | null = null;
   surname!: string;
   role!: string;
   id: any;
@@ -35,9 +38,22 @@ export class AdminComponent implements OnInit {
     private notificationService: NotificationService,
     private dialog: MatDialog
   ) {}
+    openedStatus: string | null = null; // Pour gérer le statut déroulé
   isProjectsCollapsed: boolean = true;
   toggleProjects() {
     this.isProjectsCollapsed = !this.isProjectsCollapsed;
+  }
+
+  toggleStatus(status: string) {
+    if (this.openedStatus === status) {
+      this.openedStatus = null;
+      this.selectedProjectStatus = null;
+      this.filteredProjects = [];
+    } else {
+      this.openedStatus = status;
+      this.selectedProjectStatus = status;
+      this.filterProjectsByStatus(status);
+    }
   }
 
   ngOnInit(): void {
@@ -87,6 +103,7 @@ export class AdminComponent implements OnInit {
     if (!this.id) {
       this.projects = [];
       this.filteredProjects = [];
+      this.projectStatuses = [];
       return;
     }
     this.projetService.getProjects().subscribe({
@@ -113,14 +130,29 @@ export class AdminComponent implements OnInit {
             email: project.user?.email || ''
           }))
           .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        // Met à jour la liste des statuts uniques
+        this.projectStatuses = Array.from(new Set(this.projects.map(p => p.status).filter(Boolean)));
         this.applySearch();
       },
       error: (err) => {
         console.error('Erreur lors du chargement des projets admin:', err);
         this.projects = [];
         this.filteredProjects = [];
+        this.projectStatuses = [];
       }
     });
+  }
+
+  // Filtre les projets par statut sélectionné dans l'aside
+  filterProjectsByStatus(status: string) {
+    this.selectedProjectStatus = status;
+    this.filteredProjects = this.projects.filter(p => p.status === status);
+  }
+
+  // Pour réafficher tous les projets (option "Tous les statuts")
+  showAllProjects() {
+    this.selectedProjectStatus = null;
+    this.filteredProjects = [...this.projects];
   }
 
   applySearch(): void {

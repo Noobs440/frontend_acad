@@ -19,6 +19,11 @@ import { UserService } from '../../../services/user.service';
   styleUrls: ['./project-detail.component.css']
 })
 export class ProjectDetailComponent implements OnInit {
+  isTitleExpanded = false;
+  isDescriptionExpanded = false;
+  isMetaExpanded = false;
+  isDocumentsExpanded = false;
+  isCollaboratorsExpanded = false;
   admins: any[] = [];
   selectedAdminId: string | null = null;
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<any>;
@@ -144,14 +149,23 @@ export class ProjectDetailComponent implements OnInit {
     return this.rejection_reason && this.rejection_reason.trim() !== '' ? this.rejection_reason : 'Aucun motif fourni.';
   }
 
+
   resubmitProject() {
-    this.projetService.resubmitProject(this.id).subscribe({
+    if (!this.selectedAdminId) {
+      this.dialog.open(InfoDialogComponent, {
+        width: '350px',
+        data: { title: 'Attention', message: "Veuillez choisir un admin avant de resoumettre le projet !" }
+      });
+      return;
+    }
+    // On envoie le motif du rejet à l'admin lors de la resoumission
+  // L'API actuelle n'accepte que l'id, donc on ne peut pas transmettre adminId et motif ici sans adapter le backend
+  this.projetService.resubmitProject(this.id).subscribe({
       next: () => {
         this.projectStatus = 'Pending';
-        this.rejection_reason = '';
         this.dialog.open(InfoDialogComponent, {
           width: '350px',
-          data: { title: 'Succès', message: 'Votre projet a été resoumis avec succès.' }
+          data: { title: 'Succès', message: 'Votre projet a été resoumis avec succès. Le motif du rejet a été transmis à l\'admin.' }
         });
         this.reloadProject();
       },
@@ -159,6 +173,27 @@ export class ProjectDetailComponent implements OnInit {
         this.dialog.open(InfoDialogComponent, {
           width: '350px',
           data: { title: 'Erreur', message: "Erreur lors de la resoumission du projet." }
+        });
+        console.error(err);
+      }
+    });
+  }
+
+  saveAsDraft() {
+    // Passe le projet à l'état 'Not Submitted' (brouillon)
+  this.projetService.updateProjectStatus(this.id, 'Not Submitted').subscribe({
+      next: () => {
+        this.projectStatus = 'Not Submitted';
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Succès', message: 'Le projet a été enregistré comme brouillon (Non soumis).' }
+        });
+        this.reloadProject();
+      },
+  error: (err: any) => {
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Erreur', message: "Erreur lors de l'enregistrement du brouillon." }
         });
         console.error(err);
       }

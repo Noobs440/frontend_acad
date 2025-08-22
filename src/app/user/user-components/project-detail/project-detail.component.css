@@ -1,3 +1,115 @@
+.breadcrumb-fixed {
+  position: fixed;
+  top: 3em;
+  right: 0;
+  left: auto;
+  z-index: 1050;
+  background: white;
+  box-shadow: 0 4px 18px rgba(6,187,204,0.13);
+  padding: 1.2rem 2.5rem;
+  font-size: 1.25rem;
+  width: fit-content;
+  margin: 0;
+}
+body, .main, .pagetitle {
+  padding-top: 90px !important;
+}
+.breadcrumb-sticky-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+}
+.breadcrumb-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1050;
+  background: white;
+  box-shadow: 0 4px 18px rgba(6,187,204,0.13);
+  padding: 1.2rem 2.5rem;
+  font-size: 1.25rem;
+  width: fit-content;
+  margin-left: 0;
+  transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
+}
+@media (min-width: 768px) {
+  .breadcrumb-sticky.is-sticky {
+    margin-left: auto;
+    margin-right: 0;
+  }
+}
+.breadcrumb-sticky {
+  position: sticky;
+  top: 0;
+  right: 0;
+  left: auto;
+  z-index: 1050;
+  background: white;
+  box-shadow: 0 4px 18px rgba(6,187,204,0.13);
+  padding: 1.2rem 2.5rem;
+  font-size: 1.25rem;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: 0;
+}
+.btn-action {
+  transition: box-shadow 0.2s, background 0.2s, color 0.2s;
+  border-width: 2px;
+  border-radius: 0.7rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  box-shadow: 0 2px 12px rgba(6,187,204,0.10);
+}
+.btn-action:hover, .btn-action:focus {
+  box-shadow: 0 6px 24px rgba(6,187,204,0.18);
+  background: #06BBCC !important;
+  color: #fff !important;
+  border-color: #06BBCC !important;
+}
+.project-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.7rem;
+  text-align: left;
+  cursor: pointer;
+  max-width: 100%;
+}
+.title-ellipsis {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.desc-ellipsis {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  max-width: 100%;
+}
+.project-desc-block {
+  font-size: 1.08rem;
+  color: #444;
+  margin-bottom: 1.1rem;
+  text-align: left;
+}
+.desc-toggle {
+  color: #06BBCC;
+  cursor: pointer;
+  font-weight: 500;
+  margin-left: 0.5em;
+}
+.field-label {
+  font-weight: 600;
+  color: #06BBCC;
+  margin-right: 0.3em;
+}
+.type-badge {
+  font-size: 1rem;
+  color: #06BBCC;
+  font-weight: 500;
+}
 /* Effet d'ombre au survol pour les cartes et documents */
 .hover-shadow {
   transition: box-shadow 0.2s;

@@ -53,44 +53,31 @@
 
 
 
-    <div class="dashboard-cards-bar mb-4">
-      <!-- Cartes par statut -->
-      <ng-container *ngFor="let state of projectStates; let i = index">
-        <ng-container *ngIf="projectStates.indexOf(state) === i">
-          <div class="dashboard-card status-card" [ngClass]="{'active': selectedStateFilter === state}" (click)="onStateFilterChange(state)">
-            <div class="card-body d-flex align-items-center">
-              <div class="card-icon rounded-circle d-flex align-items-center justify-content-center me-3"
-                [ngStyle]="{
-                  'background-color':
-                    state === 'Approved' ? '#d1e7dd' :
-                    state === 'Pending' ? '#fff3cd' :
-                    state === 'Rejected' ? '#f8d7da' :
-                    '#e2e3e5'
-                }"
-                style="width:48px;height:48px;">
-                <img class="status-icon" src="assets/img/icon/images.png" alt="{{state}} icon" style="width:32px;" />
-              </div>
-              <div>
-                <h5 class="card-title mb-1">{{ state | titlecase }}</h5>
-                <span class="h4 fw-bold text-dark">{{ stateCounts[state] || 0 }}</span>
-              </div>
-            </div>
+
+    <!-- Cartes de filtre sur une seule ligne, intégrées à la section projets -->
+    <div class="dashboard-cards-bar mb-4" style="display: flex; gap: 0.7rem; width: 100%; flex-wrap: nowrap; justify-content: stretch; align-items: stretch;">
+      <ng-container *ngFor="let state of projectStates">
+        <div class="dashboard-card status-card px-2 py-1 d-flex flex-column align-items-center justify-content-center"
+             [ngClass]="{'active': selectedStateFilter === state}"
+             style="flex: 1 1 0; min-width: 0; font-size:0.95rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-radius: 0.7rem;"
+             (click)="onStateFilterChange(state)">
+          <div class="text-center w-100">
+            <div class="fw-bold" style="font-size: 0.98rem;">{{ state | titlecase }}</div>
+            <div class="h5 fw-bold text-dark mb-0">{{ stateCounts[state] || 0 }}</div>
           </div>
-        </ng-container>
+        </div>
       </ng-container>
-      <!-- Carte Projets en collaboration (unique, à la fin) -->
-      <div class="dashboard-card collab-card" [ngClass]="{'active': showCollabProjects}" (click)="onCollabCardClick()">
-        <div class="card-body d-flex align-items-center">
-          <div class="card-icon rounded-circle d-flex align-items-center justify-content-center bg-warning bg-opacity-25 me-3" style="width:48px;height:48px;">
-            <i class="bi bi-people-fill text-warning" style="font-size:2rem;"></i>
-          </div>
-          <div>
-            <h5 class="card-title mb-1">Projets en collaboration</h5>
-            <span class="h4 fw-bold text-dark">{{ collaboratorProjects.length }}</span>
-          </div>
+      <div class="dashboard-card collab-card px-2 py-1 d-flex flex-column align-items-center justify-content-center"
+           [ngClass]="{'active': showCollabProjects}"
+           style="flex: 1 1 0; min-width: 0; font-size:0.95rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-radius: 0.7rem;"
+           (click)="onCollabCardClick()">
+        <div class="text-center w-100">
+          <div class="fw-bold" style="font-size: 0.98rem;">Collaboration</div>
+          <div class="h5 fw-bold text-dark mb-0">{{ collaboratorProjects.length }}</div>
         </div>
       </div>
     </div>
+
 <style>
 .dashboard-cards-bar {
   display: flex;
