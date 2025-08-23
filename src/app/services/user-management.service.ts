@@ -1,6 +1,8 @@
+ 
+
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap, catchError, of } from 'rxjs';
+import { Observable, tap, catchError, of, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -41,5 +43,15 @@ export class UserManagementService {
     password: newPassword
   });
 }
-
+ /**
+   * Recherche un utilisateur par email (filtrage côté front)
+   */
+  findUserByEmail(email: string): Observable<any | null> {
+    return this.getUsers().pipe(
+      map((users: any[]) => {
+        const found = users.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
+        return found || null;
+      })
+    );
+  }
 }

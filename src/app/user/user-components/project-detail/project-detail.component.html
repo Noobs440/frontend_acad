@@ -131,13 +131,22 @@
                     {{ document.nom_doc }}
                   </span>
                 </div>
-                <i
-                  *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'"
-                  class="fas fa-trash-alt text-danger ms-2"
-                  style="cursor: pointer"
-                  (click)="confirmDeleteDocument(document)"
-                  title="Supprimer"
-                ></i>
+                <div class="d-flex align-items-center gap-2">
+                  <i
+                    *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'"
+                    class="fas fa-edit text-primary ms-2"
+                    style="cursor: pointer"
+                    (click)="editDocument(document)"
+                    title="Modifier"
+                  ></i>
+                  <i
+                    *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'"
+                    class="fas fa-trash-alt text-danger ms-2"
+                    style="cursor: pointer"
+                    (click)="confirmDeleteDocument(document)"
+                    title="Supprimer"
+                  ></i>
+                </div>
               </a>
             </div>
             <div *ngIf="documents.length > 2" class="show-more text-center mt-2" (click)="isDocumentsExpanded = !isDocumentsExpanded" style="cursor:pointer;">

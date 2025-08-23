@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { InfoDialogComponent } from '../../../shared/info-dialog/info-dialog.component';
 import { HttpClient } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
@@ -12,6 +13,7 @@ import { DocumentService } from '../../../services/document.service';
 import { CollaborateurService } from '../../../services/collaborateur.service';
 // import supprimé : plus de superviseur
 import { UserService } from '../../../services/user.service';
+import { UserManagementService } from '../../../services/user-management.service';
 
 @Component({
   selector: 'app-submit-popup',
@@ -65,7 +67,6 @@ export class SubmitPopupComponent implements OnInit {
   niveaux_id: any[] = [];
 
   constructor(
-    // private supService: SuperviseurService, // plus de superviseur
     private colService: CollaborateurService,
     private documentService: DocumentService,
     private dialogRef: MatDialogRef<SubmitPopupComponent>,
@@ -77,8 +78,55 @@ export class SubmitPopupComponent implements OnInit {
     private categoryService: CategoryService,
     private niveauService: NiveauService,
     private userService: UserService,
+    private userManagementService: UserManagementService,
     private dialog: MatDialog
   ) {}
+  // Pour la logique collaborateur avancée
+  foundUser: any = null;
+  showPasswordField: boolean = false;
+
+  onCollaboratorEmailInput() {
+    const email = this.collaboratorForm.value.email;
+    if (!email || !this.collaboratorForm.controls['email'].valid) {
+      this.foundUser = null;
+      this.showPasswordField = false;
+      this.collaboratorForm.get('name')?.reset();
+      this.collaboratorForm.get('name')?.enable();
+      return;
+    }
+    this.userManagementService.findUserByEmail(email).subscribe(user => {
+      if (user) {
+        this.foundUser = user;
+        this.showPasswordField = false;
+        this.collaboratorForm.get('name')?.setValue(user.nom_user);
+        this.collaboratorForm.get('name')?.disable();
+      } else {
+        // Demander confirmation avant de créer
+        const confirmDialog = this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: {
+            title: 'Utilisateur introuvable',
+            message: "Cet email n'existe pas. Voulez-vous créer ce collaborateur ?",
+            confirm: true
+          }
+        });
+        confirmDialog.afterClosed().subscribe(result => {
+          if (result === true) {
+            this.foundUser = null;
+            this.showPasswordField = true;
+            this.collaboratorForm.get('name')?.reset();
+            this.collaboratorForm.get('name')?.enable();
+          } else {
+            this.collaboratorForm.get('email')?.reset();
+            this.foundUser = null;
+            this.showPasswordField = false;
+            this.collaboratorForm.get('name')?.reset();
+            this.collaboratorForm.get('name')?.enable();
+          }
+        });
+      }
+    });
+  }
 
   ngOnInit() {
     this.creationForm = this.fb.group({
@@ -99,6 +147,7 @@ export class SubmitPopupComponent implements OnInit {
     this.collaboratorForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
+      password: ['']
     });
 
   this.adminForm = this.fb.group({
@@ -359,38 +408,107 @@ export class SubmitPopupComponent implements OnInit {
         this.isLoading = false;
         return;
       }
-      // On transmet user_id si disponible et log les données envoyées
-      const userIdToSend = this.user_id && !isNaN(Number(this.user_id)) ? Number(this.user_id) : null;
-      localStorage.setItem('user_id', userIdToSend ? String(userIdToSend) : '');
-      const dataToSend = {
-        nom_collab: this.collaboratorForm.value.name,
-        email_collab: this.collaboratorForm.value.email,
-        user_id: userIdToSend
-      };
-      this.colService.addCollaborateur(
-        dataToSend.nom_collab,
-        dataToSend.email_collab,
-        this.project_id
-      ).subscribe({
-        next: () => {
+      const email = this.collaboratorForm.value.email;
+      const name = this.collaboratorForm.value.name;
+      if (this.foundUser) {
+        // Utilisateur existant, ajout direct comme collaborateur
+        this.colService.addCollaborateur(
+          this.foundUser.nom_user,
+          this.foundUser.email,
+          this.project_id,
+          this.foundUser.id // Pass the correct user_id
+        ).subscribe({
+          next: () => {
+            this.dialog.open(InfoDialogComponent, {
+              width: '350px',
+              data: { title: 'Succès', message: 'Collaborateur ajouté !' }
+            });
+            this.saveC = true;
+            this.collaboratorForm.reset();
+            this.foundUser = null;
+            this.showPasswordField = false;
+          },
+          error: err => {
+            console.error(err);
+            this.dialog.open(InfoDialogComponent, {
+              width: '350px',
+              data: { title: 'Erreur', message: "Erreur lors de l'ajout du collaborateur." }
+            });
+          },
+          complete: () => {
+            this.isLoading = false;
+          }
+        });
+      } else {
+        // Utilisateur non existant, création puis ajout
+        const password = this.collaboratorForm.value.password;
+        if (!password) {
           this.dialog.open(InfoDialogComponent, {
             width: '350px',
-            data: { title: 'Succès', message: 'Collaborateur ajouté !' }
+            data: { title: 'Erreur', message: "Veuillez saisir un mot de passe pour créer l'utilisateur." }
           });
-          this.saveC = true;
-          this.collaboratorForm.reset();
-        },
-        error: err => {
-          console.error(err);
-          this.dialog.open(InfoDialogComponent, {
-            width: '350px',
-            data: { title: 'Erreur', message: "Erreur lors de l'ajout du collaborateur." }
-          });
-        },
-        complete: () => {
           this.isLoading = false;
+          return;
         }
-      });
+        const newUser = { nom_user: name, email: email, password: password };
+        this.userManagementService.createUser(newUser).subscribe({
+          next: (createdUser) => {
+            this.colService.addCollaborateur(
+              createdUser.nom_user,
+              createdUser.email,
+              this.project_id,
+              createdUser.id // Pass the correct user_id
+            ).subscribe({
+              next: () => {
+                this.dialog.open(InfoDialogComponent, {
+                  width: '350px',
+                  data: { title: 'Succès', message: 'Utilisateur créé et collaborateur ajouté !' }
+                }).afterClosed().subscribe(() => {
+                  // Réinitialiser le formulaire et revenir à l'étape collaborateur
+                  this.saveC = true;
+                  this.collaboratorForm.reset();
+                  this.foundUser = null;
+                  this.showPasswordField = false;
+                  this.formType = 'collaborator';
+                  this.currentStep = 5;
+                });
+              },
+              error: err => {
+                console.error(err);
+                this.dialog.open(InfoDialogComponent, {
+                  width: '350px',
+                  data: { title: 'Erreur', message: "Erreur lors de l'ajout du collaborateur." }
+                }).afterClosed().subscribe(() => {
+                  // Réinitialiser le formulaire et revenir à l'étape collaborateur
+                  this.collaboratorForm.reset();
+                  this.foundUser = null;
+                  this.showPasswordField = false;
+                  this.formType = 'collaborator';
+                  this.currentStep = 5;
+                });
+              },
+              complete: () => {
+                this.isLoading = false;
+              }
+            });
+          },
+          error: err => {
+            console.error(err);
+            this.dialog.open(InfoDialogComponent, {
+              width: '350px',
+              data: { title: 'Erreur', message: "Erreur lors de la création de l'utilisateur." }
+            }).afterClosed().subscribe(() => {
+              // Réinitialiser le formulaire et revenir à l'étape collaborateur
+              this.collaboratorForm.reset();
+              this.foundUser = null;
+              this.showPasswordField = false;
+              this.formType = 'collaborator';
+              this.currentStep = 5;
+            });
+            this.isLoading = false;
+          }
+        });
+      }
     }
 
     if (this.formType === 'admin' && this.adminForm.valid) {

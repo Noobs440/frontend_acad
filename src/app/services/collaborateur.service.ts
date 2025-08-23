@@ -29,10 +29,8 @@ export class CollaborateurService {
   }
 
   // Ajout collaborateur via endpoint usecases/add/collaborateur/projet/{id}
-  addCollaborateur(nom_collab: string, email_collab: string, projet_id: string): Observable<any> {
-  // On ajoute user_id si disponible dans le localStorage ou via paramètre
-  const user_id = localStorage.getItem('user_id') || null;
-  return this.http.post<any>(`http://localhost:8000/api/usecases/add/collaborateur/projet/${projet_id}`, { nom_collab, email_collab, user_id });
+  addCollaborateur(nom_collab: string, email_collab: string, projet_id: string, user_id: number): Observable<any> {
+    return this.http.post<any>(`http://localhost:8000/api/usecases/add/collaborateur/projet/${projet_id}`, { nom_collab, email_collab, user_id });
   }
 
   deleteCollaborateur(id: number | string): Observable<void> {

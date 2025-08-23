@@ -1,3 +1,8 @@
+
+
+
+
+
  
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -93,8 +98,24 @@ export class ProjectDetailComponent implements OnInit {
       }
     });
   }
+  editDocument(document: any): void {
+    const dialogRef = this.dialog.open(DocumentPopupComponent, {
+      width: '400px',
+      height: '550px',
+      data: {
+        formType: 'document',
+        id: this.id ?? 0,
+        user_id: this.user_id ?? 0,
+        editMode: true,
+        document: document
+      }
+    });
+    dialogRef.afterClosed().subscribe((res: any) => {
+      this.documentService.getDocumentsByProject(this.id ?? 0).subscribe((docs: any[]) => this.documents = docs);
+    });
+  }
+  
 
-  // ...existing code...
   ngOnInit(): void {
     this.nom_collab = localStorage.getItem('nom_collab');
     this.user_id = localStorage.getItem('id');
