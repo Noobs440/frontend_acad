@@ -97,36 +97,43 @@ export class ProjectsComponent implements OnInit {
   }
 
 
+applyFilters() {
+  this.filteredPosts = this.data;
 
-  applyFilters() {
-    this.filteredPosts = this.data;
-
-    if (this.selectedFilliere) {
-      this.filteredPosts = this.filteredPosts.filter(post => post.filiere === this.selectedFilliere);
-    }
-
-    if (this.selectedNiveau) {
-      this.filteredPosts = this.filteredPosts.filter(post => post.niveau === this.selectedNiveau);
-    }
-
-    if (this.selectedDomain) {
-      this.filteredPosts = this.filteredPosts.filter(post => post.nom_categorie === this.selectedDomain);
-    }
-
-    if (this.searchQuery) {
-      this.filteredPosts = this.filteredPosts.filter(post =>
-        post.titre_projet.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        post.nom_utilisateur.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
-    }
-
-    this.chunkedPosts = this.chunkArray(this.filteredPosts, this.itemsPerPage);
-    this.totalPages = this.chunkedPosts.length;
-    this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
-    this.goToPage(1);
-    this.noResults = this.filteredPosts.length === 0;
+  if (this.selectedFilliere) {
+    this.filteredPosts = this.filteredPosts.filter(post => post.filiere === this.selectedFilliere);
   }
 
+  if (this.selectedNiveau) {
+    this.filteredPosts = this.filteredPosts.filter(post => post.niveau === this.selectedNiveau);
+  }
+
+  if (this.selectedDomain) {
+    this.filteredPosts = this.filteredPosts.filter(post => post.nom_categorie === this.selectedDomain);
+  }
+
+  if (this.searchQuery) {
+    // Fonction pour normaliser (enlever les accents et mettre en minuscule)
+    const normalize = (str: string) =>
+      str
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+
+    const normalizedQuery = normalize(this.searchQuery);
+
+    this.filteredPosts = this.filteredPosts.filter(post =>
+      normalize(post.titre_projet).includes(normalizedQuery) ||
+      normalize(post.nom_utilisateur).includes(normalizedQuery)
+    );
+  }
+
+  this.chunkedPosts = this.chunkArray(this.filteredPosts, this.itemsPerPage);
+  this.totalPages = this.chunkedPosts.length;
+  this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  this.goToPage(1);
+  this.noResults = this.filteredPosts.length === 0;
+}
   searchProjects() {
     this.rechercheService.searchProjects(this.searchQuery).subscribe(response => {
       this.filteredPosts = response.results;

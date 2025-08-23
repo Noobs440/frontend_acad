@@ -84,6 +84,7 @@ export class CategoryListComponent implements OnInit {
     this.currentCategory = { nom_cat: '', descript_cat: '', icone: '' };
     this.selectedFile = null;
     this.isModalOpen = true;
+    console.log('Open add modal');
   }
 
   openEditModal(category: any): void {

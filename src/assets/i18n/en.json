@@ -10,8 +10,8 @@
 
 
   "WELCOME_MESSAGE": "Welcome to AcadProManage",
-  "WELCOME_DESCRIPTION": "AcadProManage facilitates academic research by providing access to previous academic projects and enhancing collaboration among researchers.",
-  "SEARCH_PLACEHOLDER": "Enter a keyword, author",
+  "WELCOME_DESCRIPTION": "AcadProManage facilitates academic projects research of Dschang's University by providing access to previous academic projects and enhancing collaboration among researchers.",
+  "SEARCH_PLACEHOLDER": "Enter a keyword, author or collaborator about a project",
   "PROJECTS_LABEL": "Projects",
   "DOMAINS_LABEL": "Domains",
   "BROWSE_TOP_DOMAINS": "Browse Top Domains",

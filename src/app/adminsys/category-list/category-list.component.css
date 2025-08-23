@@ -38,7 +38,7 @@
   font-size: 1rem;
   cursor: pointer;
   box-shadow: 0 2px 8px 0 rgba(99,102,241,0.10);
-  transition: background 0.2s, transform 0.15s;
+  transition: 0.2s, transform 0.15s;
 }
 .controls button:hover {
   background: linear-gradient(90deg, #60a5fa 60%, #6366f1 100%);
@@ -76,7 +76,7 @@ td button {
   background: #6366f1;
   color: #fff;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+  transition:  0.2s, transform 0.15s;
 }
 td button:last-child {
   margin-right: 0;
@@ -105,7 +105,7 @@ td button:last-child:hover {
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+  transition:  0.2s, transform 0.15s;
 }
 .pagination button:disabled {
   background: #d1d5db;
@@ -186,7 +186,7 @@ td button:last-child:hover {
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+  transition:  0.2s, transform 0.15s;
 }
 .modal-actions button:hover {
   background: #60a5fa;
@@ -323,7 +323,7 @@ h1, h2 {
   font-size: 1rem;
   cursor: pointer;
   box-shadow: 0 2px 8px 0 rgba(99,102,241,0.10);
-  transition: background 0.2s, transform 0.15s;
+  transition:  0.2s, transform 0.15s;
 }
 .chart-section button:hover {
   background: linear-gradient(90deg, #60a5fa 60%, #6366f1 100%);
@@ -346,7 +346,7 @@ h1, h2 {
   font-size: 1rem;
   cursor: pointer;
   box-shadow: 0 2px 8px 0 rgba(99,102,241,0.10);
-  transition: background 0.2s, transform 0.15s;
+  transition: 0.2s, transform 0.15s;
 }
 .quick-actions button:hover {
   background: linear-gradient(90deg, #60a5fa 60%, #6366f1 100%);
@@ -506,4 +506,5 @@ th {
 .modal-actions button {
   padding: 6px 12px;
   cursor: pointer;
+}
 }

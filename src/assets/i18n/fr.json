@@ -10,7 +10,7 @@
 
   "WELCOME_MESSAGE": "Bienvenue sur AcadProManage",
   "WELCOME_DESCRIPTION": "AcadProManage facilite la recherche des projets académique en fournissant un accès aux projets récement publié.",
-  "SEARCH_PLACEHOLDER": "Entrez un mot-clé, auteur",
+  "SEARCH_PLACEHOLDER": "Entrez un mot-clé, auteur ou collaborateur à propos d'un projet",
   "PROJECTS_LABEL": "Projets",
   "DOMAINS_LABEL": "Domaines",
   "BROWSE_TOP_DOMAINS": "Parcourir les meilleurs domaines",

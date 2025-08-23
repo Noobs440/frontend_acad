@@ -1,10 +1,6 @@
 /* --- Modernisation spécifique pour document-list --- */
 /* --- Modernisation spécifique pour document-list --- */
-  max-width: 900px;
-  margin: 32px auto;
-  background: #f8fafc;
-  border-radius: 18px;
-  box-shadow: 0 4px 24px 0 rgba(52, 152, 219, 0.08), 0 1.5px 4px 0 rgba(44,62,80,0.04);
+
 
   /* --- Modernisation spécifique pour document-list --- */
   .document-list {
@@ -45,7 +41,7 @@
     font-size: 1rem;
     cursor: pointer;
     box-shadow: 0 2px 8px 0 rgba(99,102,241,0.10);
-    transition: background 0.2s, transform 0.15s;
+    transition:  0.2s, transform 0.15s;
   }
   .controls button:hover {
     background: linear-gradient(90deg, #60a5fa 60%, #6366f1 100%);
@@ -82,7 +78,7 @@
     background: #6366f1;
     color: #fff;
     cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
+    transition: 0.2s, transform 0.15s;
   }
   td button:last-child {
     margin-right: 0;
@@ -111,7 +107,7 @@
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
+    transition: 0.2s, transform 0.15s;
   }
   .pagination button:disabled {
     background: #d1d5db;
@@ -191,7 +187,7 @@
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
+    transition:  0.2s, transform 0.15s;
   }
   .modal-actions button:hover {
     background: #60a5fa;
@@ -242,7 +238,6 @@
       padding: 4px;
     }
   }
-}
 td button:last-child:hover {
   background: #f59e42;
 }
@@ -262,7 +257,7 @@ td button:last-child:hover {
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+  transition: 0.2s, transform 0.15s;
 }
 .pagination button:disabled {
   background: #d1d5db;
