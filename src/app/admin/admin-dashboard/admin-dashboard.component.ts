@@ -1,5 +1,12 @@
+import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
+import { Router } from '@angular/router';
+import { ProjetService } from '../../services/projet.service';
+import { UserService } from '../../services/user.service';
+import { CollaborateurService } from '../../services/collaborateur.service';
+import { ProjetstatusService } from '../../services/projetstatus.service';
 
-// Interfaces
 interface ProjectStatus {
   Approved: number;
   Pending: number;
@@ -16,16 +23,8 @@ interface RowData {
   nom_categorie?: string;
   created_at?: string;
   collaboratorsCount?: number;
+  description?: string;
 }
-
-// Imports
-import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { Chart, registerables } from 'chart.js';
-Chart.register(...registerables);
-import { Router } from '@angular/router';
-import { ProjetService } from '../../services/projet.service';
-import { UserService } from '../../services/user.service';
-import { CollaborateurService } from '../../services/collaborateur.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -33,11 +32,173 @@ import { CollaborateurService } from '../../services/collaborateur.service';
   styleUrls: ['./admin-dashboard.component.css']
 })
 export class AdminDashboardComponent implements OnInit, AfterViewInit {
-  isDarkTheme = false;
+  // --- Popup rejet projet ---
+  showRejectModal = false;
+  rejectReason: string = '';
+  rejectError: boolean = false;
+  rejectProjectId: number | null = null;
+  isLoadingStatus: number | null = null;
+
   // ...autres propriétés...
+  expandedDescription: { [sn: number]: boolean } = {};
+  projectActionsCache: { [sn: number]: any[] } = {};
 
-  // Recherche de projets par titre ou auteur
+  // Pagination
+  rowData: RowData[] = [];
+  filteredData: RowData[] = [];
+  paginatedData: RowData[] = [];
+  currentPage = 1;
+  rowsPerPage = 8;
+  totalPages: number[] = [];
 
+  // Filtres et stats
+  uniqueCategories: string[] = [];
+  uniqueUsers: string[] = [];
+  selectedYAxis: 'projects' | 'collaborators' = 'projects';
+  selectedXAxis: string = 'user';
+  selectedStatusFilter: string = 'all';
+  selectedCategoryFilter: string = 'all';
+  selectedUserFilter: string = 'all';
+  adminId: any = null;
+  projectStatus: ProjectStatus = {
+    Approved: 0,
+    Pending: 0,
+    Rejected: 0
+  };
+  selectedProjectId!: number;
+  approvedProjects!: number;
+  pendingProjects!: number;
+  rejectedProjects!: number;
+  selectedStatus: string | null = null;
+  selectedProjectTitle: string | null = null;
+  isSidebarCollapsed = true;
+  isDarkTheme = false;
+  dynamicChart: any;
+  rowSelection = 'single';
+
+  constructor(
+    private router: Router,
+    private projetService: ProjetService,
+    private userService: UserService,
+    private collaborateurService: CollaborateurService,
+    private projetstatusService: ProjetstatusService
+  ) {}
+
+  ngOnInit() {
+    this.userService.loadUserProfile();
+    this.userService.getUserProfile().subscribe(users => {
+      if (users && users.id) {
+        this.adminId = users.id;
+        this.loadAdminProjects();
+      }
+    });
+    this.isDarkTheme = localStorage.getItem('theme') === 'dark';
+    this.updateThemeClass();
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => this.renderDynamicChart(), 0);
+  }
+
+  // --- Popup rejet projet ---
+  openRejectModal(projectId: number) {
+    this.rejectProjectId = projectId;
+    this.rejectReason = '';
+    this.rejectError = false;
+    this.showRejectModal = true;
+  }
+
+  closeRejectModal() {
+    this.showRejectModal = false;
+    this.rejectError = false;
+    this.rejectReason = '';
+    this.rejectProjectId = null;
+  }
+
+  confirmReject() {
+    if (!this.rejectReason || this.rejectReason.trim().length === 0) {
+      this.rejectError = true;
+      return;
+    }
+    this.rejectError = false;
+    this.showRejectModal = false;
+    if (this.rejectProjectId) {
+      this.isLoadingStatus = this.rejectProjectId;
+      this.projetstatusService.rejectProject(this.rejectProjectId, this.rejectReason).subscribe({
+        next: () => {
+          this.isLoadingStatus = null;
+          this.loadAdminProjects();
+        },
+        error: (err: any) => {
+          this.isLoadingStatus = null;
+          console.error('Erreur lors du rejet du projet:', err);
+        }
+      });
+    }
+  }
+
+  // --- Actions projet ---
+  getProjectDescription(project: any): string {
+    if (project.description) return project.description;
+    const found = this.rowData.find(r => r.sn === project.sn);
+    return found && (found as any).description ? (found as any).description : '';
+  }
+
+  getProjectActions(project: RowData) {
+    return this.projectActionsCache[project.sn] || [];
+  }
+
+  updateAllProjectActions() {
+    this.projectActionsCache = {};
+    for (const project of this.rowData) {
+      const actions = [
+        {
+          label: 'Voir',
+          icon: 'bi bi-eye',
+          class: 'btn btn-outline-primary btn-sm d-flex align-items-center',
+          title: 'Voir le projet',
+          onClick: () => this.showDetail(project)
+        }
+      ];
+      if (project.status === 'Approved') {
+        actions.push({
+          label: 'En attente',
+          icon: 'bi bi-hourglass-split',
+          class: 'btn btn-outline-warning btn-sm d-flex align-items-center',
+          title: 'Mettre en attente',
+          onClick: () => this.updateProjectStatus(project.sn, 'Pending')
+        });
+      }
+      if (project.status === 'Pending') {
+        actions.push({
+          label: 'Approuver',
+          icon: 'bi bi-check-circle',
+          class: 'btn btn-outline-success btn-sm d-flex align-items-center',
+          title: 'Approuver',
+          onClick: () => this.updateProjectStatus(project.sn, 'Approved')
+        });
+        actions.push({
+          label: 'Rejeter',
+          icon: 'bi bi-x-circle',
+          class: 'btn btn-outline-danger btn-sm d-flex align-items-center',
+          title: 'Rejeter',
+          onClick: () => this.openRejectModal(project.sn)
+        });
+      }
+      if (project.status === 'Rejected') {
+        actions.push({
+          label: 'Restaurer',
+          icon: 'bi bi-arrow-repeat',
+          class: 'btn btn-outline-info btn-sm d-flex align-items-center',
+          title: 'Restaurer',
+          onClick: () => this.updateProjectStatus(project.sn, 'Approved')
+        });
+      }
+      this.projectActionsCache[project.sn] = actions;
+    }
+  }
+
+  // --- Thème ---
   toggleTheme() {
     this.isDarkTheme = !this.isDarkTheme;
     localStorage.setItem('theme', this.isDarkTheme ? 'dark' : 'light');
@@ -51,16 +212,157 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       document.body.classList.remove('dark-theme');
     }
   }
-  // Listes uniques pour les filtres
-  uniqueCategories: string[] = [];
-  uniqueUsers: string[] = [];
-  selectedYAxis: 'projects' | 'collaborators' = 'projects';
-  // Système d'analyse croisée professionnel
-  selectedXAxis: string = 'user';
-  selectedStatusFilter: string = 'all';
-  selectedCategoryFilter: string = 'all';
-  selectedUserFilter: string = 'all';
 
+  // --- Filtres et recherche ---
+  getUniqueCategories(): string[] {
+    return this.rowData
+      .map(r => r.nom_categorie)
+      .filter((v): v is string => typeof v === 'string' && v.trim() !== '')
+      .filter((v, i, a) => a.indexOf(v) === i);
+  }
+
+  getUniqueUsers(): string[] {
+    return this.rowData
+      .map(r => r.author || r.nom_utilisateur)
+      .filter((v): v is string => typeof v === 'string' && v.trim() !== '')
+      .filter((v, i, a) => a.indexOf(v) === i);
+  }
+
+  onProjectSearch(query: string): void {
+    const search = query.trim().toLowerCase();
+    if (!search) {
+      this.filteredData = this.rowData.filter(row => this.selectedStatus === null || row.status === this.selectedStatus);
+    } else {
+      this.filteredData = this.rowData.filter(row => {
+        const title = row.title?.toLowerCase() || '';
+        const author = row.author?.toLowerCase() || '';
+        const nom_utilisateur = row.nom_utilisateur?.toLowerCase() || '';
+        const status = row.status?.toLowerCase() || '';
+        const description = (row as any).description?.toLowerCase() || '';
+        return (
+          (this.selectedStatus === null || row.status === this.selectedStatus) &&
+          (
+            title.includes(search) ||
+            author.includes(search) ||
+            nom_utilisateur.includes(search) ||
+            status.includes(search) ||
+            description.includes(search)
+          )
+        );
+      });
+    }
+    this.currentPage = 1;
+    this.paginate(this.filteredData);
+  }
+
+  filterTable(status: string): void {
+    this.filteredData = this.rowData.filter(row => status === '' || row.status === status);
+    this.currentPage = 1;
+    this.paginate(this.filteredData);
+  }
+
+  sortTable(field: keyof RowData): void {
+    const sortedData = [...this.filteredData].sort((a, b) => {
+      if (a[field] !== undefined && b[field] !== undefined) {
+        if (a[field]! < b[field]!) return -1;
+        if (a[field]! > b[field]!) return 1;
+      }
+      return 0;
+    });
+    this.paginate(sortedData);
+  }
+
+  // --- Pagination ---
+  paginate(data: RowData[]): void {
+    const total = Math.ceil(data.length / this.rowsPerPage);
+    this.totalPages = Array.from({ length: total }, (_, i) => i + 1);
+    if (this.currentPage > total) this.currentPage = total > 0 ? total : 1;
+    if (this.currentPage < 1) this.currentPage = 1;
+    this.changePage(this.currentPage, data);
+  }
+
+  changePage(page: number, data: RowData[] = this.filteredData): void {
+    const total = Math.ceil(data.length / this.rowsPerPage);
+    if (page < 1) page = 1;
+    if (page > total) page = total > 0 ? total : 1;
+    this.currentPage = page;
+    const start = (page - 1) * this.rowsPerPage;
+    const end = start + this.rowsPerPage;
+    this.paginatedData = data.slice(start, end);
+  }
+
+  // --- Navigation ---
+  showDetail(selectedRow: any) {
+    this.selectedProjectId = selectedRow.sn;
+    this.router.navigate(['/admin/dashboard/project-detail', this.selectedProjectId]);
+  }
+
+  // --- Chargement des projets ---
+  loadAdminProjects() {
+    this.projetService.getProjects().subscribe({
+      next: (projects: any[]) => {
+        const adminProjects = (projects || []).filter(p => String(p.admin_id) === String(this.adminId));
+        const mapped = adminProjects.map((p, idx) => {
+          const author = p.nom_user || '';
+          return {
+            sn: p.id,
+            title: p.titre_projet || '',
+            author,
+            nom_utilisateur: p.nom_utilisateur || '',
+            image: p.image || '',
+            status: p.status || '',
+            couleur_categorie: p.couleur_categorie,
+            nom_categorie: p.nom_categorie,
+            created_at: p.created_at,
+            collaboratorsCount: 0,
+            description: p.descript_projet || ''
+          };
+        });
+        this.rowData = mapped;
+        this.filteredData = [...this.rowData];
+        this.updateAllProjectActions();
+        this.paginate(this.filteredData);
+        this.approvedProjects = adminProjects.filter(p => p.status === 'Approved').length;
+        this.pendingProjects = adminProjects.filter(p => p.status === 'Pending').length;
+        this.rejectedProjects = adminProjects.filter(p => p.status === 'Rejected').length;
+        this.rowData.forEach((row, idx) => {
+          this.collaborateurService.getCollaborateursByProject(row.sn).subscribe(collabs => {
+            this.rowData[idx].collaboratorsCount = collabs.length;
+            this.updateAllProjectActions();
+          });
+        });
+        this.uniqueCategories = this.getUniqueCategories();
+        this.uniqueUsers = this.getUniqueUsers();
+        setTimeout(() => this.renderDynamicChart(), 0);
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des projets admin:', err);
+        this.rowData = [];
+        this.filteredData = [];
+        this.paginatedData = [];
+        this.approvedProjects = 0;
+        this.pendingProjects = 0;
+        this.rejectedProjects = 0;
+      }
+    });
+  }
+
+  // --- Statut projet ---
+  updateProjectStatus(projectId: number, newStatus: string): void {
+    this.isLoadingStatus = projectId;
+    this.projetService.updateProjectStatus(projectId, newStatus).subscribe({
+      next: () => {
+        this.isLoadingStatus = null;
+        this.loadAdminProjects();
+      },
+      error: (err) => {
+        this.isLoadingStatus = null;
+        console.error('Erreur lors de la mise à jour du status du projet:', err);
+      }
+    });
+  }
+
+  // --- Graphique dynamique ---
   renderDynamicChart() {
     if (this.dynamicChart) {
       this.dynamicChart.destroy();
@@ -70,7 +372,6 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
     let labels: string[] = [];
     let data: number[] = [];
     let label = '';
-    // Palette de couleurs harmonieuse (Material/Flat)
     const palette = [
       '#1976d2', '#388e3c', '#fbc02d', '#d32f2f', '#7b1fa2', '#0288d1', '#c2185b', '#ffa000', '#388e3c', '#303f9f',
       '#0097a7', '#cddc39', '#e64a19', '#512da8', '#00796b', '#f57c00', '#0288d1', '#c2185b', '#afb42b', '#5d4037'
@@ -78,7 +379,6 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
     let color = palette[0];
     let bg = 'rgba(25, 118, 210, 0.12)';
 
-    // Filtrage avancé
     let filtered = this.rowData;
     if (this.selectedStatusFilter !== 'all') {
       filtered = filtered.filter(p => p.status === this.selectedStatusFilter);
@@ -90,8 +390,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       filtered = filtered.filter(p => (p.author || p.nom_utilisateur) === this.selectedUserFilter);
     }
 
-  if (this.selectedXAxis === 'user') {
-      // Top utilisateurs par nombre de projets ou collaborateurs
+    if (this.selectedXAxis === 'user') {
       type YKey = 'projects' | 'collaborators';
       const userMap: { [user: string]: Record<YKey, number> } = {};
       filtered.forEach(row => {
@@ -105,10 +404,9 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       labels = sortedUsers.map(([user]) => user);
       data = sortedUsers.map(([, obj]) => obj[yKey]);
       label = yKey === 'projects' ? 'Nombre de projets' : 'Nombre de collaborateurs';
-  color = palette[4];
-  bg = 'rgba(123,31,162,0.12)';
-  } else if (this.selectedXAxis === 'category') {
-      // Top catégories par nombre de projets ou collaborateurs
+      color = palette[4];
+      bg = 'rgba(123,31,162,0.12)';
+    } else if (this.selectedXAxis === 'category') {
       type YKey = 'projects' | 'collaborators';
       const catMap: { [cat: string]: Record<YKey, number> } = {};
       filtered.forEach(row => {
@@ -122,65 +420,61 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       labels = sortedCats.map(([cat]) => cat);
       data = sortedCats.map(([, obj]) => obj[yKey]);
       label = yKey === 'projects' ? 'Nombre de projets' : 'Nombre de collaborateurs';
-  color = palette[1];
-  bg = 'rgba(56,142,60,0.12)';
-  } else if (this.selectedXAxis === 'month') {
-    // Nombre de projets ou collaborateurs par mois
-    const monthLabels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
-    labels = monthLabels;
-    data = Array(12).fill(0);
-    const yKey: 'projects' | 'collaborators' = this.selectedYAxis;
-    filtered.forEach(row => {
-      if (row.created_at) {
-        const d = new Date(row.created_at);
-        const month = d.getMonth();
-        if (yKey === 'projects') {
-          data[month]++;
-        } else {
-          data[month] += row.collaboratorsCount || 0;
+      color = palette[1];
+      bg = 'rgba(56,142,60,0.12)';
+    } else if (this.selectedXAxis === 'month') {
+      const monthLabels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+      labels = monthLabels;
+      data = Array(12).fill(0);
+      const yKey: 'projects' | 'collaborators' = this.selectedYAxis;
+      filtered.forEach(row => {
+        if (row.created_at) {
+          const d = new Date(row.created_at);
+          const month = d.getMonth();
+          if (yKey === 'projects') {
+            data[month]++;
+          } else {
+            data[month] += row.collaboratorsCount || 0;
+          }
         }
-      }
-    });
-    label = yKey === 'projects' ? 'Nombre de projets' : 'Nombre de collaborateurs';
-  color = palette[2];
-  bg = 'rgba(251,192,45,0.12)';
-  } else if (this.selectedXAxis === 'date') {
-    // Nombre de projets ou collaborateurs par date de création (jour précis)
-    const dateMap: { [date: string]: { projects: number; collaborators: number } } = {};
-    filtered.forEach(row => {
-      if (row.created_at) {
-        const date = new Date(row.created_at).toLocaleDateString('fr-FR');
-        if (!dateMap[date]) dateMap[date] = { projects: 0, collaborators: 0 };
-        dateMap[date].projects++;
-        dateMap[date].collaborators += row.collaboratorsCount || 0;
-      }
-    });
-    const yKey: 'projects' | 'collaborators' = this.selectedYAxis;
-    const sortedDates = Object.entries(dateMap).sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime());
-    labels = sortedDates.map(([date]) => date);
-    data = sortedDates.map(([, obj]) => obj[yKey]);
-    label = yKey === 'projects' ? 'Nombre de projets' : 'Nombre de collaborateurs';
-  color = palette[5];
-  bg = 'rgba(2,136,209,0.12)';
-  } else if (this.selectedXAxis === 'status') {
-    // Nombre de projets ou collaborateurs par statut
-    const statusMap: { [status: string]: { projects: number; collaborators: number } } = {};
-    filtered.forEach(row => {
-      const status = row.status || 'Inconnu';
-      if (!statusMap[status]) statusMap[status] = { projects: 0, collaborators: 0 };
-      statusMap[status].projects++;
-      statusMap[status].collaborators += row.collaboratorsCount || 0;
-    });
-    const yKey: 'projects' | 'collaborators' = this.selectedYAxis;
-    const sortedStatus = Object.entries(statusMap);
-    labels = sortedStatus.map(([status]) => status);
-    data = sortedStatus.map(([, obj]) => obj[yKey]);
-    label = yKey === 'projects' ? 'Nombre de projets' : 'Nombre de collaborateurs';
-  color = palette[3];
-  bg = 'rgba(211,47,47,0.12)';
-  }
+      });
+      label = yKey === 'projects' ? 'Nombre de projets' : 'Nombre de collaborateurs';
+      color = palette[2];
+      bg = 'rgba(251,192,45,0.12)';
+    } else if (this.selectedXAxis === 'date') {
+      const dateMap: { [date: string]: { projects: number; collaborators: number } } = {};
+      filtered.forEach(row => {
+        if (row.created_at) {
+          const date = new Date(row.created_at).toLocaleDateString('fr-FR');
+          if (!dateMap[date]) dateMap[date] = { projects: 0, collaborators: 0 };
+          dateMap[date].projects++;
+          dateMap[date].collaborators += row.collaboratorsCount || 0;
+        }
+      });
+      const yKey: 'projects' | 'collaborators' = this.selectedYAxis;
+      const sortedDates = Object.entries(dateMap).sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime());
+      labels = sortedDates.map(([date]) => date);
+      data = sortedDates.map(([, obj]) => obj[yKey]);
+      label = yKey === 'projects' ? 'Nombre de projets' : 'Nombre de collaborateurs';
+      color = palette[5];
+      bg = 'rgba(2,136,209,0.12)';
+    } else if (this.selectedXAxis === 'status') {
+      const statusMap: { [status: string]: { projects: number; collaborators: number } } = {};
+      filtered.forEach(row => {
+        const status = row.status || 'Inconnu';
+        if (!statusMap[status]) statusMap[status] = { projects: 0, collaborators: 0 };
+        statusMap[status].projects++;
+        statusMap[status].collaborators += row.collaboratorsCount || 0;
+      });
+      const yKey: 'projects' | 'collaborators' = this.selectedYAxis;
+      const sortedStatus = Object.entries(statusMap);
+      labels = sortedStatus.map(([status]) => status);
+      data = sortedStatus.map(([, obj]) => obj[yKey]);
+      label = yKey === 'projects' ? 'Nombre de projets' : 'Nombre de collaborateurs';
+      color = palette[3];
+      bg = 'rgba(211,47,47,0.12)';
+    }
 
-    // Pour les axes X catégoriels, colorer chaque barre différemment
     let barColors: string[] = [];
     if (["user", "category", "status", "date"].includes(this.selectedXAxis)) {
       barColors = labels.map((_, i) => palette[i % palette.length]);
@@ -196,7 +490,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
           label,
           data,
           borderColor: barColors,
-          backgroundColor: barColors.map(c => c + '22'), // Opacité 13% pour le fond
+          backgroundColor: barColors.map(c => c + '22'),
           hoverBackgroundColor: barColors.map(c => c + '66'),
           hoverBorderColor: barColors
         }]
@@ -221,95 +515,24 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       }
     });
   }
-  dynamicChart: any;
 
-  // Recherche de projets par titre ou auteur
-  onProjectSearch(query: string): void {
-    const search = query.trim().toLowerCase();
-    if (!search) {
-      this.filteredData = this.rowData.filter(row => this.selectedStatus === null || row.status === this.selectedStatus);
-    } else {
-      this.filteredData = this.rowData.filter(row => {
-        const title = row.title?.toLowerCase() || '';
-        const author = row.author?.toLowerCase() || '';
-        const nom_utilisateur = row.nom_utilisateur?.toLowerCase() || '';
-        return (
-          (this.selectedStatus === null || row.status === this.selectedStatus) &&
-          (title.includes(search) || author.includes(search) || nom_utilisateur.includes(search))
-        );
-      });
-    }
-    this.currentPage = 1;
-    this.paginate(this.filteredData);
+  // --- Sidebar ---
+  toggleSidebar() {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
   }
 
-  // Suppression des graphes statiques, tout passe par dynamicChart
-  adminId: any = null;
-  projectStatus: ProjectStatus = {
-    Approved: 0,
-    Pending: 0,
-    Rejected: 0
-  };
-  selectedProjectId!: number ;
-  approvedProjects!: number;
-  pendingProjects!: number;
-  rejectedProjects!: number;
-  selectedStatus: string | null = null;
-  selectedProjectTitle: string | null = null;
-  rowData: RowData[] = [];
-  filteredData: RowData[] = [];
-  paginatedData: RowData[] = [];
-  currentPage = 1;
-  rowsPerPage = 2;
-  totalPages: number[] = [];
-  isSidebarCollapsed = true;
-
-
-  constructor(
-    private router: Router,
-    private projetService: ProjetService,
-    private userService: UserService,
-    private collaborateurService: CollaborateurService
-  ) {}
-  rowSelection = 'single';
-
-  ngOnInit() {
-    // Charger l'id de l'admin connecté
-    this.userService.loadUserProfile();
-    this.userService.getUserProfile().subscribe(users => {
-      if (users && users.id) {
-        this.adminId = users.id;
-        this.loadAdminProjects();
-      }
-    });
-    // Appliquer le thème selon le localStorage
-    this.isDarkTheme = localStorage.getItem('theme') === 'dark';
-    this.updateThemeClass();
-  }
-
-  ngAfterViewInit() {
-    setTimeout(() => this.renderDynamicChart(), 0);
-  }
-
-  // Suppression de renderChart et des graphes statiques
-
+  // --- Status Card ---
   onCardClick(status: string) {
     this.selectedStatus = status;
     this.filterTable(status);
   }
 
   hideProjectList() {
-  this.selectedStatus = null;
-  this.filteredData = [];
-  this.paginatedData = [];
-  this.loadAdminProjects();
-}
-
-  toggleSidebar() {
-    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    this.selectedStatus = null;
+    this.filteredData = [];
+    this.paginatedData = [];
+    this.loadAdminProjects();
   }
-
-  // (supprimé doublon ngAfterViewInit)
 
   getStatusClass(status: string) {
     return {
@@ -318,7 +541,6 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       'bg-danger': status === 'Rejected'
     };
   }
-
 
   renderActionButtons(status: string): string {
     let actionButtons = `
@@ -335,117 +557,5 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       `;
     }
     return actionButtons;
-  }
-
-  sortTable(field: keyof RowData): void {
-    const sortedData = [...this.filteredData].sort((a, b) => {
-      if (a[field] !== undefined && b[field] !== undefined) {
-        if (a[field]! < b[field]!) return -1;
-        if (a[field]! > b[field]!) return 1;
-      }
-      return 0;
-    });
-    this.paginate(sortedData);
-  }
-
-  
-  filterTable(status: string): void {
-    this.filteredData = this.rowData.filter(row => status === '' || row.status === status);
-    this.currentPage = 1;
-    this.paginate(this.filteredData);
-  }
-
-  paginate(data: RowData[]): void {
-    this.totalPages = Array.from({ length: Math.ceil(data.length / this.rowsPerPage) }, (_, i) => i + 1);
-    this.changePage(this.currentPage, data);
-  }
-
-  changePage(page: number, data: RowData[] = this.filteredData): void {
-    this.currentPage = page;
-    const start = (page - 1) * this.rowsPerPage;
-    const end = start + this.rowsPerPage;
-    this.paginatedData = data.slice(start, end);
-  }
-  showDetail(selectedRow: any) {
-    this.selectedProjectId = selectedRow.sn;
-    // Navigation vers le détail projet admin (chemin cohérent avec le routing)
-    this.router.navigate(['/admin/dashboard/project-detail', this.selectedProjectId]);
-  }
-// Recharge les projets de l'admin et le nombre de collaborateurs pour chaque projet
-  loadAdminProjects() {
-    this.projetService.getProjects().subscribe({
-      next: (projects: any[]) => {
-        const adminProjects = (projects || []).filter(p => String(p.admin_id) === String(this.adminId));
-        // Pour chaque projet, charger le nombre de collaborateurs
-        const mapped = adminProjects.map((p, idx) => {
-          const author =  p.nom_user || '';
-          return {
-            sn: p.id,
-            title: p.titre_projet || '',
-            author,
-            nom_utilisateur: p.nom_utilisateur || '',
-            image: p.image || '',
-            status: p.status || '',
-            couleur_categorie: p.couleur_categorie,
-            nom_categorie: p.nom_categorie,
-            created_at: p.created_at,
-            collaboratorsCount: 0 // sera mis à jour async
-          };
-        });
-        this.rowData = mapped;
-        this.filteredData = [...this.rowData];
-        this.paginate(this.filteredData);
-        // Mettre à jour les compteurs par statut pour l'admin
-        this.approvedProjects = adminProjects.filter(p => p.status === 'Approved').length;
-        this.pendingProjects = adminProjects.filter(p => p.status === 'Pending').length;
-        this.rejectedProjects = adminProjects.filter(p => p.status === 'Rejected').length;
-        // Charger le nombre de collaborateurs pour chaque projet
-        this.rowData.forEach((row, idx) => {
-          this.collaborateurService.getCollaborateursByProject(row.sn).subscribe(collabs => {
-            this.rowData[idx].collaboratorsCount = collabs.length;
-          });
-        });
-        // Mettre à jour les listes uniques pour les filtres
-        this.uniqueCategories = this.getUniqueCategories();
-        this.uniqueUsers = this.getUniqueUsers();
-        // Rafraîchir le repère dynamique après chargement des données
-        setTimeout(() => this.renderDynamicChart(), 0);
-      },
-      error: (err) => {
-        console.error('Erreur lors du chargement des projets admin:', err);
-        this.rowData = [];
-        this.filteredData = [];
-        this.paginatedData = [];
-        this.approvedProjects = 0;
-        this.pendingProjects = 0;
-        this.rejectedProjects = 0;
-      }
-    });
-  }
-
-  // Méthodes pour obtenir les catégories et utilisateurs uniques
-  getUniqueCategories(): string[] {
-    return this.rowData
-      .map(r => r.nom_categorie)
-      .filter((v): v is string => typeof v === 'string' && v.trim() !== '')
-      .filter((v, i, a) => a.indexOf(v) === i);
-  }
-
-  getUniqueUsers(): string[] {
-    return this.rowData
-      .map(r => r.author || r.nom_utilisateur)
-      .filter((v): v is string => typeof v === 'string' && v.trim() !== '')
-      .filter((v, i, a) => a.indexOf(v) === i);
-  }
-
-  updateProjectStatus(projectId: number, newStatus: string): void {
-    this.projetService.updateProjectStatus(projectId, newStatus).subscribe({
-      next: () => {
-        this.loadAdminProjects();
-      },
-      error: (err) => {
-        console.error('Erreur lors de la mise à jour du status du projet:', err);
-      }
-    });
   }
 }

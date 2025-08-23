@@ -28,23 +28,39 @@ import { DocumentService } from '../../../services/document.service';
   ]
 })
 export class DetailProjectComponent {
-  documents: any[]=[];
-
+  isTitleExpanded = false;
+  isMetaExpanded = false;
+  isLoadingRestore = false;
+  isLoadingApprove = false;
+  isLoadingReject = false;
+  isDescriptionExpanded = false;
+  documents: any[] = [];
+  collaborators: any[] = [];
   selectedProjectId!: number;
   selectedProjectTitle!: string;
-  projectStatus!:string;
-  projectImage!:string;
-  description!:string;
-  views!:number;
-  author!:string;
-  category!:string;
+  projectStatus!: string;
+  projectImage!: string;
+  description!: string;
+  views!: number;
+  author!: string;
+  category!: string;
   level!: string;
-  type!:string;
-  date!:string;
-  email!:string;
-  id!:number;
+  type!: string;
+  date!: string;
+  email!: string;
+  id!: number;
   rejection_reason: string = '';
-  collaborators: any[] = [];
+  isDocumentsExpanded = false;
+  isCollaboratorsExpanded = false;
+
+  get showMoreDocuments(): boolean {
+    return this.documents && this.documents.length > 1;
+  }
+
+  get showMoreCollaborators(): boolean {
+    return this.collaborators && this.collaborators.length > 2;
+  }
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -87,7 +103,7 @@ export class DetailProjectComponent {
     this.actionCellRenderer();
   }
 
-  isExpanded = false;
+
 
   showRejectModal = false;
   rejectReason: string = '';
@@ -137,8 +153,12 @@ export class DetailProjectComponent {
     });
   }
 
-  toggleExpand() {
-    this.isExpanded = !this.isExpanded;
+  toggleDocumentsExpand() {
+    this.isDocumentsExpanded = !this.isDocumentsExpanded;
+  }
+
+  toggleCollaboratorsExpand() {
+    this.isCollaboratorsExpanded = !this.isCollaboratorsExpanded;
   }
 
 

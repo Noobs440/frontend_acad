@@ -51,7 +51,8 @@ table {
   border-spacing: 0 8px;
   background: none;
   font-size: 1rem;
-/* --- Style harmonisé sur faculty-list --- */
+  /* --- Style harmonisé sur faculty-list --- */
+}
 th, td {
   padding: 14px 10px;
   background: #fff;

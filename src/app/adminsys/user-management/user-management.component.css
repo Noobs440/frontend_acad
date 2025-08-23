@@ -1,8 +1,5 @@
 /* Modern Dashboard Styles */
 /* Style harmonisé pour tous les composants -list (adminsys) */
-
-h1, h2 {
-
   /* --- Modernisation spécifique pour user-management --- */
   .user-management {
     max-width: 900px;
@@ -234,7 +231,7 @@ h1, h2 {
       padding: 4px;
     }
   }
-}
+
 .quick-actions button {
   padding: 12px 22px;
   border: none;

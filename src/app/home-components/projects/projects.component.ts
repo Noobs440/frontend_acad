@@ -1,3 +1,4 @@
+
 import { Component, Input, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { AcceuilService } from './../../services/acceuil.service';
@@ -20,6 +21,11 @@ import { ActivatedRoute } from '@angular/router';
   ],
 })
 export class ProjectsComponent implements OnInit {
+  showGlobalSearch: boolean = false;
+  // Propriétés pour la recherche globale (zone du haut)
+  globalSearchQuery: string = '';
+  globalSearchResults: any[] = [];
+  globalSearchLoading: boolean = false;
   @Input() sectionClass: string = 'recent-posts section';
   @Input() bgColor: string = '#06BBCC';
   @Input() fColor: string = 'white';
@@ -94,6 +100,25 @@ export class ProjectsComponent implements OnInit {
       this.searchProjects();
       localStorage.removeItem('searchValue');
     }
+  // Fermer la recherche globale sur navigation (optionnel)
+  this.route.params.subscribe(() => { this.showGlobalSearch = false; });
+  }
+  triggerGlobalSearch() {
+    if (!this.globalSearchQuery || this.globalSearchQuery.trim() === '') {
+      this.globalSearchResults = [];
+      return;
+    }
+    this.globalSearchLoading = true;
+    this.rechercheService.searchProjects(this.globalSearchQuery).subscribe({
+      next: (response) => {
+        this.globalSearchResults = response.results || [];
+        this.globalSearchLoading = false;
+      },
+      error: () => {
+        this.globalSearchResults = [];
+        this.globalSearchLoading = false;
+      }
+    });
   }
 
 

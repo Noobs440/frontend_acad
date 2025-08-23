@@ -46,7 +46,7 @@ export class ProjetService {
 
   // ✅ Modifier le statut d’un projet
   updateProjectStatus(projectId: number, status: string): Observable<any> {
-    return this.http.patch(`${this.API_BASE}/usecases/status/projects/${projectId}`, { status });
+    return this.http.put(`${this.API_BASE}/usecases/status/projects/${projectId}`, { status });
   }
 
   // ✅ Récupérer les types de projet (Projet, Mémoire, Article, etc.)

@@ -142,17 +142,42 @@ export class HeroSectionComponent {
     return `${this.baseUrl}${iconePath}`;
   }
 
+  // Fonction utilitaire pour supprimer les accents
+  normalizeString(str: string): string {
+    return str
+      ? str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
+      : '';
+  }
+
   filterResults(query: string) {
-    if (query.trim() === '') {
+    const normalizedQuery = this.normalizeString(query.trim());
+    if (normalizedQuery === '') {
       this.filteredProjects = this.data;
       this.filteredCategories = this.data2;
       this.overlayVisible = false;
     } else {
-      this.filteredProjects = this.data.filter(project =>
-        project.titre_projet.toLowerCase().includes(query.toLowerCase())
-      );
+      this.filteredProjects = this.data.filter(project => {
+        const titreMatch = project.titre_projet && this.normalizeString(project.titre_projet).includes(normalizedQuery);
+        const descriptionMatch = (project.descript_projet && this.normalizeString(project.descript_projet).includes(normalizedQuery)) || (project.description && this.normalizeString(project.description).includes(normalizedQuery));
+        let collabMatch = false;
+        if (project.collaborateurs && Array.isArray(project.collaborateurs)) {
+          collabMatch = project.collaborateurs.some((c: any) => {
+            if (typeof c === 'string') {
+              return this.normalizeString(c).includes(normalizedQuery);
+            } else if (c && c.nom) {
+              return this.normalizeString(c.nom).includes(normalizedQuery);
+            }
+            return false;
+          });
+        } else if (project.collaborateurs && typeof project.collaborateurs === 'string') {
+          collabMatch = this.normalizeString(project.collaborateurs).includes(normalizedQuery);
+        }
+        const domaineMatch = (project.domaine && this.normalizeString(project.domaine).includes(normalizedQuery)) || (project.domain && this.normalizeString(project.domain).includes(normalizedQuery));
+        const categorieMatch = project.nom_categorie && this.normalizeString(project.nom_categorie).includes(normalizedQuery);
+        return titreMatch || descriptionMatch || collabMatch || domaineMatch || categorieMatch;
+      });
       this.filteredCategories = this.data2.filter(category =>
-        category.nom_cat.toLowerCase().includes(query.toLowerCase())
+        this.normalizeString(category.nom_cat).includes(normalizedQuery)
       );
       this.overlayVisible = this.filteredProjects.length > 0 || this.filteredCategories.length > 0;
     }

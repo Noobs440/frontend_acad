@@ -50,8 +50,16 @@
 
             <li *ngFor="let notification of notifications" class="dropdown-item notification-item mb-2 p-2 rounded-3 position-relative bg-white border border-1 shadow-sm">
                 <div class="d-flex align-items-center gap-2 mb-1">
-                  <span class="badge bg-info text-dark me-2" style="font-size:0.85em;">{{ notification.data.status }}</span>
-                  <h6 class="mb-0 fw-semibold text-dark flex-grow-1">{{ notification.data.project_title }}</h6>
+                  <ng-container *ngIf="notification.data.type === 'collaborateur_added'; else defaultNotif">
+                    <span class="badge bg-primary text-white me-2" style="font-size:0.85em;"><i class='bi bi-person-plus'></i> Nouveau collaborateur</span>
+                    <img *ngIf="notification.data.added_by_photo" [src]="notification.data.added_by_photo" alt="Ajouté par" class="rounded-circle me-2" style="width:28px;height:28px;object-fit:cover;">
+                    <span *ngIf="notification.data.added_by_name" class="fw-semibold text-secondary me-2">{{ notification.data.added_by_name }}</span>
+                    <h6 class="mb-0 fw-semibold text-dark flex-grow-1">{{ notification.data.project_title }}</h6>
+                  </ng-container>
+                  <ng-template #defaultNotif>
+                    <span class="badge bg-info text-dark me-2" style="font-size:0.85em;">{{ notification.data.status }}</span>
+                    <h6 class="mb-0 fw-semibold text-dark flex-grow-1">{{ notification.data.project_title }}</h6>
+                  </ng-template>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mb-1">
                   <small class="text-muted fst-italic">{{ notification.created_at | date:'medium' }}</small>
@@ -142,13 +150,22 @@
             [class.collapse]="!isProjectsOpen"
             [class.show]="isProjectsOpen"
             data-bs-parent="#sidebar-nav">
-          <li *ngIf="filteredProjects.length === 0" class="text-muted px-3">Aucun projet trouvé.</li>
-          <li *ngFor="let project of filteredProjects">
-            <a routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-               [routerLink]="['/user/dashboard/project-detail', project.id]">
-              <i class="bi bi-circle"></i><span>{{ project.titre }}</span>
-            </a>
-          </li>
+          <ng-container *ngFor="let status of availableStatuses">
+            <li class="px-3 mb-1">
+              <a href="#" (click)="toggleStatusAccordion(status); $event.preventDefault();" [class.fw-bold]="openedStatus === status">
+                <i class="bi bi-filter"></i> {{ status }}
+                <i class="bi ms-2" [ngClass]="openedStatus === status ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+              </a>
+              <ul *ngIf="openedStatus === status" class="list-unstyled ms-4 mt-2">
+                <li *ngFor="let project of getProjectsByStatus(status)">
+                  <a href="#" (click)="goToProject(project.id); $event.preventDefault();" [class.fw-bold]="selectedProjectId === project.id">
+                    <i class="bi bi-file-earmark-text"></i> {{ project.titre }}
+                  </a>
+                </li>
+                <li *ngIf="getProjectsByStatus(status).length === 0" class="text-muted small ms-2">Aucun projet</li>
+              </ul>
+            </li>
+          </ng-container>
         </ul>
       </li>
 

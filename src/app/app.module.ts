@@ -21,6 +21,7 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { RegisterComponent } from './home-components/modals/register-popup/register-popup.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MatDialogModule } from '@angular/material/dialog';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'
@@ -113,7 +114,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     MatDialogModule,
     MatProgressSpinnerModule,
-    CommonModule,
+  CommonModule,
+  RouterModule,
     ReactiveFormsModule,
     FormsModule,
     OverlayModule,

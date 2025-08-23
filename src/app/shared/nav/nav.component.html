@@ -3,29 +3,29 @@
 
     <a class="logo d-flex align-items-center me-auto me-xl-0" routerLink="/home">
       <img src="assets/img/logo1.jpg" alt="Logo" width="50" height="50" style="border-radius: 50%;" />
-      <h1 class="sitename">AcadProManage</h1><span>.</span>
+      <h1 class="sitename"></h1><span>CollabFacultyRise</span>
     </a>
 
     <nav id="navmenu" class="navmenu">
       <ul>
         <li>
           <a [routerLink]="['/home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-            <i class="fas fa-home"></i> {{ 'HOME' | translate }}
+            <i class="fas fa-home"></i> Accueil
           </a>
         </li>
         <li>
           <a [routerLink]="['/home/category']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-            <i class="fas fa-th-list"></i> {{ 'DOMAINS' | translate }}
+            <i class="fas fa-th-list"></i> Domaines
           </a>
         </li>
         <li>
           <a [routerLink]="['/home/projects-listing']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-            <i class="fas fa-project-diagram"></i> {{ 'PROJECTS' | translate }}
+            <i class="fas fa-project-diagram"></i> Projets
           </a>
         </li>
         <li>
           <a [routerLink]="['/home/contact']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-            <i class="fas fa-envelope"></i> {{ 'CONTACT' | translate }}
+            <i class="fas fa-envelope"></i> Contact
           </a>
         </li>
 
@@ -35,7 +35,7 @@
 
     <ng-container *ngIf="!isLoggedIn">
       <a class="btn-getstarted" (click)="openDialog()">
-        <i class="fas fa-sign-in-alt"></i> {{ 'SIGN_IN' | translate }}
+        <i class="fas fa-sign-in-alt"></i> Se Connecter
       </a>
     </ng-container>
     <ng-container *ngIf="isLoggedIn">

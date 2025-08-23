@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { RegisterComponent } from '../register-popup/register-popup.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { InfoDialogComponent } from '../../../shared/info-dialog/info-dialog.component';
 import { CustomvalidationService } from '../../../services/customvalidation.service';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
@@ -108,10 +107,7 @@ export class LoginPopupComponent {
         console.error(err);
         this.isLoading = false;
         this.errorMessage = 'Aucun utilisateur trouver avec cette adresse email';
-        this.dialog.open(InfoDialogComponent, {
-          width: '350px',
-          data: { title: 'Erreur', message: this.errorMessage }
-        });
+        alert(this.errorMessage);
       },
       complete: () => {
         this.isLoading = false;
@@ -137,10 +133,7 @@ export class LoginPopupComponent {
         console.error(err);
         this.isLoading = false;
         this.errorMessage = 'Code de vérification invalide.';
-        this.dialog.open(InfoDialogComponent, {
-          width: '350px',
-          data: { title: 'Erreur', message: this.errorMessage }
-        });
+        alert(this.errorMessage);
       },
       complete: () => {
         this.isLoading = false;
@@ -165,10 +158,7 @@ export class LoginPopupComponent {
         console.error(err);
         this.isLoading = true;
         this.errorMessage = 'Erreur lors de l\'envoi du code de vérification.';
-        this.dialog.open(InfoDialogComponent, {
-          width: '350px',
-          data: { title: 'Erreur', message: this.errorMessage }
-        });
+        alert(this.errorMessage);
       },
       complete: () => {
         this.isLoading = false;
@@ -205,6 +195,15 @@ export class LoginPopupComponent {
       this.isLoading = true;
       this.userService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
         next: value => {
+          console.log(value)
+
+          const queryParams = {
+            token: value.access_token,
+            name: value.username,
+            role: value.role,
+            id: value.id,
+            isLoggedOut: false
+          }
           const userRole = value.role;
           const token = value.access_token;
           const name = value.username;
@@ -217,8 +216,17 @@ export class LoginPopupComponent {
           localStorage.setItem('id', id);
           localStorage.setItem('user', JSON.stringify(value.user)); // Stocker les informations de l'utilisateur
 
+          // Correction : stocker aussi l'utilisateur pour le guard
+          localStorage.setItem('currentUser', JSON.stringify({
+            id: value.id,
+            username: value.username,
+            role: value.role
+          }));
+
           // Rediriger l'utilisateur en fonction de son rôle
-          this.redirectUserByRole(userRole);
+
+            //this.router.navigate([`/${userRole}/dashboard`]);
+            this.redirectUserByRole(userRole, queryParams);
           // Fermer le modal
           this.dialogRef.close();
         },
@@ -226,6 +234,7 @@ export class LoginPopupComponent {
           console.error(err);
           this.isLoading = false;
           this.errorMessage = "Addresse email ou mot de passe invalide";
+          console.log('Erreur login, errorMessage:', this.errorMessage);
         },
         complete: () => {
           this.isLoading = false;
@@ -234,16 +243,19 @@ export class LoginPopupComponent {
     }
   }
 
-  private redirectUserByRole(role: string) {
+  private redirectUserByRole(role: string, queryParams: any) {
     switch (role) {
       case 'admin':
-        this.router.navigate(['/admin/dashboard']);
+        this.router.navigate(['/admin/dashboard'], { queryParams });
+        break;
+      case 'adminsys':
+        this.router.navigate(['/adminsys'], { queryParams });
         break;
       case 'superviseur':
-        this.router.navigate(['/enseignant']);
+        this.router.navigate(['/enseignant'], { queryParams });
         break;
       case 'user':
-        this.router.navigate(['/user/dashboard']);
+        this.router.navigate(['/user/dashboard'], { queryParams });
         break;
       default:
         this.router.navigate(['/unauthorized']);
@@ -264,7 +276,7 @@ export class LoginPopupComponent {
     });
 
     dialogRef2.afterClosed().subscribe(result => {
-      // Dialog closed
+      console.log('The dialog was closed');
     });
   }
 
@@ -277,7 +289,7 @@ export class LoginPopupComponent {
     });
 
     dialogRef3.afterClosed().subscribe(result => {
-      // Dialog closed
+      console.log('The dialog was closed');
     });
   }
 }
