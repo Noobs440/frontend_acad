@@ -11,21 +11,27 @@ import { IndexComponent } from './index/index.component';
 import { ProjectListComponent } from './project-list/project-list.component';
 import { UniversiteListComponent } from './universite-list/universite-list.component';
 import { UserManagementComponent } from './user-management/user-management.component';
+import { SettingsComponent } from './settings/settings.component';
+import { ActivityLogListComponent } from './activity-log-list/activity-log-list.component';
+import path from 'path';
 
 const routes: Routes = [
   {
     path: '',
     component: AdminsysComponent,
     children: [
+      {path: 'settings', component: SettingsComponent, children: [
+          { path: 'categories', component: CategoryListComponent },
+          { path: 'documents', component: DocumentListComponent },
+          { path: 'collaborateurs', component: CollaboratorListComponent },
+          { path: 'facultes', component: FacultyListComponent },
+          { path: 'filieres', component: FiliereListComponent },
+          { path: 'niveaux', component: NiveauListComponent },
+          { path: 'universites', component: UniversiteListComponent },
+        ]},
+      {path: 'activity-logs', component: ActivityLogListComponent },
       {path: 'users', component: UserManagementComponent },
-      {path: 'universites', component: UniversiteListComponent },
       {path: 'projets', component: ProjectListComponent },
-      { path: 'niveaux', component: NiveauListComponent },
-      { path: 'filieres', component: FiliereListComponent },
-      { path: 'facultes', component: FacultyListComponent },
-      { path: 'collaborateurs', component: CollaboratorListComponent },
-      { path: 'documents', component: DocumentListComponent },
-      { path: 'categories', component: CategoryListComponent },
       { path: 'index', component: IndexComponent },
       // autres routes
       { path: '', redirectTo: 'index', pathMatch: 'full' }

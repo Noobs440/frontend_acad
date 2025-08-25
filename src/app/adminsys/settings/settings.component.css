@@ -1,0 +1,16 @@
+.settings-layout {
+  padding: 24px;
+}
+.settings-nav ul {
+  display: flex;
+  gap: 16px;
+  list-style: none;
+  padding: 0;
+}
+.settings-nav a.active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+.settings-content {
+  margin-top: 24px;
+}

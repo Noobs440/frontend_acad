@@ -20,6 +20,8 @@ import { UniversiteListComponent } from './universite-list/universite-list.compo
 import { UserManagementComponent } from './user-management/user-management.component';
 import { ResetPasswordDialogComponent } from './reset-password-dialog/reset-password-dialog.component';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
+import { SettingsComponent } from './settings/settings.component';
+import { ActivityLogListComponent } from './activity-log-list/activity-log-list.component';
 // autres composants à ajouter ici
 
 @NgModule({
@@ -37,6 +39,8 @@ import { ConfirmDialogComponent } from './confirm-dialog.component';
     UserManagementComponent,
     ResetPasswordDialogComponent,
     ConfirmDialogComponent,
+    SettingsComponent,
+    ActivityLogListComponent,
     // autres composants
   ],
   imports: [
