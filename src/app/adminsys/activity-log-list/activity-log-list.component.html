@@ -5,21 +5,17 @@
     <thead>
       <tr>
         <th>Date</th>
-        <th>Utilisateur</th>
         <th>Action</th>
         <th>Ressource</th>
         <th>Modifications</th>
-        <th>IP</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let log of logs">
         <td>{{ log.created_at | date:'short' }}</td>
-        <td>{{ log.user?.name || 'Système' }}</td>
         <td>{{ log.event | titlecase }}</td>
         <td>{{ getResourceLabel(log) }}</td>
         <td>{{ getChanges(log) }}</td>
-        <td>{{ log.ip_address }}</td>
       </tr>
     </tbody>
   </table>
