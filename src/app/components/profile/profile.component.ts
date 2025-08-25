@@ -1,6 +1,6 @@
 import { environment } from './../../../environments/environment';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
@@ -17,12 +17,16 @@ export class ProfileComponent implements OnInit {
   user: any = {};
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef<HTMLInputElement>;
 
+  role: string | null = null;
+
   constructor(
     private userService: UserService,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.role = localStorage.getItem('role');
     // 1. Charger le cookie CSRF Laravel Sanctum
     this.http.get('http://localhost:8000/sanctum/csrf-cookie', { withCredentials: true }).subscribe({
       next: () => {
@@ -42,6 +46,14 @@ export class ProfileComponent implements OnInit {
         console.error('Erreur lors de la récupération du cookie CSRF:', err);
       }
     });
+  }
+
+  goBackToDashboard(): void {
+    if (this.role === 'admin') {
+      this.router.navigate(['/admin/dashboard']);
+    } else {
+      this.router.navigate(['/user/dashboard']);
+    }
   }
 
   triggerFile(): void {

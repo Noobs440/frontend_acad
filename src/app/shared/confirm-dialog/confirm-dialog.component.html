@@ -1,1 +1,8 @@
-<p>confirm-dialog works!</p>
+<div class="confirm-dialog-container">
+	<h2 class="confirm-dialog-title">{{ data.title }}</h2>
+	<div class="confirm-dialog-message">{{ data.message }}</div>
+	<div class="confirm-dialog-actions">
+		<button mat-button (click)="onCancel()">Annuler</button>
+		<button mat-raised-button color="primary" (click)="onConfirm()">Approuver</button>
+	</div>
+</div>

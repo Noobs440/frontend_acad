@@ -100,6 +100,7 @@ export class SubmitPopupComponent implements OnInit {
         this.showPasswordField = false;
         this.collaboratorForm.get('name')?.setValue(user.nom_user);
         this.collaboratorForm.get('name')?.disable();
+        this.collaboratorForm.get('email')?.disable();
       } else {
         // Demander confirmation avant de créer
         const confirmDialog = this.dialog.open(InfoDialogComponent, {
@@ -112,16 +113,17 @@ export class SubmitPopupComponent implements OnInit {
         });
         confirmDialog.afterClosed().subscribe(result => {
           if (result === true) {
+            // Préparer le formulaire pour la création : tout éditable et vide
             this.foundUser = null;
             this.showPasswordField = true;
             this.collaboratorForm.get('name')?.reset();
             this.collaboratorForm.get('name')?.enable();
+            this.collaboratorForm.get('email')?.enable();
+            this.collaboratorForm.get('password')?.reset();
           } else {
-            this.collaboratorForm.get('email')?.reset();
+            
             this.foundUser = null;
             this.showPasswordField = false;
-            this.collaboratorForm.get('name')?.reset();
-            this.collaboratorForm.get('name')?.enable();
           }
         });
       }
@@ -427,6 +429,7 @@ export class SubmitPopupComponent implements OnInit {
             this.collaboratorForm.reset();
             this.foundUser = null;
             this.showPasswordField = false;
+            this.collaboratorForm.get('email')?.enable();
           },
           error: err => {
             console.error(err);
@@ -434,6 +437,7 @@ export class SubmitPopupComponent implements OnInit {
               width: '350px',
               data: { title: 'Erreur', message: "Erreur lors de l'ajout du collaborateur." }
             });
+            this.collaboratorForm.get('email')?.enable();
           },
           complete: () => {
             this.isLoading = false;
@@ -453,18 +457,18 @@ export class SubmitPopupComponent implements OnInit {
         const newUser = { nom_user: name, email: email, password: password };
         this.userManagementService.createUser(newUser).subscribe({
           next: (createdUser) => {
+            // Enchaîner directement avec l'ajout du collaborateur
             this.colService.addCollaborateur(
               createdUser.nom_user,
               createdUser.email,
               this.project_id,
-              createdUser.id // Pass the correct user_id
+              createdUser.id
             ).subscribe({
               next: () => {
                 this.dialog.open(InfoDialogComponent, {
                   width: '350px',
                   data: { title: 'Succès', message: 'Utilisateur créé et collaborateur ajouté !' }
                 }).afterClosed().subscribe(() => {
-                  // Réinitialiser le formulaire et revenir à l'étape collaborateur
                   this.saveC = true;
                   this.collaboratorForm.reset();
                   this.foundUser = null;
@@ -479,7 +483,6 @@ export class SubmitPopupComponent implements OnInit {
                   width: '350px',
                   data: { title: 'Erreur', message: "Erreur lors de l'ajout du collaborateur." }
                 }).afterClosed().subscribe(() => {
-                  // Réinitialiser le formulaire et revenir à l'étape collaborateur
                   this.collaboratorForm.reset();
                   this.foundUser = null;
                   this.showPasswordField = false;
@@ -512,14 +515,14 @@ export class SubmitPopupComponent implements OnInit {
     }
 
     if (this.formType === 'admin' && this.adminForm.valid) {
-      // Soumission stricte du projet à l'admin sélectionné
+      this.isLoadingStep6 = true;
       const adminId = this.adminForm.value.admin;
       if (!adminId) {
         this.dialog.open(InfoDialogComponent, {
           width: '350px',
           data: { title: 'Attention', message: "Veuillez sélectionner un administrateur avant de soumettre le projet." }
         });
-        this.isLoading = false;
+        this.isLoadingStep6 = false;
         return;
       }
       if (!this.project_id) {
@@ -527,29 +530,43 @@ export class SubmitPopupComponent implements OnInit {
           width: '350px',
           data: { title: 'Erreur', message: "Projet non créé. Impossible de soumettre à un admin." }
         });
-        this.isLoading = false;
+        this.isLoadingStep6 = false;
         return;
       }
+      // 1. Assigner l'admin puis 2. Soumettre le projet (en série)
       this.projetService.assignAdminToProject(this.project_id, adminId).subscribe({
-        next: (response) => {
-          this.adminAdded = true;
-          this.dialog.open(InfoDialogComponent, {
-            width: '350px',
-            data: { title: 'Succès', message: "Projet soumis à l'administrateur avec succès !" }
+        next: () => {
+          this.projetService.submitProject(this.project_id).subscribe({
+            next: () => {
+              this.adminAdded = true;
+              this.dialog.open(InfoDialogComponent, {
+                width: '350px',
+                data: { title: 'Succès', message: "Projet soumis à l'administrateur avec succès !" }
+              });
+              this.dialogRef.close();
+              window.location.reload();
+            },
+            error: err => {
+              console.error('Erreur backend soumission projet:', err);
+              this.adminAdded = false;
+              this.dialog.open(InfoDialogComponent, {
+                width: '350px',
+                data: { title: 'Erreur', message: "Erreur lors de la soumission du projet." }
+              });
+            },
+            complete: () => {
+              this.isLoadingStep6 = false;
+            }
           });
-          this.dialogRef.close();
-          window.location.reload();
         },
         error: err => {
           console.error('Erreur backend assignation admin:', err);
           this.adminAdded = false;
           this.dialog.open(InfoDialogComponent, {
             width: '350px',
-            data: { title: 'Erreur', message: "Erreur lors de la soumission à l'administrateur." }
+            data: { title: 'Erreur', message: "Erreur lors de l'assignation de l'administrateur." }
           });
-        },
-        complete: () => {
-          this.isLoading = false;
+          this.isLoadingStep6 = false;
         }
       });
     }

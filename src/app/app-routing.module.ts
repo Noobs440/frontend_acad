@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home-components/home/home.component';
 import { ContactComponent } from './home-components/contact/contact.component';
 import { PopCategoryComponent } from './home-components/pop-category/pop-category.component';
+import { LevelsListingComponent } from './home-components/levels-listing/levels-listing.component';
 import { ProjectsComponent } from './home-components/projects/projects.component';
 import { TeamComponent } from './home-components/team/team.component';
 import { ProjectDetailComponent } from './home-components/project-detail/project-detail.component';
@@ -80,16 +81,17 @@ const routes: Routes = [
       // { path: '', redirectTo: '/home', pathMatch: 'full' },
       // { path: 'home', loadChildren: () => import('./home/home.module').then(m => m.HomeModule) },
       // { path: 'login', component: LoginComponent },
-      {path:"",redirectTo:"home",pathMatch:"full"},
+  {path:"",redirectTo:"home",pathMatch:"full"},
       // {path:"home/login",component:LoginComponent},
       // {path:"home/register", component:RegisterComponent},
       // {path:"admin", component:AdminDashboardComponent},
-      {path:"home/contact", component:ContactComponent},
-      {path:"home/category", component:PopCategoryComponent},
-      {path:"home/projects-listing", component:ProjectsComponent},
-      {path: "home/project-detail/:id",component:ProjectDetailComponent},
-      {path:"home/team", component:TeamComponent},
-      {path:"home",component:HomeComponent,},
+  {path:"home/contact", component:ContactComponent},
+  {path:"home/category", component:PopCategoryComponent},
+  {path:"home/levels-listing", component: LevelsListingComponent},
+  {path:"home/projects-listing", component:ProjectsComponent},
+  {path: "home/project-detail/:id",component:ProjectDetailComponent},
+  {path:"home/team", component:TeamComponent},
+  {path:"home",component:HomeComponent,},
       
     ],
   },

@@ -38,6 +38,7 @@ export class ProjectsComponent implements OnInit {
   categories: any[] = [];
   filieres: any[] = [];
   niveaux: any[] = [];
+  niveauxFiltres: any[] = [];
 
   filteredPosts: any[] = [];
   paginatedPosts: any[] = [];
@@ -63,21 +64,30 @@ export class ProjectsComponent implements OnInit {
   ) {}
   isLoading=false
   ngOnInit(): void {
-    this.isLoading=true;
-    this.acceuilService.getProjectsByOrder().subscribe({
-      next:(data) => {
-        this.data = data;
-        this.applyFilters();
-        this.isLoading=false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.isLoading = false;
-      },
-      complete: ()=>{
-        this.isLoading = false;
+    this.isLoading = true;
+    // Lire le paramètre de query 'niveau' pour activer le filtre automatiquement
+    this.route.queryParams.subscribe(params => {
+      if (params['niveau']) {
+        this.selectedNiveau = params['niveau'];
       }
-
+      if (params['domaine']) {
+        this.selectedDomain = params['domaine'];
+      }
+      // Charger les projets après avoir défini le filtre
+      this.acceuilService.getProjectsByOrder().subscribe({
+        next: (data) => {
+          this.data = data;
+          this.applyFilters();
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error(err);
+          this.isLoading = false;
+        },
+        complete: () => {
+          this.isLoading = false;
+        }
+      });
     });
 
     this.categorieService.getCategories().subscribe(categories => {
@@ -90,8 +100,8 @@ export class ProjectsComponent implements OnInit {
 
     this.niveauService.getNiveaux().subscribe(niveaux => {
       this.niveaux = niveaux;
+      this.niveauxFiltres = niveaux;
     });
-
 
     // If search value is in localStorage, use it
     const storedSearch = localStorage.getItem('searchValue');
@@ -100,8 +110,8 @@ export class ProjectsComponent implements OnInit {
       this.searchProjects();
       localStorage.removeItem('searchValue');
     }
-  // Fermer la recherche globale sur navigation (optionnel)
-  this.route.params.subscribe(() => { this.showGlobalSearch = false; });
+    // Fermer la recherche globale sur navigation (optionnel)
+    this.route.params.subscribe(() => { this.showGlobalSearch = false; });
   }
   triggerGlobalSearch() {
     if (!this.globalSearchQuery || this.globalSearchQuery.trim() === '') {
@@ -129,6 +139,20 @@ export class ProjectsComponent implements OnInit {
   }
 
   applyFilters() {
+    // Adapter la liste des niveaux selon le département sélectionné
+    if (this.selectedFilliere) {
+      // Comparaison insensible à la casse pour éviter les soucis de correspondance
+      this.niveauxFiltres = this.niveaux.filter(niv =>
+        niv.nom_fil && niv.nom_fil.toLowerCase() === this.selectedFilliere.toLowerCase()
+      );
+      // Si le niveau sélectionné n'est plus dans la liste, le reset
+      if (!this.niveauxFiltres.some(niv => niv.code_niv === this.selectedNiveau)) {
+        this.selectedNiveau = '';
+      }
+    } else {
+      this.niveauxFiltres = this.niveaux;
+    }
+
     // 1. Appliquer les filtres (filière, niveau, domaine) en mode "ET"
     let filtered = this.data;
     if (this.selectedFilliere) {

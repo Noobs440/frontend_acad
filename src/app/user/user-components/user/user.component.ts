@@ -1,3 +1,4 @@
+ 
 
 import { Component, OnInit, OnDestroy, Renderer2, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
@@ -62,7 +63,6 @@ export class UserComponent implements OnInit, OnDestroy {
     this.user_name = localStorage.getItem('name') || '';
     this.role = localStorage.getItem('role') || '';
     this.id = localStorage.getItem('id') || '';
-    this.photo = localStorage.getItem('photo') || 'assets/img/default.png';
 
     const storedPhoto = localStorage.getItem('photo');
     this.photo = storedPhoto && storedPhoto !== 'null' && storedPhoto !== 'undefined'
@@ -234,5 +234,9 @@ export class UserComponent implements OnInit, OnDestroy {
 
   getProjectsByStatus(status: string) {
     return this.filteredProjects.filter(p => p.status === status);
+  }
+
+   get collaborateurNotifications(): any[] {
+    return this.notifications.filter(n => n.data && n.data.type === 'collaborateur_added');
   }
 }

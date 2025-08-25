@@ -190,8 +190,8 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
           label: 'Restaurer',
           icon: 'bi bi-arrow-repeat',
           class: 'btn btn-outline-info btn-sm d-flex align-items-center',
-          title: 'Restaurer',
-          onClick: () => this.updateProjectStatus(project.sn, 'Approved')
+          title: 'Remettre en attente',
+          onClick: () => this.updateProjectStatus(project.sn, 'Pending')
         });
       }
       this.projectActionsCache[project.sn] = actions;

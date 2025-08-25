@@ -17,35 +17,34 @@
 
   <!-- Filtres -->
   <div class="container filters p-4" [@fadeUp]>
-    <div class="row">
-      <div class="col-md-3">
-        <div class="input-group">
+    <div class="row g-3">
+      <div class="col-12 col-md-4">
+        <div class="input-group w-100">
           <span class="input-group-text"><i class="fas fa-university"></i></span>
           <select title="{{ 'SELECT_DEPARTMENT' | translate }}" class="no-focus form-select" [(ngModel)]="selectedFilliere" (change)="applyFilters()">
-            <option disabled selected value="">{{ 'SELECT_DEPARTMENT' | translate }}</option>
+            <option value="">Tous les départements</option>
             <option *ngFor="let filiere of filieres" [value]="filiere.nom_fil">{{ filiere.nom_fil }}</option>
           </select>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="input-group">
+      <div class="col-12 col-md-4">
+        <div class="input-group w-100">
           <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
           <select title="{{ 'SELECT_LEVEL' | translate }}" class="no-focus form-select" [(ngModel)]="selectedNiveau" (change)="applyFilters()">
-            <option disabled selected value="">{{ 'SELECT_LEVEL' | translate }}</option>
-            <option *ngFor="let niveau of niveaux" [value]="niveau.code_niv">{{ niveau.code_niv }}</option>
+            <option value="">Tous les niveaux</option>
+            <option *ngFor="let niveau of niveauxFiltres" [value]="niveau.code_niv">{{ niveau.code_niv }}</option>
           </select>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="input-group">
+      <div class="col-12 col-md-4">
+        <div class="input-group w-100">
           <span class="input-group-text"><i class="fas fa-book"></i></span>
           <select title="{{ 'SELECT_DOMAIN' | translate }}" class="no-focus form-select" [(ngModel)]="selectedDomain" (change)="applyFilters()">
-            <option disabled selected value="">{{ 'SELECT_DOMAIN' | translate }}</option>
+            <option value="">Tous les domaines</option>
             <option *ngFor="let domain of categories" [value]="domain.nom_cat">{{ domain.nom_cat }}</option>
           </select>
         </div>
       </div>
-    
     </div>
   </div><!-- Fin des Filtres -->
 

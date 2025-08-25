@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { AcceuilService } from '../../services/acceuil.service';
@@ -19,6 +20,9 @@ import { RechercheService } from '../../services/recherche.service';
   ],
 })
 export class PopCategoryComponent implements OnInit {
+
+
+  // ...
   isLoggedIn = !!localStorage.getItem('token');
   bgColor = 'white';
   noResults = false;
@@ -38,8 +42,9 @@ export class PopCategoryComponent implements OnInit {
 
   selectedFaculty = '';
   selectedDepartment = '';
-  selectedLevel = '';
-  searchQuery = '';
+  selectedCategory: string | null = null;
+  selectedLevel: string | null = null;
+  // ...
 
   private baseUrl: string = 'http://localhost:8000';
 
@@ -48,41 +53,53 @@ export class PopCategoryComponent implements OnInit {
     private facultyService: FacultyService,
     private filiereService: FiliereService,
     private niveauService: NiveauService,
-    private rechercheService: RechercheService
+    private rechercheService: RechercheService,
+    private router: Router
   ) {}
+  onCategoryClick(category: any): void {
+    this.router.navigate(['/home/projects-listing'], { queryParams: { domaine: category.nom_cat } });
+  }
 
   isLoading=false;
 
   ngOnInit(): void {
-    this.isLoading=true
+    // Charger les niveaux
+    this.niveauService.getNiveaux().subscribe({
+      next: (niveaux: any[]) => {
+        this.niveaux = niveaux;
+      },
+      error: (_err: any) => {
+        this.niveaux = [];
+      }
+    });
+    this.isLoading = true;
     this.acceuilService.getCategoriesWithProjectNumber().subscribe({
-      next:(data)=>{
+      next: (data: any[]) => {
         this.data = data;
+        this.categories = data;
         this.applyFilters();
-        this.isLoading=false;
+  // ...
+        this.isLoading = false;
+      },
+      error: (_err: any) => {
+        this.isLoading = false;
+      },
+      complete: () => {
+        this.isLoading = false;
       }
-      ,error:(err)=>
-      {
-        this.isLoading=false;
-      },complete:()=>{
-        this.isLoading=false;
-      }
-
     });
 
   }
 
-  applyFilters() {
-    this.filteredCategories = this.data;
-
-
-    if (this.searchQuery) {
-      this.filteredCategories = this.filteredCategories.filter(category =>
-        category.nom_cat.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        category.descript_cat.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+  applyFilters(): void {
+    let filtered = this.data;
+    if (this.selectedCategory && this.selectedCategory !== null) {
+      filtered = filtered.filter((category: any) => category.nom_cat === this.selectedCategory);
     }
-
+    if (this.selectedLevel && this.selectedLevel !== null) {
+      filtered = filtered.filter((category: any) => category.niveau === this.selectedLevel);
+    }
+    this.filteredCategories = filtered;
     this.chunkedCategories = this.chunkArray(this.filteredCategories, this.itemsPerPage);
     this.totalPages = this.chunkedCategories.length;
     this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
@@ -105,8 +122,9 @@ export class PopCategoryComponent implements OnInit {
     }
   }
 
-  clearFilters() {
-    this.searchQuery = '';
+  clearFilters(): void {
+    this.selectedCategory = null;
+    this.selectedLevel = null;
     this.applyFilters();
   }
 

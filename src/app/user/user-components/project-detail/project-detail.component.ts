@@ -1,9 +1,5 @@
-
-
-
-
-
- 
+import { ProjectHistoryService } from '../../../services/project-history.service';
+  
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
@@ -24,6 +20,13 @@ import { UserService } from '../../../services/user.service';
   styleUrls: ['./project-detail.component.css']
 })
 export class ProjectDetailComponent implements OnInit {
+  isLoadingAddDocument = false;
+  isLoadingAddCollaborator = false;
+  isLoadingDelete = false;
+  isLoadingResubmit = false;
+  isLoadingDraft = false;
+  isLoadingSubmit = false;
+  isLoadingAssignAdmin = false;
   isTitleExpanded = false;
   isDescriptionExpanded = false;
   isMetaExpanded = false;
@@ -59,7 +62,7 @@ export class ProjectDetailComponent implements OnInit {
   user_token: any;
   confirm_message = "";
   isExpanded = false;
-
+  projectHistory: any[] = [];
   constructor(
     private dialog: MatDialog,
     private route: ActivatedRoute,
@@ -70,6 +73,7 @@ export class ProjectDetailComponent implements OnInit {
     private projetService: ProjetService,
     private projetStatusService: ProjetstatusService,
     private userService: UserService,
+    private projectHistoryService: ProjectHistoryService,
   ) {}
 
   fetchAdmins() {
@@ -163,6 +167,11 @@ export class ProjectDetailComponent implements OnInit {
     // Charger les documents et collaborateurs liés au projet
     this.documentService.getDocumentsByProject(this.selectedProjectId).subscribe(res => this.documents = res);
     this.collaborateurService.getCollaborateursByProject(this.selectedProjectId).subscribe(res => this.collaborators = res);
+
+    // Charger l'historique des modifications du projet
+    this.projectHistoryService.getHistory(this.selectedProjectId).subscribe(history => {
+      this.projectHistory = history;
+    });
   }
 // ...existing code...
 
@@ -202,7 +211,7 @@ export class ProjectDetailComponent implements OnInit {
 
   saveAsDraft() {
     // Passe le projet à l'état 'Not Submitted' (brouillon)
-  this.projetService.updateProjectStatus(this.id, 'Not Submitted').subscribe({
+    this.projetService.updateProjectStatus(this.id, 'Not Submitted').subscribe({
       next: () => {
         this.projectStatus = 'Not Submitted';
         this.dialog.open(InfoDialogComponent, {
@@ -211,7 +220,7 @@ export class ProjectDetailComponent implements OnInit {
         });
         this.reloadProject();
       },
-  error: (err: any) => {
+      error: (err: any) => {
         this.dialog.open(InfoDialogComponent, {
           width: '350px',
           data: { title: 'Erreur', message: "Erreur lors de l'enregistrement du brouillon." }
@@ -265,16 +274,37 @@ export class ProjectDetailComponent implements OnInit {
       });
       return;
     }
-    this.projetService.assignAdminToProject(this.id, this.selectedAdminId).subscribe({
-      next: () => this.dialog.open(InfoDialogComponent, {
+    if (!this.documents || this.documents.length === 0) {
+      this.dialog.open(InfoDialogComponent, {
         width: '350px',
-        data: { title: 'Succès', message: "Votre projet a été soumis à l'admin choisi" }
-      }),
+        data: { title: 'Attention', message: "Vous devez ajouter au moins un document avant de soumettre le projet !" }
+      });
+      return;
+    }
+    // On assigne l'admin puis on soumet le projet (statut passera à Pending côté backend)
+    this.projetService.assignAdminToProject(this.id, this.selectedAdminId).subscribe({
+      next: () => {
+        this.projetService.submitProject(this.id).subscribe({
+          next: () => {
+            this.dialog.open(InfoDialogComponent, {
+              width: '350px',
+              data: { title: 'Succès', message: "Votre projet a été soumis à l'admin choisi et passe en attente." }
+            });
+            this.Submitted = true;
+            this.projectStatus = 'Pending';
+          },
+          error: (err) => {
+            this.dialog.open(InfoDialogComponent, {
+              width: '350px',
+              data: { title: 'Erreur', message: err?.error?.message || "Erreur lors de la soumission du projet." }
+            });
+          }
+        });
+      },
       error: err => this.dialog.open(InfoDialogComponent, {
         width: '350px',
-        data: { title: 'Erreur', message: "Votre projet doit contenir au moins un document" }
-      }),
-      complete: () => this.Submitted = true
+        data: { title: 'Erreur', message: "Erreur lors de l'assignation de l'admin." }
+      })
     });
   }
 

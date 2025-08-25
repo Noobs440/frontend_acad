@@ -9,6 +9,11 @@ import { Observable, tap, catchError, of } from 'rxjs';
   providedIn: 'root'
 })
 export class ProjetService {
+
+  // Soumettre un projet (passe en attente si conditions backend OK)
+  submitProject(id: number) {
+    return this.http.post(`${this.API_BASE}/usecases/submit/${id}`, {});
+  }
   // Rejeter un projet avec un motif
   rejectProjectWithReason(projectId: number, reason: string): Observable<any> {
     return this.http.post(`${this.API_BASE}/ressources/projets/${projectId}/reject`, { rejection_reason: reason });
@@ -22,9 +27,7 @@ export class ProjetService {
     return this.http.get<any[]>(`${this.API_BASE}/projects/supervised`);
   }
   // Assigner un superviseur à un projet
-  assignSupervisorToProject(projectId: number, supervisorId: string): Observable<any> {
-    return this.http.post(`${this.API_BASE}/projects/${projectId}/assign-supervisor`, { supervisorId });
-  }
+ 
   // Assigner un admin à un projet existant
   assignAdminToProject(projectId: number, adminId: string): Observable<any> {
     return this.http.post(`${this.API_BASE}/ressources/projets/${projectId}/assign-admin`, { admin_id: adminId });

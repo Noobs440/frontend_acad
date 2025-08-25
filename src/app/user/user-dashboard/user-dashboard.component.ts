@@ -115,10 +115,16 @@ export class UserDashboardComponent implements OnInit {
   groupProjectsByStateAndDate() {
     this.groupedProjects = {};
     for (const state of this.projectStates) {
-      // Filtrer les projets par état
-      const projectsOfState = this.projects
-        .filter((p: any) => p.status === state)
-        .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      let projectsOfState;
+      if (state === 'Not Submitted') {
+        projectsOfState = this.projects
+          .filter((p: any) => p.status === 'Not Submitted')
+          .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      } else {
+        projectsOfState = this.projects
+          .filter((p: any) => p.status === state)
+          .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      }
       this.groupedProjects[state] = projectsOfState;
     }
   }
@@ -126,54 +132,60 @@ export class UserDashboardComponent implements OnInit {
   computeStateCounts() {
     this.stateCounts = {};
     for (const state of this.projectStates) {
-      this.stateCounts[state] = this.projects.filter((p: any) => p.status === state).length;
+      if (state === 'Not Submitted') {
+        this.stateCounts[state] = this.projects.filter((p: any) => p.status === 'Not Submitted').length;
+      } else {
+        this.stateCounts[state] = this.projects.filter((p: any) => p.status === state).length;
+      }
     }
   }
 
   applyFilters(): void {
     const query = this.searchQuery.toLowerCase().trim();
     let filtered: any[] = [];
-    // Si un état est sélectionné, ne montrer que ce groupe, sinon tous les groupes concaténés
+    // Recherche sur plusieurs champs
+    const searchFn = (project: any) => {
+      return (
+        (project.titre?.toLowerCase().includes(query) ||
+         project.titre_projet?.toLowerCase().includes(query) ||
+         project.type?.toLowerCase().includes(query) ||
+         project.nom_categorie?.toLowerCase().includes(query) ||
+         project.nom_utilisateur?.toLowerCase().includes(query)) &&
+        (this.selectedTypeFilter === 'all' ||
+         project.type?.toLowerCase() === this.selectedTypeFilter.toLowerCase())
+      );
+    };
     if (this.selectedStateFilter) {
-      filtered = (this.groupedProjects[this.selectedStateFilter] || []).filter(project => {
-        const matchesSearch =
-          project.titre?.toLowerCase().includes(query) ||
-          project.type?.toLowerCase().includes(query);
-        const matchesType =
-          this.selectedTypeFilter === 'all' ||
-          project.type?.toLowerCase() === this.selectedTypeFilter.toLowerCase();
-        return matchesSearch && matchesType;
-      });
+      filtered = (this.groupedProjects[this.selectedStateFilter] || []).filter(searchFn);
     } else {
-      // Parcourir tous les groupes dans l'ordre des états
       for (const state of this.projectStates) {
-        const group = (this.groupedProjects[state] || []).filter(project => {
-          const matchesSearch =
-            project.titre?.toLowerCase().includes(query) ||
-            project.type?.toLowerCase().includes(query);
-          const matchesType =
-            this.selectedTypeFilter === 'all' ||
-            project.type?.toLowerCase() === this.selectedTypeFilter.toLowerCase();
-          return matchesSearch && matchesType;
-        });
+        const group = (this.groupedProjects[state] || []).filter(searchFn);
         filtered = filtered.concat(group);
       }
     }
+    // Toujours revenir à la page 1 si la recherche change et la page courante dépasse le max
     this.totalPages = Math.max(1, Math.ceil(filtered.length / this.itemsPerPage));
-    this.currentPage = Math.min(this.currentPage, this.totalPages);
-    this.currentPage = Math.max(this.currentPage, 1);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = 1;
+    }
     this.updateDisplayedProjects(filtered);
   }
 
   onStateFilterChange(state: string) {
     this.showStateProjects = state;
     this.showCollabProjects = false;
+    this.selectedStateFilter = state;
+    this.currentPage = 1;
+    this.applyFilters();
   }
 
 
   hideProjectList() {
     this.showCollabProjects = false;
     this.showStateProjects = null;
+    this.selectedStateFilter = null;
+    this.currentPage = 1;
+    this.applyFilters();
   }
 
   updateDisplayedProjects(filteredProjects?: any[]): void {
@@ -186,22 +198,33 @@ export class UserDashboardComponent implements OnInit {
   onPageChange(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
-      this.applyFilters();
+      if (this.showCollabProjects) {
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        this.selectedProject = this.collaboratorProjects.slice(startIndex, endIndex);
+      } else if (this.showStateProjects) {
+        const stateProjects = this.groupedProjects[this.showStateProjects] || [];
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        this.selectedProject = stateProjects.slice(startIndex, endIndex);
+      } else {
+        this.applyFilters();
+      }
     }
   }
 
   onSearchQueryChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.searchQuery = input.value;
-    this.currentPage = 1;
-    this.applyFilters();
+  const input = event.target as HTMLInputElement;
+  this.searchQuery = input.value;
+  this.currentPage = 1;
+  this.applyFilters();
   }
 
   onTypeFilterChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    this.selectedTypeFilter = select.value;
-    this.currentPage = 1;
-    this.applyFilters();
+  const select = event.target as HTMLSelectElement;
+  this.selectedTypeFilter = select.value;
+  this.currentPage = 1;
+  this.applyFilters();
   }
 
 
@@ -225,12 +248,10 @@ export class UserDashboardComponent implements OnInit {
     this.showCollabProjects = !this.showCollabProjects;
     if (this.showCollabProjects) {
       this.showStateProjects = null;
-      // Affichage exclusif : on ne montre que les projets en collaboration
-      this.selectedProject = this.collaboratorProjects.slice(0, this.itemsPerPage);
-      this.totalPages = Math.max(1, Math.ceil(this.collaboratorProjects.length / this.itemsPerPage));
       this.currentPage = 1;
+      this.totalPages = Math.max(1, Math.ceil(this.collaboratorProjects.length / this.itemsPerPage));
+      this.selectedProject = this.collaboratorProjects.slice(0, this.itemsPerPage);
     } else {
-      // Si on masque, on réapplique les filtres normaux
       this.applyFilters();
     }
   }

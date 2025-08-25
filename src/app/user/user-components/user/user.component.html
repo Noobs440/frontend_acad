@@ -38,39 +38,50 @@
             </span>
           </a>
 
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications p-3 shadow-lg border-0" style="min-width: 340px; max-width: 400px; max-height: 420px; overflow-y: auto; background: #f8fafd;">
-            <li class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
-              <span class="fw-bold text-primary"><i class="bi bi-bell me-1"></i> Notifications ({{ notifications.length }})</span>
-              <button class="btn btn-sm btn-outline-primary px-2 py-0" (click)="markAllNotificationAsRead()">Tout marquer comme lu</button>
-            </li>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications p-0 border-0 shadow-lg" style="min-width: 350px; max-width: 400px; max-height: 420px; overflow-y: auto; background: #fff; border-radius: 16px;">
+              <li class="d-flex justify-content-between align-items-center px-3 pt-3 pb-2 border-bottom" style="background: #f5f6fa; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                <span class="fw-bold text-primary"><i class="bi bi-bell me-1"></i> Notifications ({{ notifications.length }})</span>
+                <button class="btn btn-sm btn-outline-primary px-2 py-0" (click)="markAllNotificationAsRead()">Tout marquer comme lu</button>
+              </li>
 
-            <li *ngIf="notifications.length === 0" class="text-center text-muted py-3">
-              Aucune notification
-            </li>
+              <li *ngIf="notifications.length === 0" class="text-center text-muted py-4">
+                Aucune notification
+              </li>
 
-            <li *ngFor="let notification of notifications" class="dropdown-item notification-item mb-2 p-2 rounded-3 position-relative bg-white border border-1 shadow-sm">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <ng-container *ngIf="notification.data.type === 'collaborateur_added'; else defaultNotif">
-                    <span class="badge bg-primary text-white me-2" style="font-size:0.85em;"><i class='bi bi-person-plus'></i> Nouveau collaborateur</span>
-                    <img *ngIf="notification.data.added_by_photo" [src]="notification.data.added_by_photo" alt="Ajouté par" class="rounded-circle me-2" style="width:28px;height:28px;object-fit:cover;">
-                    <span *ngIf="notification.data.added_by_name" class="fw-semibold text-secondary me-2">{{ notification.data.added_by_name }}</span>
-                    <h6 class="mb-0 fw-semibold text-dark flex-grow-1">{{ notification.data.project_title }}</h6>
-                  </ng-container>
-                  <ng-template #defaultNotif>
-                    <span class="badge bg-info text-dark me-2" style="font-size:0.85em;">{{ notification.data.status }}</span>
-                    <h6 class="mb-0 fw-semibold text-dark flex-grow-1">{{ notification.data.project_title }}</h6>
-                  </ng-template>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                  <small class="text-muted fst-italic">{{ notification.created_at | date:'medium' }}</small>
-                  <button class="btn btn-outline-primary btn-sm px-2 py-0" (click)="markNotificationAsRead(notification.id)">
-                    <i class="bi bi-check2-circle"></i> Lu
-                  </button>
-                </div>
-                <div>
-                  <p class="mb-1 text-secondary small">{{ notification.data.message }}</p>
-                </div>
-            </li>
+              <ng-container *ngIf="notifications.length > 0; else noNotif">
+                <li *ngFor="let notification of notifications" class="dropdown-item notification-item px-3 py-3 mb-0 position-relative bg-white border-0 d-flex align-items-start gap-3 notification-fb-style" style="transition: background 0.2s; border-bottom: 1px solid #f0f0f0; cursor:pointer; border-radius:0;">
+                  <div class="d-flex flex-shrink-0 align-items-center justify-content-center" style="width:44px; height:44px; background:#e7f3ff; border-radius:50%;">
+                    <i *ngIf="notification.data.status" class="bi bi-arrow-repeat text-info fs-4"></i>
+                    <i *ngIf="!notification.data.status && notification.data.type === 'collaborateur_added'" class="bi bi-person-plus text-primary fs-4"></i>
+                    <i *ngIf="!notification.data.status && notification.data.type !== 'collaborateur_added'" class="bi bi-info-circle text-info fs-4"></i>
+                  </div>
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-items-center mb-1">
+                      <span *ngIf="notification.data.added_by_name" class="fw-semibold text-secondary me-2">{{ notification.data.added_by_name }}</span>
+                      <span class="fw-bold text-dark">{{ notification.data.project_title || 'Notification' }}</span>
+                    </div>
+                    <div class="text-muted small mb-1">{{ notification.created_at | date:'medium' }}</div>
+                    <div class="mb-1">
+                      <span *ngIf="notification.data.status" class="badge bg-info me-2">Changement d'état</span>
+                      <span *ngIf="!notification.data.status && notification.data.type === 'collaborateur_added'" class="badge bg-primary me-2">Collaborateur ajouté</span>
+                      <span *ngIf="!notification.data.status && notification.data.type !== 'collaborateur_added'" class="badge bg-success me-2">Soumission</span>
+                    </div>
+                    <div class="mb-1">{{ notification.data.message }}</div>
+                  </div>
+                  <div class="align-self-center ms-2">
+                    <button class="btn btn-outline-primary btn-sm px-2 py-0" (click)="markNotificationAsRead(notification.id)"><i class="bi bi-check2"></i></button>
+                  </div>
+                </li>
+              </ng-container>
+              <ng-template #noNotif>
+                <li class="text-center text-muted py-4">Aucune notification</li>
+              </ng-template>
+<!-- style and ng-container closing tags removed: fixed NG5002 error -->
+              <ng-template #noCollabNotif>
+                <li class="text-center text-muted py-4">
+                  Aucune notification de collaborateur pour le moment.
+                </li>
+              </ng-template>
           </ul>
         </li>
 

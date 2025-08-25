@@ -62,6 +62,15 @@
              style="flex: 1 1 0; min-width: 0; font-size:0.95rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-radius: 0.7rem;"
              (click)="onStateFilterChange(state)">
           <div class="text-center w-100">
+            <div class="mb-1">
+              <ng-container [ngSwitch]="state">
+                <i *ngSwitchCase="'Not Submitted'" class="bi bi-upload text-secondary fs-4"></i>
+                <i *ngSwitchCase="'Pending'" class="bi bi-hourglass-split text-warning fs-4"></i>
+                <i *ngSwitchCase="'Approved'" class="bi bi-check-circle text-success fs-4"></i>
+                <i *ngSwitchCase="'Rejected'" class="bi bi-x-circle text-danger fs-4"></i>
+                <i *ngSwitchDefault class="bi bi-folder text-info fs-4"></i>
+              </ng-container>
+            </div>
             <div class="fw-bold" style="font-size: 0.98rem;">{{ state | titlecase }}</div>
             <div class="h5 fw-bold text-dark mb-0">{{ stateCounts[state] || 0 }}</div>
           </div>
@@ -72,6 +81,9 @@
            style="flex: 1 1 0; min-width: 0; font-size:0.95rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-radius: 0.7rem;"
            (click)="onCollabCardClick()">
         <div class="text-center w-100">
+          <div class="mb-1">
+            <i class="bi bi-people-fill text-primary fs-4"></i>
+          </div>
           <div class="fw-bold" style="font-size: 0.98rem;">Collaboration</div>
           <div class="h5 fw-bold text-dark mb-0">{{ collaboratorProjects.length }}</div>
         </div>
@@ -178,48 +190,53 @@
       <button class="btn btn-outline-secondary btn-sm" (click)="hideProjectList()">Masquer</button>
     </div>
     <ng-container *ngIf="collaboratorProjects.length; else noCollab">
-      <div class="project-card-grid" *ngIf="collaboratorProjects.length">
-        <div class="project-card-item" *ngFor="let project of selectedProject">
-          <a [routerLink]="['/user/dashboard/project-detail', project.id]" class="card project-card-custom text-decoration-none">
-            <img [src]="getFullImageUrl(project.image)" alt="Image du projet {{ project.titre }}" class="card-img-top" />
-            <div class="card-body p-3">
-              <h5 class="card-title">{{ project.titre || project.titre_projet }}
-                <span class="badge bg-warning text-dark ms-2">Collaborateur</span>
-              </h5>
-              <span class="badge category-badge me-2" [style.backgroundColor]="project.couleur_categorie || '#6c757d'">
-                {{ project.nom_categorie }}
-              </span>
-              <span class="badge status-badge" [ngClass]="{
-                'badge-not-submitted': project.status === 'Not Submitted',
-                'badge-pending': project.status === 'Pending',
-                'badge-approved': project.status === 'Approved',
-                'badge-rejected': project.status === 'Rejected'
-              }">
-                {{ project.status | titlecase }}
-              </span>
-              <p class="card-text mt-2">
-                <small class="text-muted fw-bold">
-                  Par {{ project.nom_utilisateur }} le {{ project.created_at | date: 'mediumDate' }}
-                </small>
-              </p>
-            </div>
-          </a>
-        </div>
+      <div class="project-card-grid">
+        <ng-container *ngIf="selectedProject.length; else noPageDataCollab">
+          <div class="project-card-item" *ngFor="let project of selectedProject">
+            <a [routerLink]="['/user/dashboard/project-detail', project.id]" class="card project-card-custom text-decoration-none">
+              <img [src]="getFullImageUrl(project.image)" alt="Image du projet {{ project.titre }}" class="card-img-top" />
+              <div class="card-body p-3">
+                <h5 class="card-title">{{ project.titre || project.titre_projet }}
+                  <span class="badge bg-warning text-dark ms-2">Collaborateur</span>
+                </h5>
+                <span class="badge category-badge me-2" [style.backgroundColor]="project.couleur_categorie || '#6c757d'">
+                  {{ project.nom_categorie }}
+                </span>
+                <span class="badge status-badge" [ngClass]="{
+                  'badge-not-submitted': project.status === 'Not Submitted',
+                  'badge-pending': project.status === 'Pending',
+                  'badge-approved': project.status === 'Approved',
+                  'badge-rejected': project.status === 'Rejected'
+                }">
+                  {{ project.status | titlecase }}
+                </span>
+                <p class="card-text mt-2">
+                  <small class="text-muted fw-bold">
+                    Par {{ project.nom_utilisateur }} le {{ project.created_at | date: 'mediumDate' }}
+                  </small>
+                </p>
+              </div>
+            </a>
+          </div>
+        </ng-container>
+        <ng-template #noPageDataCollab>
+          <div class="col-12 text-center text-muted py-4">Aucun projet à afficher sur cette page.</div>
+        </ng-template>
       </div>
       <!-- Pagination -->
-      <nav *ngIf="totalPages > 1" aria-label="Pagination projets collaboration" class="d-flex justify-content-center mt-3">
-        <ul class="pagination">
-          <li class="page-item" [class.disabled]="currentPage === 1">
-            <a class="page-link" (click)="onPageChange(currentPage - 1)" style="cursor:pointer;">&laquo;</a>
-          </li>
-          <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="currentPage === (i+1)">
-            <a class="page-link" (click)="onPageChange(i+1)" style="cursor:pointer;">{{ i+1 }}</a>
-          </li>
-          <li class="page-item" [class.disabled]="currentPage === totalPages">
-            <a class="page-link" (click)="onPageChange(currentPage + 1)" style="cursor:pointer;">&raquo;</a>
-          </li>
-        </ul>
-      </nav>
+        <nav *ngIf="totalPages > 1" aria-label="Pagination projets collaboration" class="d-flex justify-content-center mt-3">
+          <ul class="pagination">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <a class="page-link" (click)="onPageChange(currentPage - 1)" style="cursor:pointer;">&laquo;</a>
+            </li>
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="currentPage === (i+1)">
+              <a class="page-link" (click)="onPageChange(i+1)" style="cursor:pointer;">{{ i+1 }}</a>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <a class="page-link" (click)="onPageChange(currentPage + 1)" style="cursor:pointer;">&raquo;</a>
+            </li>
+          </ul>
+        </nav>
     </ng-container>
     <ng-template #noCollab>
       <div class="col-12"><p class="text-muted">Aucun projet en collaboration.</p></div>
@@ -235,34 +252,53 @@
       <button class="btn btn-outline-secondary btn-sm" (click)="hideProjectList()">Masquer</button>
     </div>
     <ng-container *ngIf="groupedProjects[showStateProjects]?.length; else noState">
-      <div class="project-card-grid" *ngIf="groupedProjects[showStateProjects]?.length">
-        <div class="project-card-item" *ngFor="let project of groupedProjects[showStateProjects]">
-          <a [routerLink]="['/user/dashboard/project-detail', project.id]" class="card project-card-custom text-decoration-none">
-            <img [src]="getFullImageUrl(project.image)" alt="Image du projet {{ project.titre }}" class="card-img-top" />
-            <div class="card-body p-3">
-              <h5 class="card-title">{{ project.titre }}
-                <span *ngIf="project.readonly" class="badge bg-warning text-dark ms-2">Collaborateur</span>
-              </h5>
-              <span class="badge category-badge me-2" [style.backgroundColor]="project.couleur_categorie || '#6c757d'">
-                {{ project.nom_categorie }}
-              </span>
-              <span class="badge status-badge" [ngClass]="{
-                'badge-not-submitted': project.status === 'Not Submitted',
-                'badge-pending': project.status === 'Pending',
-                'badge-approved': project.status === 'Approved',
-                'badge-rejected': project.status === 'Rejected'
-              }">
-                {{ project.status | titlecase }}
-              </span>
-              <p class="card-text mt-2">
-                <small class="text-muted fw-bold">
-                  Par {{ project.nom_utilisateur }} le {{ project.created_at | date: 'mediumDate' }}
-                </small>
-              </p>
-            </div>
-          </a>
-        </div>
+      <div class="project-card-grid">
+        <ng-container *ngIf="selectedProject.length; else noPageDataState">
+          <div class="project-card-item" *ngFor="let project of selectedProject">
+            <a [routerLink]="['/user/dashboard/project-detail', project.id]" class="card project-card-custom text-decoration-none">
+              <img [src]="getFullImageUrl(project.image)" alt="Image du projet {{ project.titre }}" class="card-img-top" />
+              <div class="card-body p-3">
+                <h5 class="card-title">{{ project.titre }}
+                  <span *ngIf="project.readonly" class="badge bg-warning text-dark ms-2">Collaborateur</span>
+                </h5>
+                <span class="badge category-badge me-2" [style.backgroundColor]="project.couleur_categorie || '#6c757d'">
+                  {{ project.nom_categorie }}
+                </span>
+                <span class="badge status-badge" [ngClass]="{
+                  'badge-not-submitted': project.status === 'Not Submitted',
+                  'badge-pending': project.status === 'Pending',
+                  'badge-approved': project.status === 'Approved',
+                  'badge-rejected': project.status === 'Rejected'
+                }">
+                  {{ project.status | titlecase }}
+                </span>
+                <p class="card-text mt-2">
+                  <small class="text-muted fw-bold">
+                    Par {{ project.nom_utilisateur }} le {{ project.created_at | date: 'mediumDate' }}
+                  </small>
+                </p>
+              </div>
+            </a>
+          </div>
+        </ng-container>
+        <ng-template #noPageDataState>
+          <div class="col-12 text-center text-muted py-4">Aucun projet à afficher sur cette page.</div>
+        </ng-template>
       </div>
+      <!-- Pagination pour la vue filtrée par statut -->
+      <nav *ngIf="totalPages > 1" aria-label="Pagination projets filtrés" class="d-flex justify-content-center mt-3">
+        <ul class="pagination">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link" (click)="onPageChange(currentPage - 1)" style="cursor:pointer;">&laquo;</a>
+          </li>
+          <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="currentPage === (i+1)">
+            <a class="page-link" (click)="onPageChange(i+1)" style="cursor:pointer;">{{ i+1 }}</a>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a class="page-link" (click)="onPageChange(currentPage + 1)" style="cursor:pointer;">&raquo;</a>
+          </li>
+        </ul>
+      </nav>
 <style>
 .project-card-grid {
   display: grid;
@@ -329,9 +365,63 @@
   </div>
 </div>
 
-<!-- ...le reste du dashboard (filtres, upload, etc.) ne s'affiche que si aucune vue exclusive n'est active -->
+
+<!-- Vue générale : tous les projets filtrés, paginés -->
 <div *ngIf="!showCollabProjects && !showStateProjects">
-  <!-- ...existing dashboard code (filtres, upload, etc.)... -->
+  <div class="container mt-3">
+    <div class="row">
+      <div class="col-12 mb-2 mt-4 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold text-primary">Tous mes projets ({{ selectedProject.length }})</h5>
+      </div>
+      <ng-container *ngIf="selectedProject.length; else noGeneralProjects">
+        <div class="project-card-grid">
+          <div class="project-card-item" *ngFor="let project of selectedProject">
+            <a [routerLink]="['/user/dashboard/project-detail', project.id]" class="card project-card-custom text-decoration-none">
+              <img [src]="getFullImageUrl(project.image)" alt="Image du projet {{ project.titre }}" class="card-img-top" />
+              <div class="card-body p-3">
+                <h5 class="card-title">{{ project.titre || project.titre_projet }}
+                  <span *ngIf="project.readonly" class="badge bg-warning text-dark ms-2">Collaborateur</span>
+                </h5>
+                <span class="badge category-badge me-2" [style.backgroundColor]="project.couleur_categorie || '#6c757d'">
+                  {{ project.nom_categorie }}
+                </span>
+                <span class="badge status-badge" [ngClass]="{
+                  'badge-not-submitted': project.status === 'Not Submitted',
+                  'badge-pending': project.status === 'Pending',
+                  'badge-approved': project.status === 'Approved',
+                  'badge-rejected': project.status === 'Rejected'
+                }">
+                  {{ project.status | titlecase }}
+                </span>
+                <p class="card-text mt-2">
+                  <small class="text-muted fw-bold">
+                    Par {{ project.nom_utilisateur }} le {{ project.created_at | date: 'mediumDate' }}
+                  </small>
+                </p>
+              </div>
+            </a>
+          </div>
+        </div>
+        <!-- Pagination générale -->
+        <nav *ngIf="totalPages > 1" aria-label="Pagination projets généraux" class="d-flex justify-content-center mt-3">
+          <ul class="pagination">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <a class="page-link" (click)="onPageChange(currentPage - 1)" style="cursor:pointer;">&laquo;</a>
+            </li>
+            <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="currentPage === (i+1)">
+              <a class="page-link" (click)="onPageChange(i+1)" style="cursor:pointer;">{{ i+1 }}</a>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <a class="page-link" (click)="onPageChange(currentPage + 1)" style="cursor:pointer;">&raquo;</a>
+            </li>
+          </ul>
+        </nav>
+      </ng-container>
+      <ng-template #noGeneralProjects>
+        <div class="col-12 text-center text-muted py-4">Aucun projet à afficher.</div>
+      </ng-template>
+    </div>
+  </div>
 </div>
 
   <!-- Zone de commentaires projet (overlay) -->

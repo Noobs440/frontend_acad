@@ -1,134 +1,187 @@
-  <h1 class="dashboard-title">Admin Dashboard</h1>
-      <nav>
-        <ol class="breadcrumb dashboard-breadcrumb">
-          <li class="breadcrumb-item"><a [routerLink]="['/home']">Home</a></li>
-          <li class="breadcrumb-item"><a [routerLink]="['/admin/dashboard']">Admin Dashboard</a></li>
-          <li class="breadcrumb-item active">{{ selectedProjectTitle }}</li>
-        </ol>
-      </nav>
-  
-  <div class="globalese dashboard-header-fixed">
-    <div class="dashboard-header-group">
-      <button routerLink="/admin/dashboard" class="btn btn-primary retour-dashboard-btn">
-        Retour au Dashboard Admin
-      </button>
-      <div class="actions-box sticky-actions">
-        <ng-container *ngIf="projectStatus=='Approved'">
-          <button class="btn btn-view" (click)="onView()" [disabled]="isLoadingRestore"><i class="fas fa-eye"></i> Voir</button>
-          <button class="btn btn-del" (click)="onRestore()" [disabled]="isLoadingRestore">
-            <span *ngIf="isLoadingRestore" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-            <i class="fas fa-undo"></i> Restaurer
-          </button>
-        </ng-container>
-        <ng-container *ngIf="projectStatus=='Pending'">
-          <button class="btn btn-view" (click)="onView()" [disabled]="isLoadingApprove || isLoadingReject"><i class="fas fa-eye"></i> Voir</button>
-          <button class="btn btn-val" (click)="onValidate()" [disabled]="isLoadingApprove">
-            <span *ngIf="isLoadingApprove" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-            <i class="fas fa-check"></i> Approuver
-          </button>
-          <button class="btn btn-del" (click)="openRejectModal()" [disabled]="isLoadingReject">
-            <span *ngIf="isLoadingReject" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-            <i class="fas fa-times"></i> Rejeter
-          </button>
-        </ng-container>
-        <ng-container *ngIf="projectStatus=='Rejected'">
-          <div class="alert alert-danger mb-2">
-            <strong>Motif du rejet :</strong>
-            <span>{{ getRejectionReason() }}</span>
-          </div>
-          <button class="btn btn-val" (click)="onRestore()" [disabled]="isLoadingRestore">
-            <span *ngIf="isLoadingRestore" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-            <i class="fas fa-undo"></i> Restaurer
-          </button>
-        </ng-container>
-      </div>
-      <!-- Bloc Documents dans l'en-tête -->
-      <div class="service-box doc-collab-header">
-        <h4 class="doc-collab-title"><i class="bi bi-file-earmark-text me-1"></i> Documents</h4>
-        <div class="download-catalog doc-collab-list">
-          <a *ngFor="let document of documents | slice:0:(isDocumentsExpanded ? documents.length : 1)"
-             [href]="getFullDocumentUrl(document.lien_doc)" target="_blank" rel="noopener"
-             class="document-item doc-collab-item d-flex align-items-center">
-            <i class="bi bi-filetype-pdf doc-collab-icon"></i>
-            <span class="document-link doc-collab-link">{{ document.nom_doc }}</span>
-          </a>
+
+  <main id="main" class="main">
+    <div class="pagetitle mb-3">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div>
+          <h1 class="fw-bold text-primary mb-0">Admin <span class="text-dark">Dashboard</span></h1>
+          <nav class="breadcrumb-fixed">
+            <ol class="breadcrumb bg-white rounded shadow-sm px-4 py-3 mb-0" style="font-size:1.15rem;">
+              <li class="breadcrumb-item">
+                <a [routerLink]="['/home']" style="font-weight:600; color:#06BBCC;">Home</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a [routerLink]="['/admin/dashboard']" style="font-weight:600; color:#06BBCC;">Admin Dashboard</a>
+              </li>
+              <li class="breadcrumb-item active" style="font-weight:700; color:#222;">{{ selectedProjectTitle }}</li>
+            </ol>
+          </nav>
         </div>
-  <div *ngIf="showMoreDocuments" class="show-more doc-collab-showmore" (click)="toggleDocumentsExpand()">
-          <i class="bi" [ngClass]="isDocumentsExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-          <span>{{ isDocumentsExpanded ? 'Show Less' : 'Show More' }}</span>
-        </div>
-      </div>
-      <!-- Bloc Collaborators dans l'en-tête -->
-      <div class="service-box doc-collab-header">
-        <h4 class="doc-collab-title"><i class="bi bi-people me-1"></i> Collaborators</h4>
-        <div class="download-catalog doc-collab-list">
-          <div *ngFor="let collaborator of collaborators | slice:0:(isCollaboratorsExpanded ? collaborators.length : 2)"
-               class="doc-collab-item d-flex align-items-center">
-            <i class="bi bi-person doc-collab-icon"></i>
-            <span class="doc-collab-link">{{ collaborator.nom_collab }}</span>
-            <span class="doc-collab-email">{{ collaborator.email_collab }}</span>
-          </div>
-        </div>
-  <div *ngIf="showMoreCollaborators" class="show-more doc-collab-showmore" (click)="toggleCollaboratorsExpand()">
-          <i class="bi" [ngClass]="isCollaboratorsExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-          <span>{{ isCollaboratorsExpanded ? 'Show Less' : 'Show More' }}</span>
+        <div class="d-flex flex-wrap gap-3 mt-2">
+          <!-- Actions admin -->
+          <ng-container *ngIf="projectStatus=='Approved'">
+            <button class="btn btn-view" (click)="onView()" [disabled]="isLoadingRestore"><i class="fas fa-eye"></i> Voir</button>
+            <button class="btn btn-del" (click)="onRestore()" [disabled]="isLoadingRestore">
+              <span *ngIf="isLoadingRestore" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              <i class="fas fa-undo"></i> Restaurer
+            </button>
+          </ng-container>
+          <ng-container *ngIf="projectStatus=='Pending'">
+            <button class="btn btn-view" (click)="onView()" [disabled]="isLoadingApprove || isLoadingReject"><i class="fas fa-eye"></i> Voir</button>
+            <button class="btn btn-val" (click)="onValidate()" [disabled]="isLoadingApprove">
+              <span *ngIf="isLoadingApprove" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              <i class="fas fa-check"></i> Approuver
+            </button>
+            <button class="btn btn-del" (click)="openRejectModal()" [disabled]="isLoadingReject">
+              <span *ngIf="isLoadingReject" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              <i class="fas fa-times"></i> Rejeter
+            </button>
+          </ng-container>
+          <ng-container *ngIf="projectStatus=='Rejected'">
+            <div class="alert alert-danger mb-2">
+              <strong>Motif du rejet :</strong>
+              <span>{{ getRejectionReason() }}</span>
+            </div>
+            <button class="btn btn-val" (click)="onRestore()" [disabled]="isLoadingRestore">
+              <span *ngIf="isLoadingRestore" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              <i class="fas fa-undo"></i> Restaurer
+            </button>
+          </ng-container>
         </div>
       </div>
     </div>
-  </div>
 
-
-<main id="main" class="main main-with-header-padding">
-
-
-  <section class="section dashboard">
-    <div class="project-detail-container">
-      <!-- Colonne gauche : image et infos projet -->
-      <div class="project-detail-left">
-        <img [src]="getFullImageUrl(projectImage)" alt="Project image" class="project-detail-img" />
-        <h3 class="project-title" [ngClass]="{'title-ellipsis': !isTitleExpanded}" (click)="isTitleExpanded = !isTitleExpanded" title="Cliquez pour voir le titre complet">
-          <span class="field-label">Titre :</span>
-          <span *ngIf="!isTitleExpanded">{{ selectedProjectTitle || '' }}<span *ngIf="(selectedProjectTitle || '').length > 50">...</span></span>
-          <span *ngIf="isTitleExpanded">{{ selectedProjectTitle }}</span>
-          <span class="type-badge">({{ type }})</span>
-        </h3>
-
-        <div class="project-desc-block">
-          <span class="field-label">Description :</span>
-          <span *ngIf="!isDescriptionExpanded">
-            <span class="desc-ellipsis">{{ description }}</span>
-            <a *ngIf="description.length > 0" class="desc-toggle" (click)="isDescriptionExpanded = true">Voir plus</a>
-          </span>
-          <span *ngIf="isDescriptionExpanded">
-            {{ description }}
-            <a *ngIf="description.length > 0" class="desc-toggle" (click)="isDescriptionExpanded = false">Voir moins</a>
-          </span>
-  </div>
-        <div *ngIf="!isMetaExpanded">
-          <a class="desc-toggle" (click)="isMetaExpanded = true">Voir plus de détails</a>
+    <section class="section dashboard">
+      <div class="row g-4">
+        <div class="col-12 col-lg-6 order-lg-1">
+          <div class="card shadow-sm rounded-4 border-0 mb-4 h-100">
+            <img
+              [src]="getFullImageUrl(projectImage)"
+              alt="Project image"
+              class="img-fluid rounded-top-4"
+              style="max-height: 320px; object-fit: cover;"
+            />
+            <div class="card-body">
+              <h3 class="project-title" [ngClass]="{'title-ellipsis': !isTitleExpanded}" (click)="isTitleExpanded = !isTitleExpanded" title="Cliquez pour voir le titre complet">
+                <span class="field-label">Titre :</span>
+                <span *ngIf="!isTitleExpanded">{{ selectedProjectTitle || '' }}<span *ngIf="(selectedProjectTitle || '').length > 50">...</span></span>
+                <span *ngIf="isTitleExpanded">{{ selectedProjectTitle }}</span>
+                <span class="type-badge">({{ type }})</span>
+              </h3>
+              <div class="project-desc-block">
+                <span class="field-label">Description :</span>
+                <span *ngIf="!isDescriptionExpanded">
+                  <span class="desc-ellipsis">{{ description }}</span>
+                  <a *ngIf="description.length > 0" class="desc-toggle" (click)="isDescriptionExpanded = true">Voir plus</a>
+                </span>
+                <span *ngIf="isDescriptionExpanded">
+                  {{ description }}
+                  <a *ngIf="description.length > 0" class="desc-toggle" (click)="isDescriptionExpanded = false">Voir moins</a>
+                </span>
+              </div>
+              <div *ngIf="!isMetaExpanded">
+                <a class="desc-toggle" (click)="isMetaExpanded = true">Voir plus de détails</a>
+              </div>
+              <ul class="project-meta list-unstyled mb-0" *ngIf="isMetaExpanded">
+                <li class="mb-2"><span class="field-label">Auteur :</span> <i class="bi bi-person-circle me-2"></i> <span class="fw-semibold">{{ author }}</span></li>
+                <li class="mb-2"><span class="field-label">Niveau :</span> <i class="fas fa-graduation-cap me-2"></i> <span>{{ level }}</span></li>
+                <li class="mb-2"><span class="field-label">Catégorie :</span> <span>{{ category }}</span></li>
+                <li class="mb-2"><span class="field-label">Type :</span> <span>{{ type }}</span></li>
+                <li class="mb-2"><span class="field-label">Date :</span> <span>{{ date | date:'dd/MM/yyyy' }}</span></li>
+                <li><span class="field-label">Vues :</span> <i class="fas fa-eye me-2"></i> <span>{{ views }}</span></li>
+                <li><span class="field-label">Statut :</span> <span>{{ projectStatus }}</span></li>
+                <li><a class="desc-toggle" (click)="isMetaExpanded = false">Masquer les détails</a></li>
+              </ul>
+              <div class="contact-box">
+                <h4>Contact Auteur</h4>
+                <p><span class="field-label">Téléphone :</span> <i class="bi bi-telephone me-2"></i> <span>+589 55488 55</span></p>
+                <p><span class="field-label">Email :</span> <i class="bi bi-envelope me-2"></i> <a href="mailto:{{ email }}">{{ email }}</a></p>
+              </div>
+            </div>
+          </div>
         </div>
-        <ul class="project-meta" *ngIf="isMetaExpanded">
-          <li><span class="field-label">Auteur :</span> <i class="bi bi-person-circle"></i> <span class="font-bold">{{ author }}</span></li>
-          <li><span class="field-label">Niveau :</span> <i class="fas fa-graduation-cap"></i> <span>{{ level }}</span></li>
-          <li><span class="field-label">Catégorie :</span> <span>{{ category }}</span></li>
-          <li><span class="field-label">Type :</span> <span>{{ type }}</span></li>
-          <li><span class="field-label">Date :</span> <span>{{ date | date:'dd/MM/yyyy' }}</span></li>
-          <li><span class="field-label">Vues :</span> <i class="fas fa-eye"></i> <span>{{ views }}</span></li>
-          <li><span class="field-label">Statut :</span> <span>{{ projectStatus }}</span></li>
-          <li><a class="desc-toggle" (click)="isMetaExpanded = false">Masquer les détails</a></li>
-        </ul>
-        <div class="contact-box">
-          <h4>Contact Auteur</h4>
-          <p><span class="field-label">Téléphone :</span> <i class="bi bi-telephone me-2"></i> <span>+589 55488 55</span></p>
-          <p><span class="field-label">Email :</span> <i class="bi bi-envelope me-2"></i> <a href="mailto:{{ email }}">{{ email }}</a></p>
+        <div class="col-12 col-lg-6 order-lg-2 d-flex flex-column align-items-lg-end align-items-start">
+          <div class="d-flex flex-column gap-3 w-100">
+            <!-- Actions admin -->
+            <div class="action-btn-group">
+              <ng-container *ngIf="projectStatus=='Approved'">
+                <button class="btn btn-view" (click)="onView()" [disabled]="isLoadingRestore"><i class="fas fa-eye"></i> Voir</button>
+                <button class="btn btn-del" (click)="onRestore()" [disabled]="isLoadingRestore">
+                  <span *ngIf="isLoadingRestore" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  <i class="fas fa-undo"></i> Restaurer
+                </button>
+              </ng-container>
+              <ng-container *ngIf="projectStatus=='Pending'">
+                <button class="btn btn-view" (click)="onView()" [disabled]="isLoadingApprove || isLoadingReject"><i class="fas fa-eye"></i> Voir</button>
+                <button class="btn btn-val" (click)="onValidate()" [disabled]="isLoadingApprove">
+                  <span *ngIf="isLoadingApprove" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  <i class="fas fa-check"></i> Approuver
+                </button>
+                <button class="btn btn-del" (click)="openRejectModal()" [disabled]="isLoadingReject">
+                  <span *ngIf="isLoadingReject" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  <i class="fas fa-times"></i> Rejeter
+                </button>
+              </ng-container>
+              <ng-container *ngIf="projectStatus=='Rejected'">
+                <div class="alert alert-danger mb-2">
+                  <strong>Motif du rejet :</strong>
+                  <span>{{ getRejectionReason() }}</span>
+                </div>
+                <button class="btn btn-val" (click)="onRestore()" [disabled]="isLoadingRestore">
+                  <span *ngIf="isLoadingRestore" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  <i class="fas fa-undo"></i> Restaurer
+                </button>
+              </ng-container>
+            </div>
+            <!-- Documents -->
+            <div class="card shadow-sm rounded-4 border-0 mb-4 w-100">
+              <div class="card-body">
+                <h4 class="fw-bold mb-3">Documents liés</h4>
+                <div class="download-catalog">
+                  <a
+                    *ngFor="let document of documents | slice:0:(isDocumentsExpanded ? documents.length : 2)"
+                    class="document-item d-flex justify-content-between align-items-center px-2 py-2 rounded-3 mb-2 bg-light border hover-shadow"
+                    [href]="getFullDocumentUrl(document.lien_doc)" target="_blank" rel="noopener"
+                  >
+                    <div>
+                      <i class="bi bi-filetype-pdf text-danger me-2"></i>
+                      <span class="document-link text-decoration-underline text-primary" style="cursor:pointer;">
+                        {{ document.nom_doc }}
+                      </span>
+                    </div>
+                  </a>
+                </div>
+                <div *ngIf="documents.length > 2" class="show-more text-center mt-2" (click)="isDocumentsExpanded = !isDocumentsExpanded" style="cursor:pointer;">
+                  <i class="bi" [ngClass]="isDocumentsExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                  <span class="ms-1">{{ isDocumentsExpanded ? 'Afficher moins' : 'Afficher plus' }}</span>
+                </div>
+              </div>
+            </div>
+            <!-- Collaborateurs -->
+            <div class="card shadow-sm rounded-4 border-0 mb-4 w-100">
+              <div class="card-body">
+                <h4 class="fw-bold mb-3">Collaborateurs liés</h4>
+                <div class="download-catalog">
+                  <div
+                    *ngFor="let collaborator of collaborators | slice:0:(isCollaboratorsExpanded ? collaborators.length : 2)"
+                    class="d-flex justify-content-between align-items-center px-2 py-2 rounded-3 mb-2 bg-light border hover-shadow"
+                  >
+                    <div>
+                      <i class="bi bi-person text-secondary me-2"></i>
+                      <span>{{ collaborator.nom_collab }} <span class="text-muted">{{ collaborator.email_collab }}</span></span>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="collaborators.length > 2" class="show-more text-center mt-2" (click)="isCollaboratorsExpanded = !isCollaboratorsExpanded" style="cursor:pointer;">
+                  <i class="bi" [ngClass]="isCollaboratorsExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                  <span class="ms-1">{{ isCollaboratorsExpanded ? 'Afficher moins' : 'Afficher plus' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-  <!-- Colonne droite : vide (actions/documents/collaborators déplacés dans l'en-tête) -->
-  <div class="project-detail-right"></div>
-    </div>
-  </section>
-</main>
+    </section>
+  </main>
 
 <!-- Modal motif de rejet -->
 <div class="modal-pro modal" tabindex="-1" [ngClass]="{'show': showRejectModal}" [ngStyle]="{'display': showRejectModal ? 'flex' : 'none'}">
