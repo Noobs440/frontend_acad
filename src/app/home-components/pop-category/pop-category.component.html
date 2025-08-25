@@ -2,8 +2,8 @@
 <section id="recent-posts" class="recent-posts section">
   <!-- Section Title -->
   <div class="con1 container section-title" [@fadeUp]>
-    <h2>{{ 'CONSULT_BY_DOMAINS' | translate }}</h2>
-    <h5>{{ 'ACCESS_TO_ALL_DOMAINS' | translate }}</h5>
+    <h2>LISTES DES DOMAINES POUR LES PROJETS</h2>
+    <h5>Accédez à tous les projets par domaines</h5>
   </div><!-- End Section Title -->
 
   <!-- ... -->
@@ -13,7 +13,7 @@
       <div class="col-12">
         <div class="input-group w-100">
           <select class="form-select" [(ngModel)]="selectedCategory" (change)="applyFilters()">
-            <option [ngValue]="null">{{ 'SELECT_DOMAIN' | translate }}</option>
+            <option [ngValue]="null">Selectionner un domaine</option>
             <option *ngFor="let category of categories" [ngValue]="category.nom_cat">{{ category.nom_cat }}</option>
           </select>
         </div>

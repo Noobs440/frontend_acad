@@ -9,8 +9,8 @@
 <section id="recent-posts" class="recent-posts section" [ngStyle]="{'background-color': bgColor}">
   <!-- Titre de la section -->
   <div class="con1 container section-title" [ngStyle]="{'padding-top': pad, 'color': fColor}" [@fadeUp]>
-    <h2>{{ 'CONSULT_PROJECTS' | translate }}</h2>
-    <h5>{{ 'DISCOVER_IDEAS' | translate }}</h5>
+    <h2>CONSULTEZ TOUS LES PROJETS PUBLIÉS DANS LA PLATEFORME</h2>
+    <h5>Découvrez des idées innovantes et des projets passionnants.</h5>
   </div><!-- Fin du Titre de la section -->
 
   
@@ -51,7 +51,7 @@
   <!-- Message Aucun Résultat -->
   <div *ngIf="noResults && !isLoading" class="container projects p-4 align-items-center mytext">
     <div class="row gy-4">
-      <p>{{ 'NO_RESULTS_FOUND' | translate }}</p>
+      <p>Aucun projet trouvé.</p>
     </div>
   </div>
 

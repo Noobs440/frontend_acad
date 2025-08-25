@@ -19,11 +19,11 @@
           <div class="overlay-content custom-scroll shadow-lg rounded" *ngIf="overlayVisible">
             <div class="col-12 p-2">
               <ul class="list-unstyled mb-0">
-                <li class="overlay-label">{{ 'PROJECTS_LABEL' | translate }}</li>
+                <li class="overlay-label">PROJETS DISPONIBLES</li>
                 <li class="overlay-item" (mousedown)="search(project.titre_projet)" *ngFor="let project of data">
                   <i class="fas fa-search"></i> {{ project.titre_projet }}
                 </li>
-                <li class="overlay-label mt-2">{{ 'DOMAINS_LABEL' | translate }}</li>
+                <li class="overlay-label mt-2">DOMAINES DISPONIBLES</li>
                 <li class="overlay-item" (mousedown)="search(category.nom_cat)" *ngFor="let category of data2">
                   <i class="fas fa-search"></i> {{ category.nom_cat }}
                 </li>
@@ -68,7 +68,7 @@
               </div>
             </div>
             <div class="consultMore text-center mt-2">
-              <a [routerLink]="['/home/category']" class="consult-link">{{ 'CONSULT_MORE_DOMAINS' | translate }}</a>
+              <a [routerLink]="['/home/category']" class="consult-link">DECOUVREZ NOS DIFFERENTS DOMAINES</a>
             </div>
           </div>
         </div>

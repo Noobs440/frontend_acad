@@ -5,14 +5,14 @@
     <div class="d-flex align-items-center justify-content-between">
       <a [routerLink]="['/admin/dashboard']" class="logo d-flex align-items-center">
         <img src="assets/img/logo1.jpg" alt="">
-        <span class="d-none d-lg-block">Admin</span>
+        <span class="d-none d-lg-block">Enseignant</span>
       </a>
       <i #toggleSidebarBtn (click)="toggleSidebar()"  class="bi bi-list toggle-sidebar-btn d-lg-none"></i>
     </div><!-- End Logo -->
 
     <div class="search-bar">
       <form class="search-form d-flex align-items-center" (submit)="$event.preventDefault()">
-        <input type="text" name="query" placeholder="Search" title="Enter search keyword"
+        <input type="text" name="query" placeholder="rechercher un projet..." title="Enter search keyword"
           [value]="searchQuery" (input)="onSearchInputChange($event)" autocomplete="off">
         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
       </form>
@@ -93,28 +93,28 @@
               <li>
                 <a class="dropdown-item d-flex align-items-center" routerLink="/profile">
                   <i class="bi bi-person"></i>
-                  <span>My Profile</span>
+                  <span>Mon Profile</span>
                 </a>
               </li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <a class="dropdown-item d-flex align-items-center" [routerLink]="['/helpAdmin']">
                   <i class="bi bi-question-circle"></i>
-                  <span>Need Help?</span>
+                  <span>Besoin d'aide?</span>
                 </a>
               </li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <p class="dropdown-item d-flex align-items-center" (click)="deconnexion()">
                   <i class="bi bi-box-arrow-right"></i>
-                  <span>Sign Out</span>
+                  <span>Deconnexion</span>
                 </p>
               </li>
             </ul>
           </ng-container>
           <ng-template #signInBtn>
             <a class="btn btn-primary ms-3" routerLink="/home">
-              <i class="fas fa-sign-in-alt"></i> Sign In
+              <i class="fas fa-sign-in-alt"></i> Se Connecter
             </a>
           </ng-template>
         </li>
