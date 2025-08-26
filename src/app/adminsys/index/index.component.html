@@ -3,51 +3,46 @@
 
   <!-- Cartes de stats -->
   <div class="stats-cards">
-    <div class="card stat-card">
+    <a class="card stat-card" routerLink="/adminsys/settings/universites">
       <i class="fas fa-university"></i>
       <h3>Universités</h3>
       <p>{{ universityCount }}</p>
-    </div>
-    <div class="card stat-card">
+    </a>
+    <a class="card stat-card" routerLink="/adminsys/settings/filieres">
       <i class="fas fa-graduation-cap"></i>
       <h3>Filières</h3>
       <p>{{ filiereCount }}</p>
-    </div>
-    <div class="card stat-card">
+    </a>
+    <a class="card stat-card" routerLink="/adminsys/projets">
       <i class="fas fa-project-diagram"></i>
       <h3>Projets</h3>
       <p>{{ projetCount }}</p>
-    </div>
-    <div class="card stat-card">
+    </a>
+    <a class="card stat-card" routerLink="/adminsys/settings/categories">
       <i class="fas fa-folder-open"></i>
       <h3>Catégories</h3>
       <p>{{ categoryCount }}</p>
-    </div>
-    <div class="card stat-card">
+    </a>
+    <a class="card stat-card" routerLink="/adminsys/settings/documents">
       <i class="fas fa-file-alt"></i>
       <h3>Documents</h3>
       <p>{{ documentCount }}</p>
-    </div>
-    <div class="card stat-card">
+    </a>
+    <a class="card stat-card" routerLink="/adminsys/settings/collaborateurs">
       <i class="fas fa-users"></i>
       <h3>Collaborateurs</h3>
       <p>{{ collaborateurCount }}</p>
-    </div>
-    <!--<div class="card stat-card">
-      <i class="fas fa-user"></i>
-      <h3>Utilisateurs</h3>
-      <p>{{ userCount }}</p>
-    </div> -->
-    <div class="card stat-card">
+    </a>
+    <a class="card stat-card" routerLink="/adminsys/settings/facultes">
       <i class="fas fa-chalkboard-teacher"></i>
       <h3>Facultés</h3>
       <p>{{ facultyCount }}</p>
-    </div> 
-    <div class="card stat-card">
+    </a>
+    <a class="card stat-card" routerLink="/adminsys/settings/niveaux">
       <i class="fas fa-layer-group"></i>
       <h3>Niveaux</h3>
       <p>{{ niveauCount }}</p>
-    </div>
+    </a>
   </div>
 
   <!-- Graphique -->
@@ -65,8 +60,8 @@
   <!-- Actions rapides -->
   <div class="quick-actions">
     <h2>Actions rapides</h2>
-    <button (click)="navigateTo('universites')">Ajouter une université</button>
-    <button (click)="navigateTo('filieres')">Gérer les filières</button>
+    <button (click)="navigateTo('settings/universites')">Ajouter une université</button>
+    <button (click)="navigateTo('settings/filieres')">Gérer les filières</button>
     <button (click)="navigateTo('projets')">Ajouter un projet</button>
   </div>
 </div>

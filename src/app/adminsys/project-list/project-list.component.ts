@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProjetService } from '../../services/projet.service';
+import { normalizeString } from '../../utils/string-utils';
 
 @Component({
   selector: 'app-project-list',
@@ -39,6 +40,12 @@ export class ProjectListComponent implements OnInit {
   showConfirmDeleteModal = false;
   projectToDelete: any = null;
 
+  filters = {
+    action: '',
+    resource: '',
+    changes: ''
+  };
+
   constructor(private projetService: ProjetService) {}
 
   ngOnInit(): void {
@@ -61,12 +68,30 @@ export class ProjectListComponent implements OnInit {
       p.titre_projet.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
 
+    // Apply search filters
+    if (this.filters.action) {
+      temp = temp.filter(log =>
+        normalizeString(log.event).includes(normalizeString(this.filters.action))
+      );
+    }
+    if (this.filters.resource) {
+      temp = temp.filter(log =>
+        normalizeString(this.getResourceLabel(log)).includes(normalizeString(this.filters.resource))
+      );
+    }
+    if (this.filters.changes) {
+      temp = temp.filter(log =>
+        normalizeString(this.getChanges(log)).includes(normalizeString(this.filters.changes))
+      );
+    }
+
     temp.sort((a, b) => {
       return this.sortAsc
         ? a.titre_projet.localeCompare(b.titre_projet)
         : b.titre_projet.localeCompare(a.titre_projet);
     });
 
+    // Apply pagination
     this.totalPages = Math.ceil(temp.length / this.pageSize);
     this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
 
@@ -183,5 +208,17 @@ export class ProjectListComponent implements OnInit {
   cancelDelete(): void {
     this.showConfirmDeleteModal = false;
     this.projectToDelete = null;
+  }
+
+  openDescriptionModal(description: string): void {
+    alert(description); // Remplacez par une implémentation de modal si nécessaire
+  }
+
+  getResourceLabel(log: any): string {
+    return log.resource || 'Unknown';
+  }
+
+  getChanges(log: any): string {
+    return log.changes || 'No changes';
   }
 }

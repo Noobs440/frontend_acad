@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivityLogService, ActivityLog } from '../../services/activity-log.service';
+import { normalizeString } from '../../utils/string-utils';
 
 @Component({
   selector: 'app-activity-log-list',
@@ -11,6 +12,15 @@ export class ActivityLogListComponent implements OnInit {
   currentPage = 1;
   totalPages = 1;
   perPage = 20;
+  pageSize = 5;
+
+  filters = {
+    action: '',
+    resource: '',
+    changes: ''
+  };
+
+  filteredLogs: ActivityLog[] = [];
 
   constructor(private activityLogService: ActivityLogService) {}
 
@@ -18,17 +28,53 @@ export class ActivityLogListComponent implements OnInit {
     this.loadLogs();
   }
 
+  applyFilters(): void {
+    let temp = this.logs;
+
+    // Apply search filters
+    if (this.filters.action) {
+      temp = temp.filter(log =>
+        normalizeString(log.event).includes(normalizeString(this.filters.action))
+      );
+    }
+    if (this.filters.resource) {
+      temp = temp.filter(log =>
+        normalizeString(this.getResourceLabel(log)).includes(normalizeString(this.filters.resource))
+      );
+    }
+    if (this.filters.changes) {
+      temp = temp.filter(log =>
+        normalizeString(this.getChanges(log)).includes(normalizeString(this.filters.changes))
+      );
+    }
+
+    // Apply pagination
+    this.totalPages = Math.ceil(temp.length / this.pageSize);
+    this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
+
+    const start = (this.currentPage - 1) * this.pageSize;
+    this.filteredLogs = temp.slice(start, start + this.pageSize);
+  }
+
   loadLogs(page: number = 1): void {
     this.activityLogService.getLogs({}, page, this.perPage).subscribe({
       next: (response) => {
         this.logs = response.data;
+        this.filteredLogs = [...this.logs];
         this.currentPage = response.current_page;
         this.totalPages = response.last_page;
+        this.applyFilters();
       },
       error: (err) => {
         console.error('Erreur lors du chargement des logs', err);
       }
     });
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.applyFilters();
   }
 
   getResourceLabel(log: any): string {

@@ -114,6 +114,10 @@ h1, h2 {
   transform: scale(1.04);
 }
 
+a{
+  text-decoration: none;
+}
+
 @media (max-width: 900px) {
   .stats-cards {
     flex-direction: column;

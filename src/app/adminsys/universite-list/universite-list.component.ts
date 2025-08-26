@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UniversityService } from '../../services/university.service';
+import { normalizeString } from '../../utils/string-utils';
 
 @Component({
   selector: 'app-universite-list',
@@ -35,6 +36,14 @@ export class UniversiteListComponent implements OnInit {
   // Pour confirmation sauvegarde modal
   showConfirmSaveModal = false;
 
+  searchField: string = 'nom_univ';
+
+  filters = {
+    action: '',
+    resource: '',
+    changes: ''
+  };
+
   constructor(private universityService: UniversityService) {}
 
   ngOnInit(): void {
@@ -50,15 +59,33 @@ export class UniversiteListComponent implements OnInit {
 
   applyFilters(): void {
     let temp = this.universites.filter(u =>
-      u.nom_univ.toLowerCase().includes(this.searchTerm.toLowerCase())
+      u[this.searchField]?.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
 
     temp.sort((a, b) => {
       return this.sortAsc
-        ? a.nom_univ.localeCompare(b.nom_univ)
-        : b.nom_univ.localeCompare(a.nom_univ);
+        ? a[this.searchField]?.localeCompare(b[this.searchField])
+        : b[this.searchField]?.localeCompare(a[this.searchField]);
     });
 
+    // Apply search filters
+    if (this.filters.action) {
+      temp = temp.filter(log =>
+        normalizeString(log.event).includes(normalizeString(this.filters.action))
+      );
+    }
+    if (this.filters.resource) {
+      temp = temp.filter(log =>
+        normalizeString(this.getResourceLabel(log)).includes(normalizeString(this.filters.resource))
+      );
+    }
+    if (this.filters.changes) {
+      temp = temp.filter(log =>
+        normalizeString(this.getChanges(log)).includes(normalizeString(this.filters.changes))
+      );
+    }
+
+    // Apply pagination
     this.totalPages = Math.ceil(temp.length / this.pageSize);
     this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
 
@@ -164,5 +191,13 @@ export class UniversiteListComponent implements OnInit {
   cancelDelete(): void {
     this.showConfirmDeleteModal = false;
     this.univToDelete = null;
+  }
+
+  getResourceLabel(log: any): string {
+    return log.resource || 'Unknown';
+  }
+
+  getChanges(log: any): string {
+    return log.changes || 'No changes';
   }
 }

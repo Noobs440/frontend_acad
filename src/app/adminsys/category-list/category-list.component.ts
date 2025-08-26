@@ -28,6 +28,8 @@ export class CategoryListComponent implements OnInit {
   isDeleteConfirmOpen = false;
   categoryToDeleteId: number | null = null;
 
+  searchField: string = 'nom_cat';
+
   constructor(private categoryService: CategoryService) { }
 
   ngOnInit(): void {
@@ -47,13 +49,13 @@ export class CategoryListComponent implements OnInit {
 
   applyFilters(): void {
     let temp = this.categories.filter(c =>
-      c.nom_cat.toLowerCase().includes(this.searchTerm.toLowerCase())
+      c[this.searchField]?.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
 
     temp.sort((a, b) => {
       return this.sortAsc
-        ? a.nom_cat.localeCompare(b.nom_cat)
-        : b.nom_cat.localeCompare(a.nom_cat);
+        ? a[this.searchField]?.localeCompare(b[this.searchField])
+        : b[this.searchField]?.localeCompare(a[this.searchField]);
     });
 
     this.totalPages = Math.ceil(temp.length / this.pageSize);

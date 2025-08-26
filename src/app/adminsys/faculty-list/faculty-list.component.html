@@ -1,14 +1,19 @@
 <div class="faculty-list">
 
   <div class="controls">
-    <input type="text" placeholder="Recherche par nom" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+    <select [(ngModel)]="searchField" (change)="applyFilters()">
+      <option value="nom_fac">Nom</option>
+      <option value="email_fac">Email</option>
+      <option value="tbl_universite_id">Université</option>
+    </select>
+    <input type="text" placeholder="Recherche" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
     <button (click)="toggleSort()">
       Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
     </button>
     <button (click)="openAddModal()">Ajouter une faculté</button>
   </div>
 
-  <table>
+  <table class="table">
     <thead>
       <tr>
         <th>Nom</th>

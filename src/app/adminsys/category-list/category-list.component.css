@@ -81,14 +81,14 @@ td button {
 }
 td button:last-child {
   margin-right: 0;
-  background: #f87171;
+  background: #fbbf24;
 }
 td button:hover {
   background: #60a5fa;
   transform: scale(1.04);
 }
 td button:last-child:hover {
-  background: #ef4444;
+  background: #f59e42;
 }
 
 .pagination {
@@ -507,5 +507,4 @@ th {
 .modal-actions button {
   padding: 6px 12px;
   cursor: pointer;
-}
 }

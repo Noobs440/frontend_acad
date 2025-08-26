@@ -19,6 +19,7 @@ export class DocumentListComponent implements OnInit {
   // Recherche et tri
   searchTerm = '';
   sortAsc = true;
+  searchField: string = 'nom_doc';
 
   // Modale
   isModalOpen = false;
@@ -51,15 +52,23 @@ export class DocumentListComponent implements OnInit {
 
   applyFilters(): void {
     let temp = this.documents.filter(d =>
-      d.nom_doc.toLowerCase().includes(this.searchTerm.toLowerCase())
+      d[this.searchField]?.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
 
     temp.sort((a, b) => {
       return this.sortAsc
-        ? a.nom_doc.localeCompare(b.nom_doc)
-        : b.nom_doc.localeCompare(a.nom_doc);
+        ? a[this.searchField]?.localeCompare(b[this.searchField])
+        : b[this.searchField]?.localeCompare(a[this.searchField]);
     });
 
+    // Apply search filters
+    if (this.searchTerm) {
+      temp = temp.filter(log =>
+        this.normalizeString(log.event).includes(this.normalizeString(this.searchTerm))
+      );
+    }
+
+    // Apply pagination
     this.totalPages = Math.ceil(temp.length / this.pageSize);
     this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
 
@@ -146,5 +155,9 @@ export class DocumentListComponent implements OnInit {
         this.loadDocuments();
       });
     }
+  }
+
+  private normalizeString(str: string): string {
+    return str ? str.toString().toLowerCase().trim() : '';
   }
 }

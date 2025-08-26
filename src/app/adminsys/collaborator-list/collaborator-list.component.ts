@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CollaborateurService } from '../../services/collaborateur.service';
 import { ProjetService } from '../../services/projet.service';
 import { UserManagementService } from '../../services/user-management.service';
+import { normalizeString } from '../../utils/string-utils';
 
 @Component({
   selector: 'app-collaborator-list',
@@ -24,11 +25,18 @@ export class CollaboratorListComponent implements OnInit {
   // Recherche et tri
   searchTerm = '';
   sortAsc = true;
+  searchField: string = 'nom_collab';
 
   // Modale
   isModalOpen = false;
   isEditMode = false;
   currentCollaborator: any = { nom_collab: '', email_collab: '', tbl_projet_id: '', user_id: '' };
+
+  filters = {
+    action: '',
+    resource: '',
+    changes: ''
+  };
 
   constructor(
     private collaborateurService: CollaborateurService,
@@ -75,15 +83,23 @@ export class CollaboratorListComponent implements OnInit {
 
   applyFilters(): void {
     let temp = this.collaborators.filter(c =>
-      c.nom_collab.toLowerCase().includes(this.searchTerm.toLowerCase())
+      c[this.searchField]?.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
+
+    // Apply search filters
+    if (this.searchTerm) {
+      temp = temp.filter(log =>
+        normalizeString(log.event).includes(normalizeString(this.searchTerm))
+      );
+    }
 
     temp.sort((a, b) => {
       return this.sortAsc
-        ? a.nom_collab.localeCompare(b.nom_collab)
-        : b.nom_collab.localeCompare(a.nom_collab);
+        ? a[this.searchField]?.localeCompare(b[this.searchField])
+        : b[this.searchField]?.localeCompare(a[this.searchField]);
     });
 
+    // Apply pagination
     this.totalPages = Math.ceil(temp.length / this.pageSize);
     this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
 
@@ -157,5 +173,13 @@ export class CollaboratorListComponent implements OnInit {
         this.loadCollaborators();
       });
     }
+  }
+
+  getResourceLabel(log: any): string {
+    return log.resource || 'Unknown';
+  }
+
+  getChanges(log: any): string {
+    return log.changes || 'No changes';
   }
 }

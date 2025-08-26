@@ -6,7 +6,7 @@
     <button (click)="openAddModal()" disabled>Ajouter un projet</button>
   </div>
 
-  <table>
+  <table class="table">
     <thead>
       <tr>
         <th>Titre</th>
@@ -24,7 +24,17 @@
     <tbody>
       <tr *ngFor="let project of filteredProjects">
         <td>{{ project.titre_projet }}</td>
-        <td>{{ project.descript_projet }}</td>
+        <td>
+          <span *ngIf="!project.showFullDescription">
+            {{ project.descript_projet | slice:0:50 }}
+            <span *ngIf="project.descript_projet.length > 50">
+              ... <a href="#" (click)="$event.preventDefault(); project.showFullDescription = true">voir plus</a>
+            </span>
+          </span>
+          <span *ngIf="project.showFullDescription">
+            {{ project.descript_projet }} <a href="#" (click)="$event.preventDefault(); project.showFullDescription = false">voir moins</a>
+          </span>
+        </td>
         <td>
           <img [src]="project.image" alt="Image projet" width="60" height="60" *ngIf="project.image" />
         </td>

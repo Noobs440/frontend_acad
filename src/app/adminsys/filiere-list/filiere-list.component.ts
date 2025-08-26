@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FiliereService } from '../../services/filiere.service';
+import { normalizeString } from '../../utils/string-utils';
 
 @Component({
   selector: 'app-filiere-list',
@@ -30,6 +31,12 @@ export class FiliereListComponent implements OnInit {
   showConfirmDeleteModal = false;
   filiereToDelete: any = null;
 
+  filters = {
+    action: '',
+    resource: '',
+    changes: ''
+  };
+
   constructor(private filiereService: FiliereService) {}
 
   ngOnInit(): void {
@@ -56,6 +63,14 @@ export class FiliereListComponent implements OnInit {
     return fac ? fac.nom_fac : 'Faculté inconnue';
   }
 
+  getResourceLabel(log: any): string {
+    return log.resource || 'Unknown';
+  }
+
+  getChanges(log: any): string {
+    return log.changes || 'No changes';
+  }
+
   applyFilters(): void {
     let temp = this.filieres.filter(f =>
       f.nom_fil.toLowerCase().includes(this.searchTerm.toLowerCase())
@@ -67,6 +82,24 @@ export class FiliereListComponent implements OnInit {
         : b.nom_fil.localeCompare(a.nom_fil);
     });
 
+    // Apply search filters
+    if (this.filters.action) {
+      temp = temp.filter(log =>
+        normalizeString(log.event).includes(normalizeString(this.filters.action))
+      );
+    }
+    if (this.filters.resource) {
+      temp = temp.filter(log =>
+        normalizeString(this.getResourceLabel(log)).includes(normalizeString(this.filters.resource))
+      );
+    }
+    if (this.filters.changes) {
+      temp = temp.filter(log =>
+        normalizeString(this.getChanges(log)).includes(normalizeString(this.filters.changes))
+      );
+    }
+
+    // Apply pagination
     this.totalPages = Math.ceil(temp.length / this.pageSize);
     this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
 

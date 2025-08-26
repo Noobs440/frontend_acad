@@ -1,16 +1,32 @@
 <div class="adminsys-layout">
   <nav class="sidebar">
-    <ul>
-      <li><a routerLink="/adminsys/index" routerLinkActive="active">Acceuil</a></li>
-      <li><a routerLink="/adminsys/projets" routerLinkActive="active">Gestion des Projets</a></li>
-      <li><a routerLink="/adminsys/users" routerLinkActive="active">Gestion des Utilisateurs</a></li>
-      <li><a routerLink="/adminsys/activity-logs" routerLinkActive="active">Historique des activités du système</a></li>
-
-      <li><a routerLink="/adminsys/settings" routerLinkActive="active">Paramètres</a></li>
+    <div class="user-info">
+      <img [src]="userPhoto" alt="User Avatar" class="avatar" *ngIf="userPhoto !== 'assets/img/default-profile.png'; else defaultIcon">
+      <ng-template #defaultIcon>
+        <i class="fas fa-user-circle avatar-icon"></i>
+      </ng-template>
+      <span class="username">{{ userName }}</span>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a routerLink="/adminsys/index" routerLinkActive="active"><i class="fas fa-home"></i> Acceuil</a></li>
+      <li><a routerLink="/adminsys/projets" routerLinkActive="active"><i class="fas fa-project-diagram"></i> Gestion des Projets</a></li>
+      <li><a routerLink="/adminsys/users" routerLinkActive="active"><i class="fas fa-users"></i> Gestion des Utilisateurs</a></li>
+      <li><a routerLink="/adminsys/activity-logs" routerLinkActive="active"><i class="fas fa-history"></i> Historique des activités</a></li>
+      <li><a routerLink="/adminsys/settings" routerLinkActive="active"><i class="fas fa-cogs"></i> Paramètres</a></li>
+      <li>
+        <a href="#" (click)="$event.preventDefault(); logout()">
+          <i class="fas fa-sign-out-alt"></i> Déconnexion
+        </a>
+      </li>
     </ul>
   </nav>
 
   <main class="content">
+    <div class="top-nav">
+      <a routerLink="/home" routerLinkActive="active" class="top-nav-link">
+        <i class="fas fa-home"></i> Home
+      </a>
+    </div>
     <router-outlet></router-outlet>
   </main>
 </div>

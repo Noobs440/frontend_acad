@@ -1,7 +1,12 @@
 <div class="document-list">
 
   <div class="controls">
-    <input type="text" placeholder="Recherche par nom" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+    <select [(ngModel)]="searchField" (change)="applyFilters()">
+      <option value="nom_doc">Nom</option>
+      <option value="user_id">Utilisateur</option>
+      <option value="tbl_projet_id">Projet</option>
+    </select>
+    <input type="text" placeholder="Recherche" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
 
     <button (click)="toggleSort()">
       Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
@@ -10,7 +15,7 @@
     <button (click)="openAddModal()" disabled>Ajouter un document</button>
   </div>
 
-  <table>
+  <table class="table">
     <thead>
       <tr>
         <th>Nom</th>

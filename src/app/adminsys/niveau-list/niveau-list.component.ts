@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NiveauService } from '../../services/niveau.service';
+import { normalizeString } from '../../utils/string-utils';
 
 @Component({
   selector: 'app-niveau-list',
@@ -28,6 +29,15 @@ export class NiveauListComponent implements OnInit {
   showConfirmDeleteModal = false;
   niveauToDelete: any = null;
 
+  // Champ de recherche sélectionné
+  searchField: string = 'code_niv';
+
+  filters = {
+    action: '',
+    resource: '',
+    changes: ''
+  };
+
   constructor(private niveauService: NiveauService) {}
 
   ngOnInit(): void {
@@ -43,15 +53,33 @@ export class NiveauListComponent implements OnInit {
 
   applyFilters(): void {
     let temp = this.niveaux.filter(n =>
-      n.code_niv.toLowerCase().includes(this.searchTerm.toLowerCase())
+      n[this.searchField]?.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
 
     temp.sort((a, b) => {
       return this.sortAsc
-        ? a.code_niv.localeCompare(b.code_niv)
-        : b.code_niv.localeCompare(a.code_niv);
+        ? a[this.searchField]?.localeCompare(b[this.searchField])
+        : b[this.searchField]?.localeCompare(a[this.searchField]);
     });
 
+    // Apply search filters
+    if (this.filters.action) {
+      temp = temp.filter(log =>
+        normalizeString(log.event).includes(normalizeString(this.filters.action))
+      );
+    }
+    if (this.filters.resource) {
+      temp = temp.filter(log =>
+        normalizeString(this.getResourceLabel(log)).includes(normalizeString(this.filters.resource))
+      );
+    }
+    if (this.filters.changes) {
+      temp = temp.filter(log =>
+        normalizeString(this.getChanges(log)).includes(normalizeString(this.filters.changes))
+      );
+    }
+
+    // Apply pagination
     this.totalPages = Math.ceil(temp.length / this.pageSize);
     this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
 
@@ -132,5 +160,13 @@ export class NiveauListComponent implements OnInit {
   cancelDelete(): void {
     this.showConfirmDeleteModal = false;
     this.niveauToDelete = null;
+  }
+
+  getResourceLabel(log: any): string {
+    return log.resource || 'Unknown';
+  }
+
+  getChanges(log: any): string {
+    return log.changes || 'No changes';
   }
 }

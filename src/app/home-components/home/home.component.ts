@@ -17,6 +17,7 @@ export class HomeComponent implements OnInit {
     const role = localStorage.getItem('role');
     if (role === 'admin') return '/admin/dashboard';
     if (role === 'enseignant') return '/enseignant/dashboard';
+    if (role === 'adminsys') return '/adminsys';
     return '/user/dashboard';
   }
 

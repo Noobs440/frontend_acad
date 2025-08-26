@@ -31,6 +31,8 @@ export class FacultyListComponent implements OnInit {
   showConfirmDeleteModal = false;
   facultyToDelete: any = null;
 
+  searchField: string = 'nom_fac';
+
   constructor(private facultyService: FacultyService) {}
 
   ngOnInit(): void {
@@ -58,15 +60,25 @@ export class FacultyListComponent implements OnInit {
 
   applyFilters(): void {
     let temp = this.faculties.filter(f =>
-      f.nom_fac.toLowerCase().includes(this.searchTerm.toLowerCase())
+      f[this.searchField]?.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
+
+    // Apply search filters
+    if (this.searchTerm) {
+      temp = temp.filter(faculty =>
+        faculty.nom_fac.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        faculty.email_fac.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        this.getUniversityName(faculty.tbl_universite_id).toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    }
 
     temp.sort((a, b) => {
       return this.sortAsc
-        ? a.nom_fac.localeCompare(b.nom_fac)
-        : b.nom_fac.localeCompare(a.nom_fac);
+        ? a[this.searchField]?.localeCompare(b[this.searchField])
+        : b[this.searchField]?.localeCompare(a[this.searchField]);
     });
 
+    // Apply pagination
     this.totalPages = Math.ceil(temp.length / this.pageSize);
     this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
 

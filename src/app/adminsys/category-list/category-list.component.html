@@ -1,7 +1,11 @@
 <div class="category-list">
 
   <div class="controls">
-    <input type="text" placeholder="Recherche par nom" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
+    <select [(ngModel)]="searchField" (change)="applyFilters()">
+      <option value="nom_cat">Nom</option>
+      <option value="descript_cat">Description</option>
+    </select>
+    <input type="text" placeholder="Recherche" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
 
     <button (click)="toggleSort()">
       Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
@@ -10,7 +14,7 @@
     <button (click)="openAddModal()">Ajouter une catégorie</button>
   </div>
 
-  <table>
+  <table class="table">
     <thead>
       <tr>
         <th>Nom</th>
