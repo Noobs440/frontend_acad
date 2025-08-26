@@ -1,3 +1,191 @@
+/* Fond très clair pour la section principale */
+section.section.dashboard {
+  background: #f8fafc;
+  border-radius: 1.5rem;
+  padding: 2.5rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Accentuer l’ombre sur la carte principale et les blocs secondaires */
+.card.shadow-sm, .card.shadow-sm.rounded-4, .card.shadow-sm.rounded-4.border-0 {
+  box-shadow: 0 6px 32px rgba(6, 187, 204, 0.13) !important;
+  border-radius: 1.25rem !important;
+  border: none !important;
+}
+
+/* Effet de survol sur les cartes */
+.card.shadow-sm:hover {
+  box-shadow: 0 12px 40px rgba(6, 187, 204, 0.18) !important;
+  transform: translateY(-2px) scale(1.01);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+/* Effet de survol sur les boutons d’action */
+.action-btn, .btn-action {
+  transition: box-shadow 0.2s, background 0.2s, color 0.2s;
+}
+.action-btn:hover, .btn-action:hover {
+  box-shadow: 0 8px 28px rgba(6, 187, 204, 0.18);
+  background: #06BBCC !important;
+  color: #fff !important;
+  border-color: #06BBCC !important;
+}
+
+/* Uniformiser les marges et paddings pour plus d’aération */
+.card-body, .download-catalog, .project-desc-block, .admin-select-block, .action-btn-group {
+  margin-bottom: 1.2rem;
+}
+.card-body {
+  padding: 2rem 2rem 1.5rem 2rem !important;
+}
+
+/* Arrondis plus marqués sur les cartes et blocs */
+.rounded-4, .card, .admin-select-block {
+  border-radius: 1.25rem !important;
+}
+
+/* Effet hover sur les documents et collaborateurs */
+.download-catalog .document-item.bg-light.border.hover-shadow:hover,
+.download-catalog .d-flex.bg-light.border.hover-shadow:hover {
+  box-shadow: 0 4px 18px rgba(59, 130, 246, 0.13);
+  background: #e6f7fa;
+  border-color: #06BBCC;
+}
+/* Style professionnel pour la section Choisir un admin */
+.admin-select-block {
+  background: #f8fafc;
+  border: 1.5px solid #06BBCC;
+  border-radius: 1rem;
+  padding: 1.2rem 1.5rem 1.5rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(6, 187, 204, 0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 420px;
+}
+.admin-select-block label {
+  font-weight: 600;
+  color: #06BBCC;
+  margin-bottom: 0.7rem;
+  font-size: 1.08rem;
+}
+.admin-select-block .input-group {
+  width: 100%;
+  display: flex;
+  gap: 0.7rem;
+}
+.admin-select-block .form-select {
+  border-radius: 0.7rem;
+  border: 1.5px solid #3b82f6;
+  font-size: 1.08rem;
+  padding: 0.6rem 1.1rem;
+  min-width: 0;
+  flex: 1 1 60%;
+}
+.admin-select-block .btn {
+  border-radius: 0.7rem;
+  font-size: 1.08rem;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  min-width: 120px;
+}
+/* Style pour alignement et taille uniforme des boutons d'action */
+.action-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+/* Largeur fixe pour tous les boutons d'action principaux */
+.action-btn {
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+  min-height: 48px;
+  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  transition: box-shadow 0.2s, background 0.2s;
+}
+@media (max-width: 991px) {
+  .action-btn {
+    width: 180px;
+    min-width: 180px;
+    max-width: 180px;
+    font-size: 1rem;
+    padding: 0.65rem 1.1rem;
+  }
+}
+@media (max-width: 991px) {
+  .action-btn-group {
+    justify-content: flex-start;
+  }
+  .action-btn {
+    min-width: 180px;
+    font-size: 1rem;
+    padding: 0.65rem 1.1rem;
+  }
+}
+/* Style amélioré pour la carte contact */
+.contact-card {
+  background: #fff;
+  border: 2px solid #06BBCC;
+  box-shadow: 0 4px 24px rgba(6, 187, 204, 0.08);
+  border-radius: 1.25rem;
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 260px;
+  max-width: 100%;
+}
+.contact-card .help-icon {
+  font-size: 2.8rem;
+  color: #06BBCC;
+  margin-bottom: 0.5rem;
+}
+.contact-card h4 {
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 0.5rem;
+  font-size: 1.35rem;
+}
+.contact-card p {
+  margin: 0.25rem 0;
+  font-size: 1.08rem;
+  color: #444;
+  display: flex;
+  align-items: center;
+}
+.contact-card i {
+  font-size: 1.25rem;
+  margin-right: 0.5rem;
+  color: #3b82f6;
+}
+.contact-card a {
+  color: #06BBCC;
+  text-decoration: underline;
+  font-weight: 500;
+}
+/* Uniformiser la taille des boutons d'action principaux */
+.action-btn {
+  min-width: 220px;
+  min-height: 48px;
+  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .breadcrumb-fixed {
   position: fixed;
   top: 3em;
@@ -315,7 +503,7 @@ h6 {
 
 .dropdown-menu .dropdown-header,
 .dropdown-menu .dropdown-footer {
-  text-align: center;
+  text-align: left;
   font-size: 15px;
   padding: 10px 25px;
 }

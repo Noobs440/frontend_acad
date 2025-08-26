@@ -1,3 +1,4 @@
+
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap, catchError, of } from 'rxjs';
@@ -7,6 +8,10 @@ import { Observable, tap, catchError, of } from 'rxjs';
   providedIn: 'root'
 })
 export class NiveauService {
+
+  getLevelsWithProjectCount(): Observable<any[]> {
+  return this.http.get<any[]>('http://localhost:8000/api/usecases/listing/levels-with-project-count');
+  }
 
   constructor(private http:HttpClient){}
 

@@ -2,8 +2,8 @@
 <section id="recent-posts" class="recent-posts section" [ngStyle]="{'background-color': bgColor}">
   <!-- Section Title -->
   <div class="con1 container section-title">
-    <h2>{{ 'RECENT_PROJECTS_POSTED' | translate }}</h2>
-    <p>{{ 'MOST_RECENT_PROJECTS' | translate }}</p>
+    <h2>PROJETS RÉCEMMENT PUBLIÉS</h2>
+    <p>trouvez ici les projets récemment publiés</p>
   </div><!-- End Section Title -->
 
   <div *ngIf="isLoading" class="container d-flex projects p-4 justify-content-center align-items-center">
@@ -63,11 +63,11 @@
     <!-- Controls -->
     <button [ngStyle]="{ 'color': prevButtonColor}" class="carousel-control-prev" *ngIf="data.length > 6" type="button" data-bs-target="#recentPostsCarousel" data-bs-slide="prev">
       <span [ngStyle]="{'color': prevButtonColor}" class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">{{ 'PREVIOUS' | translate }}</span>
+      <span class="visually-hidden">Précédent</span>
     </button>
     <button class="carousel-control-next" *ngIf="data.length > 6" type="button" data-bs-target="#recentPostsCarousel" data-bs-slide="next">
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">{{ 'NEXT' | translate }}</span>
+      <span class="visually-hidden">Suivant</span>
     </button>
   </div><!-- End carousel -->
 </section><!-- /Recent Posts Section -->

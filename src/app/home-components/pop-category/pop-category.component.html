@@ -2,17 +2,20 @@
 <section id="recent-posts" class="recent-posts section">
   <!-- Section Title -->
   <div class="con1 container section-title" [@fadeUp]>
-    <h2>{{ 'CONSULT_BY_DOMAINS' | translate }}</h2>
-    <h5>{{ 'ACCESS_TO_ALL_DOMAINS' | translate }}</h5>
+    <h2>LISTES DES DOMAINES POUR LES PROJETS</h2>
+    <h5>Accédez à tous les projets par domaines</h5>
   </div><!-- End Section Title -->
 
+  <!-- ... -->
   <!-- Filters -->
   <div class="container filters p-4" [@fadeUp]>
     <div class="row align-items-center">
-      <div class="col-md-12">
-        <div class="input-group">
-          <input type="text" class="form-control no-focus" placeholder="{{ 'SEARCH_DOMAIN' | translate }}" [(ngModel)]="searchQuery" (input)="applyFilters()">
-          <button class="btn btn-outline-secondary" type="button" (click)="clearFilters()"><i class="fas fa-times"></i></button>
+      <div class="col-12">
+        <div class="input-group w-100">
+          <select class="form-select" [(ngModel)]="selectedCategory" (change)="applyFilters()">
+            <option [ngValue]="null">Selectionner un domaine</option>
+            <option *ngFor="let category of categories" [ngValue]="category.nom_cat">{{ category.nom_cat }}</option>
+          </select>
         </div>
       </div>
     </div>
@@ -51,7 +54,7 @@
           </div>
           <p class="categories-category bg-blue-600" [ngClass]="category.badge"><i class="fas fa-robot"></i> {{ category.nom_cat }}</p>
           <h2 class="title">
-            <a [routerLink]="['/home/projects-listing']">{{ category.descript_cat }}</a>
+            <a style="cursor:pointer;" (click)="onCategoryClick(category)">{{ category.descript_cat }}</a>
           </h2>
           <div class="d-flex align-items-center">
             <div class="categories-meta">

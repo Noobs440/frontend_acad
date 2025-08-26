@@ -1,4 +1,5 @@
 import { InfoDialogComponent } from './shared/info-dialog/info-dialog.component';
+import { LevelsListingComponent } from './home-components/levels-listing/levels-listing.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
@@ -93,11 +94,12 @@ export function HttpLoaderFactory(http: HttpClient) {
     CounterDirective,
     CounterDirective,
     SafeUrlPipe,
-  ConfirmDialogComponent,
-  LogoutConfirmDialogComponent,
-  InfoDialogComponent,
+    ConfirmDialogComponent,
+    LogoutConfirmDialogComponent,
+    InfoDialogComponent,
     EditEmailComponent,
     FloatingChatComponent,
+  LevelsListingComponent,
   ],
   imports: [
 
