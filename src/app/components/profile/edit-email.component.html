@@ -13,9 +13,9 @@
         email
         class="form-control"
         placeholder="Entrez votre nouvel email"
-        [class.is-invalid]="emailForm.submitted && !emailForm.controls['email']?.valid"
+        [class.is-invalid]="emailForm.submitted && !emailForm.controls['email'].valid"
       />
-      <div *ngIf="emailForm.submitted && !emailForm.controls['email']?.valid" class="invalid-feedback">
+      <div *ngIf="emailForm.submitted && !emailForm.controls['email'].valid" class="invalid-feedback">
         Veuillez entrer une adresse email valide.
       </div>
     </div>
