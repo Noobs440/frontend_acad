@@ -1,5 +1,12 @@
-<h2 mat-dialog-title>{{ data.title }}</h2>
-<mat-dialog-content>{{ data.message }}</mat-dialog-content>
+<div class="dialog-header" [ngClass]="data.color === 'warn' ? 'warn' : ''">
+  <mat-icon *ngIf="data.icon" color="warn" style="font-size:32px;vertical-align:middle;">{{data.icon}}</mat-icon>
+  <h2 mat-dialog-title [innerHTML]="data.title"></h2>
+</div>
+<mat-dialog-content>
+  <div [innerHTML]="data.message"></div>
+</mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>OK</button>
+  <button mat-button mat-dialog-close="false" *ngIf="data.cancelButtonText">{{data.cancelButtonText}}</button>
+  <button mat-raised-button color="warn" mat-dialog-close="true" *ngIf="data.confirmButtonText">{{data.confirmButtonText}}</button>
+  <button mat-button mat-dialog-close *ngIf="!data.confirmButtonText && !data.cancelButtonText">OK</button>
 </mat-dialog-actions>

@@ -139,7 +139,7 @@
                       *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'"
                       class="fas fa-edit text-primary ms-2"
                       style="cursor: pointer"
-                      (click)="editDocument(document)"
+                      (click)="editDocument(document); $event.preventDefault()"
                       title="Modifier"
                     ></i>
                     <i
@@ -180,10 +180,14 @@
                     </button>
                     <button
                       (click)="confirmDeleteCollaborator(collaborator)"
-                      class="btn btn-sm btn-outline-danger px-2 py-1"
+                      class="btn btn-sm btn-outline-danger px-2 py-1 min-w-[40px] flex items-center justify-center"
                       title="Supprimer"
+                      [disabled]="isDeletingCollaborator === collaborator.id"
                     >
-                      <i class="fas fa-trash-alt"></i>
+                      <ng-container *ngIf="isDeletingCollaborator !== collaborator.id">
+                        <i class="fas fa-trash-alt"></i>
+                      </ng-container>
+                      <mat-spinner *ngIf="isDeletingCollaborator === collaborator.id" [diameter]="18" class="ml-1"></mat-spinner>
                     </button>
                   </div>
                 </div>

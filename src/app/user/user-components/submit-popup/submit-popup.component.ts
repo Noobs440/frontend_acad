@@ -454,8 +454,8 @@ export class SubmitPopupComponent implements OnInit {
           this.isLoading = false;
           return;
         }
-        const newUser = { nom_user: name, email: email, password: password };
-        this.userManagementService.createUser(newUser).subscribe({
+  const newUser = { nom_user: name, email: email, password: password, role: 'user' };
+  this.userManagementService.createUser(newUser).subscribe({
           next: (createdUser) => {
             // Enchaîner directement avec l'ajout du collaborateur
             this.colService.addCollaborateur(

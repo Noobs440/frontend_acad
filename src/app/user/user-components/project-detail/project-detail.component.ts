@@ -20,6 +20,7 @@ import { UserService } from '../../../services/user.service';
   styleUrls: ['./project-detail.component.css']
 })
 export class ProjectDetailComponent implements OnInit {
+  isDeletingCollaborator: string | null = null;
   isLoadingAddDocument = false;
   isLoadingAddCollaborator = false;
   isLoadingDelete = false;
@@ -363,15 +364,26 @@ export class ProjectDetailComponent implements OnInit {
 
   confirmDeleteCollaborator(collaborator: any) {
     const dialogRef = this.dialog.open(InfoDialogComponent, {
-      width: '350px',
-      data: { title: 'Confirmation', message: `Supprimer le collaborateur "${collaborator.nom_collab}" ?` }
+      width: '400px',
+      disableClose: true, // Empêche la fermeture en cliquant à l'extérieur
+      data: {
+        title: 'Confirmation de suppression',
+        message: `Êtes-vous sûr de vouloir supprimer le collaborateur <b>${collaborator.nom_collab}</b> (<i>${collaborator.email_collab}</i>) ?<br><br><span style='color:red;font-weight:bold;'>Cette action est irréversible.</span>`,
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler',
+        icon: 'warning',
+        color: 'warn'
+      }
     });
     dialogRef.afterClosed().subscribe(result => {
-      if (result) this.deleteCollaboratorById(collaborator.id);
+      if (result === true) {
+        this.deleteCollaboratorById(collaborator.id);
+      }
     });
   }
 
   deleteCollaboratorById(id: string) {
+    this.isDeletingCollaborator = id;
     this.collaborateurService.deleteCollaborateur(id).subscribe({
       next: () => {
         this.collaborators = this.collaborators.filter(c => c.id !== id);
@@ -383,6 +395,9 @@ export class ProjectDetailComponent implements OnInit {
           width: '350px',
           data: { title: 'Erreur', message: "Erreur lors de la suppression." }
         });
+      },
+      complete: () => {
+        this.isDeletingCollaborator = null;
       }
     });
   }
@@ -408,11 +423,21 @@ export class ProjectDetailComponent implements OnInit {
 
   confirmDeleteDocument(document: any) {
     const dialogRef = this.dialog.open(InfoDialogComponent, {
-      width: '350px',
-      data: { title: 'Confirmation', message: `Voulez-vous vraiment supprimer le document "${document.nom_doc}" ?` }
+      width: '400px',
+      disableClose: true,
+      data: {
+        title: 'Confirmation de suppression',
+        message: `Êtes-vous sûr de vouloir supprimer le document <b>${document.nom_doc}</b> ?<br><br><span style='color:red;font-weight:bold;'>Cette action est irréversible.</span>`,
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler',
+        icon: 'warning',
+        color: 'warn'
+      }
     });
     dialogRef.afterClosed().subscribe(result => {
-      if (result) this.deleteDocumentByid(document.id);
+      if (result === true) {
+        this.deleteDocumentByid(document.id);
+      }
     });
   }
 
