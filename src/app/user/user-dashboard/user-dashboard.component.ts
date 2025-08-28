@@ -141,20 +141,27 @@ export class UserDashboardComponent implements OnInit {
   }
 
   applyFilters(): void {
-    const query = this.searchQuery.toLowerCase().trim();
+    const normalize = (str: string) =>
+      str
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '')
+        .toLowerCase();
+
+    const query = normalize(this.searchQuery.trim());
     let filtered: any[] = [];
-    // Recherche sur plusieurs champs
+
     const searchFn = (project: any) => {
       return (
-        (project.titre?.toLowerCase().includes(query) ||
-         project.titre_projet?.toLowerCase().includes(query) ||
-         project.type?.toLowerCase().includes(query) ||
-         project.nom_categorie?.toLowerCase().includes(query) ||
-         project.nom_utilisateur?.toLowerCase().includes(query)) &&
+        (normalize(project.titre || '').includes(query) ||
+         normalize(project.titre_projet || '').includes(query) ||
+         normalize(project.type || '').includes(query) ||
+         normalize(project.nom_categorie || '').includes(query) ||
+         normalize(project.nom_utilisateur || '').includes(query)) &&
         (this.selectedTypeFilter === 'all' ||
-         project.type?.toLowerCase() === this.selectedTypeFilter.toLowerCase())
+         normalize(project.type || '') === normalize(this.selectedTypeFilter))
       );
     };
+
     if (this.selectedStateFilter) {
       filtered = (this.groupedProjects[this.selectedStateFilter] || []).filter(searchFn);
     } else {
@@ -163,7 +170,7 @@ export class UserDashboardComponent implements OnInit {
         filtered = filtered.concat(group);
       }
     }
-    // Toujours revenir à la page 1 si la recherche change et la page courante dépasse le max
+
     this.totalPages = Math.max(1, Math.ceil(filtered.length / this.itemsPerPage));
     if (this.currentPage > this.totalPages) {
       this.currentPage = 1;

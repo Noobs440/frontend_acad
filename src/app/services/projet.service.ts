@@ -37,22 +37,21 @@ export class ProjetService {
 
   constructor(private http: HttpClient) {}
 
-  // ✅ Récupérer tous les projets
   getProjects(): Observable<any> {
     return this.http.get(`${this.API_BASE}/ressources/projets`);
   }
 
-  // ✅ Incrémenter les vues d’un projet
+  getAllProjects(): Observable<any> {
+    return this.http.get(`${this.API_BASE}/projects`);
+  }
+
   countViews(id: any): Observable<any> {
     return this.http.get(`${this.API_BASE}/usecases/addview/${id}`);
   }
 
-  // ✅ Modifier le statut d’un projet
   updateProjectStatus(projectId: number, status: string): Observable<any> {
     return this.http.put(`${this.API_BASE}/usecases/status/projects/${projectId}`, { status });
   }
-
-  // ✅ Récupérer les types de projet (Projet, Mémoire, Article, etc.)
   getProjectsTypes(): Observable<any[]> {
     return this.http.get<any[]>(`${this.API_BASE}/usecases/listing/getprojectstype`).pipe(
       tap((response) => console.table(response)),
@@ -63,17 +62,15 @@ export class ProjetService {
     );
   }
 
-  // ✅ Ajouter un projet (FormData pour l’upload d’image)
   addProject(formData: FormData): Observable<any> {
     return this.http.post<any>(`${this.API_BASE}/ressources/projets`, formData);
   }
 
-  // ✅ Supprimer un projet
   deleteProject(id: number): Observable<any> {
     return this.http.delete(`${this.API_BASE}/ressources/projets/${id}`);
   }
 
-  // ✅ Modifier un projet existant
+
   updateProject(
     id: string,
     titre_projet: string,
@@ -90,6 +87,11 @@ export class ProjetService {
       tbl_categorie_id
     });
   }
+
+  updateProjectWithFormData(id: string, formData: FormData): Observable<any> {
+  return this.http.post<any>(`${this.API_BASE}/ressources/projets/${id}`, formData);
+}
+
 
 getProjectById(id: number) {
   return this.http.get<any>(`${this.API_BASE}/ressources/projets/${id}`);

@@ -41,8 +41,7 @@
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/@iconscout/unicons/css/line.css",
               "node_modules/ag-grid-community/styles/ag-grid.css",
-              "node_modules/ag-grid-community/styles/ag-theme-alpine.css",
-              "src/table-styles.css"
+              "node_modules/ag-grid-community/styles/ag-theme-alpine.css"
             ],
             "scripts": [
               "node_modules/@popperjs/core/dist/umd/popper-base.min.js",

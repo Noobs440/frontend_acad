@@ -1,6 +1,6 @@
 <div class="w-full contain-content h-full max-w-lg p-6 pt-2 bg-white rounded-lg shadow-lg">
   <!-- Bouton fermeture -->
-  <button *ngIf="formType === 'project'" (click)="onCancel()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+  <button *ngIf="formType === 'project' || formType === 'document' || formType === 'collaborator' || formType === 'supervisor'" (click)="onCancel()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
     <i class="fas fa-times text-l"></i>
   </button>
 
@@ -33,7 +33,7 @@
 
 
       <div class="form-group mb-1">
-        <label for="type" class="mb-1">Type Projet</label>
+        <label for="type" class="mb-1">Categorie de Projet</label>
         <select
           formControlName="type"
           id="type"
@@ -99,7 +99,7 @@
       </div>
 
       <div class="form-group mb-2">
-        <label for="category" class="mb-1">Catégorie</label>
+        <label for="category" class="mb-1">Domaine</label>
         <select
           formControlName="category"
           id="category"

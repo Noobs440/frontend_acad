@@ -10,7 +10,7 @@
       <i #toggleSidebarBtn (click)="toggleSidebar()" class="bi bi-list toggle-sidebar-btn d-lg-none"></i>
     </div>
 
-    <!-- Barre de recherche -->
+    <!-- Barre de recherche 
     <div class="search-bar d-flex align-items-center flex-grow-1 mx-4">
       <form class="search-form d-flex align-items-center w-100" (submit)="$event.preventDefault()">
         <input
@@ -23,7 +23,7 @@
         />
         <button type="submit" class="btn btn-outline-primary l" title="Search"><i class="bi bi-search"></i></button>
       </form>
-    </div>
+    </div> -->
 
     <!-- Navigation -->
     <nav class="header-nav ms-auto">
@@ -100,20 +100,11 @@
 
             <li>
               <a class="dropdown-item d-flex align-items-center" routerLink="/profile">
-                <i class="bi bi-person"></i>
-                <span>Mon Profil</span>
-              </a>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center">
                 <i class="bi bi-gear"></i>
-                <span>Paramètres</span>
+                <span>Settings</span>
               </a>
             </li>
             <li><hr class="dropdown-divider"></li>
-
             <li>
               <a class="dropdown-item d-flex align-items-center" [routerLink]="['/helpUser']">
                 <i class="bi bi-question-circle"></i>
@@ -182,13 +173,6 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" routerLink="/profile">
-          <i class="bi bi-person"></i>
-          <span>Profile</span>
-        </a>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed">
           <i class="fas fa-cog"></i>
           <span>Settings</span>
         </a>

@@ -3,7 +3,7 @@
   <div class="controls">
     <input type="text" placeholder="Recherche par titre" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
     <button (click)="toggleSort()">Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}</button>
-    <button (click)="openAddModal()" disabled>Ajouter un projet</button>
+    <button (click)="openAddModal()">Ajouter un projet</button>
   </div>
 
   <table class="table">
@@ -17,7 +17,6 @@
         <th>Utilisateur</th>
         <th>Type</th>
         <th>Statut</th>
-        <!--<th>Soumis</th>-->
         <th>Actions</th>
       </tr>
     </thead>
@@ -43,9 +42,8 @@
         <td>{{ project.nom_utilisateur }}</td>
         <td>{{ project.type }}</td>
         <td>{{ project.status }}</td>
-        <!--<td>{{ project.soumis ? 'Oui' : 'Non' }}</td>-->
         <td>
-          <button (click)="openEditModal(project)" disabled>Modifier</button>
+          <button (click)="openEditModal(project)">Modifier</button>
           <button (click)="openConfirmDelete(project)">Supprimer</button>
         </td>
       </tr>
@@ -74,19 +72,36 @@
       </label>
 
       <label>
-        Niveau (ID) :
-        <input type="number" [(ngModel)]="currentProject.tbl_niveau_id" />
-      </label>
+  Niveau :
+  <select [(ngModel)]="currentProject.tbl_niveau_id">
+    <option value="" disabled>Choisir un niveau</option>
+    <option *ngFor="let niveau of niveaux" [value]="niveau.id">{{ niveau.nom }}</option>
+  </select>
+</label>
 
-      <label>
-        Catégorie (ID) :
-        <input type="number" [(ngModel)]="currentProject.tbl_categorie_id" />
-      </label>
+<label>
+  Catégorie :
+  <select [(ngModel)]="currentProject.tbl_categorie_id">
+    <option value="" disabled>Choisir une catégorie</option>
+    <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
+  </select>
+</label>
 
-      <label>
-        Utilisateur (ID) :
-        <textarea [(ngModel)]="currentProject.user_id" readonly></textarea>
-      </label>
+<label>
+  Utilisateur :
+<input type="text"
+       placeholder="Rechercher un utilisateur..."
+       [(ngModel)]="currentProject.user_id"
+       (input)="onUserSearch($event)" />
+
+
+  <ul *ngIf="utilisateurs.length > 0" class="autocomplete-list">
+    <li *ngFor="let u of utilisateurs" (click)="currentProject.user_id = u.id; utilisateurs = []">
+      {{ u.nom }}
+    </li>
+  </ul>
+</label>
+
 
       <label>
         Image :
@@ -94,21 +109,11 @@
       </label>
 
       <div class="modal-actions">
-        <button (click)="saveProject()">
-          {{ isEditMode ? 'Enregistrer' : 'Ajouter' }}
+        <button (click)="saveProject()" [disabled]="isSaving">
+          <span *ngIf="!isSaving">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</span>
+          <span *ngIf="isSaving"><i class="spinner"></i> Chargement...</span>
         </button>
         <button (click)="closeModal()">Annuler</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal confirmation sauvegarde -->
-  <div class="modal-backdrop" *ngIf="showConfirmSaveModal">
-    <div class="modal">
-      <p>Voulez-vous vraiment {{ isEditMode ? 'enregistrer les modifications' : 'ajouter ce projet' }} ?</p>
-      <div class="modal-actions">
-        <button (click)="confirmSave()">Oui</button>
-        <button (click)="cancelSave()">Non</button>
       </div>
     </div>
   </div>
@@ -118,10 +123,12 @@
     <div class="modal">
       <p>Voulez-vous vraiment supprimer le projet <strong>{{ projectToDelete?.titre_projet }}</strong> ?</p>
       <div class="modal-actions">
-        <button (click)="confirmDelete()">Oui, supprimer</button>
+        <button (click)="confirmDelete()" [disabled]="isDeleting">
+          <span *ngIf="!isDeleting">Oui, supprimer</span>
+          <span *ngIf="isDeleting"><i class="spinner"></i> Suppression...</span>
+        </button>
         <button (click)="cancelDelete()">Annuler</button>
       </div>
     </div>
   </div>
-
 </div>

@@ -81,14 +81,14 @@ td button {
 }
 td button:last-child {
   margin-right: 0;
-  background: #fbbf24;
+  background: rgb(247, 75, 75);
 }
 td button:hover {
   background: #60a5fa;
   transform: scale(1.04);
 }
 td button:last-child:hover {
-  background: #f59e42;
+  background: rgb(247, 75, 75);
 }
 
 .pagination {

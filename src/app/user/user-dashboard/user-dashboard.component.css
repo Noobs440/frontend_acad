@@ -1,4 +1,18 @@
 /* Status Grouping Cards */
+.breadcrumb-item1 a{
+  text-decoration: none;
+  text-align: center;
+  font-size: 130%;
+  width: 20%;
+  height: 20%;
+  padding: 1%;
+  border-radius: 5px;
+  margin-left: 90%;
+  font-weight: bold;
+  color: white;
+  border: 10px;
+  background-color: #06BBCC;
+}
 .status-grouping-container {
   display: flex;
   flex-wrap: wrap;
@@ -361,25 +375,25 @@ h6 {
 .breadcrumb {
   font-size: 14px;
   font-family: "Nunito", sans-serif;
-  color: #899bbd;
+  color: black;
   font-weight: 600;
 }
 
 .breadcrumb a {
-  color: #899bbd;
+  color: black;
   transition: 0.3s;
 }
 
 .breadcrumb a:hover {
-  color: #51678f;
+  color: black;
 }
 
 .breadcrumb .breadcrumb-item::before {
-  color: #899bbd;
+  color: black;
 }
 
 .breadcrumb .active {
-  color: #51678f;
+  color: black;
   font-weight: 600;
 }
 

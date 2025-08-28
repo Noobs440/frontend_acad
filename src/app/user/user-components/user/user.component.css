@@ -404,25 +404,25 @@ h6 {
 .breadcrumb {
   font-size: 14px;
   font-family: "Nunito", sans-serif;
-  color: #899bbd;
-  font-weight: 600;
+  color: black;
+  font-weight: bold;
 }
 
 .breadcrumb a {
-  color: #899bbd;
+  color: black;
   transition: 0.3s;
 }
 
 .breadcrumb a:hover {
-  color: #51678f;
+  color: black;
 }
 
 .breadcrumb .breadcrumb-item::before {
-  color: #899bbd;
+  color: black;
 }
 
 .breadcrumb .active {
-  color: #51678f;
+  color: black;
   font-weight: 600;
 }
 

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ProjetService } from '../../services/projet.service';
 import { normalizeString } from '../../utils/string-utils';
+import { debounceTime, switchMap } from 'rxjs/operators';
+import { Subject, of } from 'rxjs';
 
 @Component({
   selector: 'app-project-list',
@@ -11,6 +13,9 @@ export class ProjectListComponent implements OnInit {
 
   projects: any[] = [];
   filteredProjects: any[] = [];
+    niveaux: any[] = [];
+  categories: any[] = [];
+  utilisateurs: any[] = [];
 
   currentPage = 1;
   pageSize = 5;
@@ -40,16 +45,46 @@ export class ProjectListComponent implements OnInit {
   showConfirmDeleteModal = false;
   projectToDelete: any = null;
 
+  // Spinner flags
+  isSaving: boolean = false;
+  isDeleting: boolean = false;
+
   filters = {
     action: '',
     resource: '',
     changes: ''
   };
 
+  userSearch$ = new Subject<string>();
+
   constructor(private projetService: ProjetService) {}
 
   ngOnInit(): void {
     this.loadProjects();
+    this.loadDropdowns();
+
+    this.userSearch$.pipe(
+      debounceTime(300),
+      switchMap(term => term ? this.searchUsers(term) : of([]))
+    ).subscribe(users => this.utilisateurs = users);
+    
+  }
+
+  loadDropdowns(): void {
+    this.projetService.getNiveaux().subscribe(n => this.niveaux = n);
+    this.projetService.getCategories().subscribe(c => this.categories = c);
+  }
+
+onUserSearch(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const term = input.value;
+  this.userSearch$.next(term);
+}
+
+
+
+  searchUsers(term: string) {
+    return this.projetService.getSupervisedProjectsByEmail(term);
   }
 
   onFileSelected(event: any): void {
@@ -57,7 +92,7 @@ export class ProjectListComponent implements OnInit {
   }
 
   loadProjects(): void {
-    this.projetService.getProjects().subscribe(data => {
+    this.projetService.getAllProjects().subscribe(data => {
       this.projects = data;
       this.applyFilters();
     });
@@ -85,13 +120,11 @@ export class ProjectListComponent implements OnInit {
       );
     }
 
-    temp.sort((a, b) => {
-      return this.sortAsc
+    temp.sort((a, b) => this.sortAsc
         ? a.titre_projet.localeCompare(b.titre_projet)
-        : b.titre_projet.localeCompare(a.titre_projet);
-    });
+        : b.titre_projet.localeCompare(a.titre_projet)
+    );
 
-    // Apply pagination
     this.totalPages = Math.ceil(temp.length / this.pageSize);
     this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
 
@@ -143,7 +176,6 @@ export class ProjectListComponent implements OnInit {
     this.isModalOpen = false;
   }
 
-  // Demande confirmation avant sauvegarde
   saveProject(): void {
     if (!this.currentProject.titre_projet.trim() || !this.currentProject.descript_projet.trim()) {
       alert('Veuillez remplir tous les champs requis.');
@@ -154,6 +186,7 @@ export class ProjectListComponent implements OnInit {
 
   confirmSave(): void {
     this.showConfirmSaveModal = false;
+    this.isSaving = true;
 
     const formData = new FormData();
     formData.append('titre_projet', this.currentProject.titre_projet);
@@ -167,22 +200,20 @@ export class ProjectListComponent implements OnInit {
       formData.append('image', this.selectedFile);
     }
 
+    const finalize = () => this.isSaving = false;
+
     if (this.isEditMode) {
-      this.projetService.updateProject(
-        this.currentProject.id,
-        this.currentProject.titre_projet,
-        this.currentProject.descript_projet,
-        this.currentProject.user_id,
-        this.currentProject.tbl_niveau_id,
-        this.currentProject.tbl_categorie_id
-      ).subscribe(() => {
-        this.loadProjects();
-        this.closeModal();
+      formData.append('_method', 'PUT');
+      this.projetService.updateProjectWithFormData(this.currentProject.id, formData).subscribe({
+        next: () => { this.loadProjects(); this.closeModal(); },
+        error: () => finalize(),
+        complete: () => finalize()
       });
     } else {
-      this.projetService.addProject(formData).subscribe(() => {
-        this.loadProjects();
-        this.closeModal();
+      this.projetService.addProject(formData).subscribe({
+        next: () => { this.loadProjects(); this.closeModal(); },
+        error: () => finalize(),
+        complete: () => finalize()
       });
     }
   }
@@ -197,12 +228,14 @@ export class ProjectListComponent implements OnInit {
   }
 
   confirmDelete(): void {
-    if (this.projectToDelete) {
-      this.projetService.deleteProject(this.projectToDelete.id).subscribe(() => {
-        this.loadProjects();
-      });
-    }
-    this.cancelDelete();
+    if (!this.projectToDelete) return;
+
+    this.isDeleting = true;
+    this.projetService.deleteProject(this.projectToDelete.id).subscribe({
+      next: () => this.loadProjects(),
+      error: () => this.isDeleting = false,
+      complete: () => { this.isDeleting = false; this.cancelDelete(); }
+    });
   }
 
   cancelDelete(): void {
@@ -211,7 +244,7 @@ export class ProjectListComponent implements OnInit {
   }
 
   openDescriptionModal(description: string): void {
-    alert(description); // Remplacez par une implémentation de modal si nécessaire
+    alert(description);
   }
 
   getResourceLabel(log: any): string {

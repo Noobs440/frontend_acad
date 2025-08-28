@@ -82,7 +82,7 @@
   }
   td button:last-child {
     margin-right: 0;
-    background: #fbbf24;
+    background: rgb(247, 75, 75);
     color: #fff;
   }
   td button:hover {
@@ -90,7 +90,7 @@
     transform: scale(1.04);
   }
   td button:last-child:hover {
-    background: #f59e42;
+    background: rgb(247, 75, 75);
   }
   .pagination {
     display: flex;
@@ -239,7 +239,7 @@
     }
   }
 td button:last-child:hover {
-  background: #f59e42;
+  background: rgb(247, 75, 75);
 }
 
 .pagination {

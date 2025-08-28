@@ -279,3 +279,38 @@ th {
     padding: 4px;
   }
 }
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ccc;
+  border-top: 2px solid #333;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.autocomplete-list {
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.autocomplete-list li {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.autocomplete-list li:hover {
+  background-color: #eee;
+}

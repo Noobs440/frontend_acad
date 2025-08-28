@@ -299,7 +299,7 @@
           <option value="Pending">En attente</option>
           <option value="Rejected">Rejeté</option>
         </select>
-        <label class="ms-3 me-2 mb-0">Filtrer par catégorie :</label>
+        <label class="ms-3 me-2 mb-0">Filtrer par Domaine</label>
         <select class="form-select form-select-sm w-auto" [(ngModel)]="selectedCategoryFilter" (change)="renderDynamicChart()">
           <option value="all">Toutes</option>
           <ng-container *ngFor="let cat of uniqueCategories">

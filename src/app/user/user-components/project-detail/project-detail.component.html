@@ -23,7 +23,7 @@
     <span *ngIf="isLoadingAddDocument" class="spinner-border spinner-border-sm me-2"></span>
     <i class="fas fa-plus me-2" *ngIf="!isLoadingAddDocument"></i> Ajouter un document
   </button>
-  <button class="btn btn-action btn-outline-success action-btn d-flex align-items-center shadow-lg fw-bold"
+  <button class="btn btn-action btn-outline-primary action-btn d-flex align-items-center shadow-lg fw-bold"
     (click)="openDialog('collaborator')" [disabled]="isLoadingAddCollaborator">
     <span *ngIf="isLoadingAddCollaborator" class="spinner-border spinner-border-sm me-2"></span>
     <i class="fas fa-plus me-2" *ngIf="!isLoadingAddCollaborator"></i> Ajouter un collaborateur
@@ -88,20 +88,6 @@
       </div>
       <div class="col-12 col-lg-6 order-lg-2 d-flex flex-column align-items-lg-end align-items-start">
         <div class="d-flex flex-column gap-3 w-100">
-          <div class="action-btn-group" *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'">
-            <button class="btn btn-action btn-outline-primary d-flex align-items-center action-btn shadow-lg fw-bold"
-                    (click)="openDialog('document')">
-              <i class="fas fa-plus me-2"></i> Ajouter un document
-            </button>
-            <button class="btn btn-action btn-outline-success d-flex align-items-center action-btn shadow-lg fw-bold"
-                    (click)="openDialog('collaborator')">
-              <i class="fas fa-plus me-2"></i> Ajouter un collaborateur
-            </button>
-            <button class="btn btn-action btn-outline-danger d-flex align-items-center action-btn shadow-lg fw-bold"
-                    (click)="openDeleteDialog(deleteDialog)">
-              <i class="fas fa-trash me-2"></i> Supprimer le projet
-            </button>
-          </div>
           <div *ngIf="projectStatus === 'Rejected'" class="action-btn-group">
             <button class="btn btn-warning text-white fw-bold action-btn shadow-sm" (click)="resubmitProject()" [disabled]="isLoadingResubmit">
               <span *ngIf="isLoadingResubmit" class="spinner-border spinner-border-sm me-2"></span>
@@ -113,7 +99,7 @@
             </button>
           </div>
           <div *ngIf="(projectStatus === 'Not Submitted') && !Submitted" class="action-btn-group">
-            <button class="btn btn-warning text-white action-btn" (click)="submitProject()" [disabled]="isLoadingSubmit">
+            <button class="btn btn-action btn-outline-primary action-btn d-flex align-items-center shadow-lg fw-bold" (click)="submitProject()" [disabled]="isLoadingSubmit">
               <span *ngIf="isLoadingSubmit" class="spinner-border spinner-border-sm me-2"></span>
               <i class="fas fa-plus" *ngIf="!isLoadingSubmit"></i> Soumettre
             </button>

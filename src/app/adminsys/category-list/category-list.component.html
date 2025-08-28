@@ -11,7 +11,7 @@
       Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
     </button>
 
-    <button (click)="openAddModal()">Ajouter une catégorie</button>
+    <button (click)="openAddModal()">Ajouter un Domaine</button>
   </div>
 
   <table class="table">
@@ -43,7 +43,7 @@
   <!-- Modal ajout/modif -->
   <div class="modal" *ngIf="isModalOpen">
     <div class="modal-content">
-      <h3>{{ isEditMode ? 'Modifier catégorie' : 'Ajouter catégorie' }}</h3>
+      <h3>{{ isEditMode ? 'Modifier Domaine' : 'Ajouter Domaine' }}</h3>
 
       <label>
         Nom:
@@ -72,7 +72,7 @@
   <div class="modal" *ngIf="isDeleteConfirmOpen">
     <div class="modal-content">
       <h3>Confirmer la suppression</h3>
-      <p>Voulez-vous vraiment supprimer cette catégorie ?</p>
+      <p>Voulez-vous vraiment supprimer ce Domaine ?</p>
       <div class="modal-actions">
         <button (click)="confirmDelete()">Oui</button>
         <button (click)="cancelDelete()">Non</button>

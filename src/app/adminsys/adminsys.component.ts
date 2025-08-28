@@ -40,7 +40,7 @@ export class AdminsysComponent implements OnInit {
       width: '350px'
     });
     dialogRef.afterClosed().subscribe(result => {
-      if (result === true) { // Vérifie si le résultat est true
+      if (result === true) { 
         localStorage.clear();
         window.location.href = '/home';
       }

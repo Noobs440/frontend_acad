@@ -1,4 +1,8 @@
 /* Style moderne pour les cartes de niveaux */
+h2{
+	margin-top: 5%;
+}
+.section{background-color: #06BBCC;}
 .level-card {
 	min-width: 200px;
 	border-radius: 18px;
