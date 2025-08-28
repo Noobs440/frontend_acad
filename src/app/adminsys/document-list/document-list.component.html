@@ -12,7 +12,7 @@
       Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
     </button>
 
-    <button (click)="openAddModal()" disabled>Ajouter un document</button>
+    <button (click)="openAddModal()">Ajouter un document</button>
   </div>
 
   <table class="table">
@@ -43,8 +43,8 @@
         <td>{{ doc.projet?.titre_projet || '-' }}</td>
 
         <td>
-          <button (click)="openEditModal(doc)" disabled>Modifier</button>
-          <button (click)="deleteDocument(doc.id)" disabled>Supprimer</button>
+          <button (click)="openEditModal(doc)">Modifier</button>
+          <button (click)="deleteDocument(doc.id)">Supprimer</button>
         </td>
       </tr>
     </tbody>
