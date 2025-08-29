@@ -75,7 +75,7 @@
   Niveau :
   <select [(ngModel)]="currentProject.tbl_niveau_id">
     <option value="" disabled>Choisir un niveau</option>
-    <option *ngFor="let niveau of niveaux" [value]="niveau.id">{{ niveau.nom }}</option>
+    <option *ngFor="let niveau of niveaux" [value]="niveau.id">{{ niveau.code_niv }}</option>
   </select>
 </label>
 
@@ -83,21 +83,20 @@
   Catégorie :
   <select [(ngModel)]="currentProject.tbl_categorie_id">
     <option value="" disabled>Choisir une catégorie</option>
-    <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
+    <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom_cat }}</option>
   </select>
 </label>
 
 <label>
   Utilisateur :
-<input type="text"
-       placeholder="Rechercher un utilisateur..."
-       [(ngModel)]="currentProject.user_id"
-       (input)="onUserSearch($event)" />
-
+  <input type="text"
+         placeholder="Rechercher un utilisateur..."
+         [(ngModel)]="selectedUserName"
+         (input)="onUserSearch($event)" />
 
   <ul *ngIf="utilisateurs.length > 0" class="autocomplete-list">
-    <li *ngFor="let u of utilisateurs" (click)="currentProject.user_id = u.id; utilisateurs = []">
-      {{ u.nom }}
+    <li *ngFor="let u of utilisateurs" (click)="selectUser(u)">
+      {{ u.nom_user }}
     </li>
   </ul>
 </label>
@@ -111,7 +110,6 @@
       <div class="modal-actions">
         <button (click)="saveProject()" [disabled]="isSaving">
           <span *ngIf="!isSaving">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</span>
-          <span *ngIf="isSaving"><i class="spinner"></i> Chargement...</span>
         </button>
         <button (click)="closeModal()">Annuler</button>
       </div>
