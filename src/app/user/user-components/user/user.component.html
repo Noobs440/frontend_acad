@@ -41,7 +41,10 @@
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications p-0 border-0 shadow-lg" style="min-width: 350px; max-width: 400px; max-height: 420px; overflow-y: auto; background: #fff; border-radius: 16px;">
               <li class="d-flex justify-content-between align-items-center px-3 pt-3 pb-2 border-bottom" style="background: #f5f6fa; border-top-left-radius: 16px; border-top-right-radius: 16px;">
                 <span class="fw-bold text-primary"><i class="bi bi-bell me-1"></i> Notifications ({{ notifications.length }})</span>
-                <button class="btn btn-sm btn-outline-primary px-2 py-0" (click)="markAllNotificationAsRead()">Tout marquer comme lu</button>
+                <button class="btn btn-sm btn-outline-primary px-2 py-0 d-flex align-items-center" (click)="markAllNotificationAsRead()" [disabled]="isLoadingMarkAllRead">
+                  <span *ngIf="isLoadingMarkAllRead" class="spinner-border spinner-border-sm me-2"></span>
+                  <span *ngIf="!isLoadingMarkAllRead">Tout marquer comme lu</span>
+                </button>
               </li>
 
               <li *ngIf="notifications.length === 0" class="text-center text-muted py-4">
@@ -69,7 +72,10 @@
                     <div class="mb-1">{{ notification.data.message }}</div>
                   </div>
                   <div class="align-self-center ms-2">
-                    <button class="btn btn-outline-primary btn-sm px-2 py-0" (click)="markNotificationAsRead(notification.id)"><i class="bi bi-check2"></i></button>
+                    <button class="btn btn-outline-primary btn-sm px-2 py-0 d-flex align-items-center" (click)="markNotificationAsRead(notification.id)" [disabled]="isLoadingMarkRead === notification.id">
+                      <span *ngIf="isLoadingMarkRead === notification.id" class="spinner-border spinner-border-sm me-2"></span>
+                      <span *ngIf="isLoadingMarkRead !== notification.id"><i class="bi bi-check2"></i></span>
+                    </button>
                   </div>
                 </li>
               </ng-container>
@@ -114,9 +120,9 @@
             <li><hr class="dropdown-divider"></li>
 
             <li>
-              <p class="dropdown-item d-flex align-items-center mb-0" (click)="deconnexion()">
-                <i class="bi bi-box-arrow-right"></i>
-                <span>Déconnexion</span>
+              <p class="dropdown-item d-flex align-items-center mb-0" (click)="deconnexion()" [class.disabled]="isLoadingLogout" style="cursor:pointer;">
+                <span *ngIf="isLoadingLogout" class="spinner-border spinner-border-sm me-2"></span>
+                <span *ngIf="!isLoadingLogout"><i class="bi bi-box-arrow-right"></i> Déconnexion</span>
               </p>
             </li>
           </ul>
@@ -136,7 +142,7 @@
         </a>
       </li>
 
-      <li class="nav-heading">Pages</li>
+      
 
       <li class="nav-item">
         <a class="nav-link collapsed"
@@ -144,7 +150,7 @@
            [attr.aria-expanded]="isProjectsOpen"
            style="cursor:pointer;">
           <i class="bi bi-menu-button-wide"></i>
-          <span>My Projects</span>
+          <span>Mes Projets</span>
           <i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="components-nav"
@@ -191,7 +197,7 @@
 
   <footer id="footer" class="footer">
     <div class="mycopyright">
-      &copy; Copyright <strong><span>AcadProManage</span></strong>. All Rights Reserved
+      &copy; Copyright <strong><span>CollabFacultyRise</span></strong>. All Rights Reserved
     </div>
     <div class="credits"></div>
   </footer>

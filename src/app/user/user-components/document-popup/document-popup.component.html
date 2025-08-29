@@ -83,8 +83,11 @@
           <small class="text-red-600" *ngIf="submittedCollaborator && collaboratorFormControl['email'].errors?.['email']">
             Email invalide
           </small>
-          <button type="button" (click)="onCollaboratorEmailInput()" class="px-3 py-1 bg-customBlue text-white rounded hover:bg-customBlue-dark flex items-center justify-center">
-            <i class="fas fa-search"></i>
+          <button type="button" (click)="onCollaboratorEmailInput()" class="px-3 py-1 bg-customBlue text-white rounded hover:bg-customBlue-dark flex items-center justify-center" [disabled]="isLoadingSearch">
+            <ng-container *ngIf="!isLoadingSearch">
+              <i class="fas fa-search"></i>
+            </ng-container>
+            <mat-spinner *ngIf="isLoadingSearch" [diameter]="20" class="ml-2"></mat-spinner>
           </button>
         </div>
       </div>
@@ -158,9 +161,10 @@
       </small>
     </div>
 
-    <button type="submit" class="w-full py-2 mt-2 text-white bg-customBlue rounded hover:bg-blue-700"
-            [disabled]="supervisorForm.invalid">
-      Ajouter
+    <button type="submit" class="w-full py-2 mt-2 text-white bg-customBlue rounded hover:bg-blue-700 flex items-center justify-center"
+            [disabled]="supervisorForm.invalid || isLoadingSupervisor">
+      <span *ngIf="!isLoadingSupervisor">Ajouter</span>
+      <mat-spinner *ngIf="isLoadingSupervisor" [diameter]="24" class="ml-2"></mat-spinner>
     </button>
   </form>
 </div>

@@ -15,6 +15,10 @@ import { InfoDialogComponent } from '../../../shared/info-dialog/info-dialog.com
   styleUrls: ['./document-popup.component.css']
 })
 export class DocumentPopupComponent implements OnInit {
+  // Spinner pour la recherche de document
+  isLoadingSearch: boolean = false;
+  // Spinner pour l'ajout de superviseur
+  isLoadingSupervisor: boolean = false;
   isDeletingCollaborator: string | null = null;
 
   confirmDeleteCollaborator(collaborator: any) {

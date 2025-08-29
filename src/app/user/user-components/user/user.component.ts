@@ -21,6 +21,11 @@ export class UserComponent implements OnInit, OnDestroy {
   id: string = '';
   photo: string = 'assets/img/default.png';
 
+
+isLoadingMarkAllRead = false;
+isLoadingMarkRead: number | null = null;
+isLoadingLogout = false;
+
   showProfileDropdown = false;
   isProjectsOpen = false;
 
@@ -170,22 +175,29 @@ export class UserComponent implements OnInit, OnDestroy {
 
   // Déconnexion utilisateur
   deconnexion(): void {
-    const dialogRef = this.dialog.open(LogoutConfirmDialogComponent, {
-      width: '350px'
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.userService.logout().subscribe({
-          next: () => {},
-          error: err => console.log(err),
-          complete: () => {
-            localStorage.clear();
-            this.router.navigate(['/home']);
-          }
-        });
-      }
-    });
-  }
+  this.isLoadingLogout = true;
+  const dialogRef = this.dialog.open(LogoutConfirmDialogComponent, {
+    width: '350px'
+  });
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.userService.logout().subscribe({
+        next: () => {},
+        error: err => {
+          console.log(err);
+          this.isLoadingLogout = false;
+        },
+        complete: () => {
+          localStorage.clear();
+          this.router.navigate(['/home']);
+          this.isLoadingLogout = false;
+        }
+      });
+    } else {
+      this.isLoadingLogout = false;
+    }
+  });
+}
 
   // Ouvre/ferme le menu latéral sur mobile
   toggleSidebar(): void {
@@ -202,17 +214,23 @@ export class UserComponent implements OnInit, OnDestroy {
 
   // Marquer toutes les notifications comme lues
   markAllNotificationAsRead(): void {
-    this.notificationService.markAllNotificationAsRead().subscribe(() => {
-      this.loadNotifications();
-    });
-  }
+  this.isLoadingMarkAllRead = true;
+  this.notificationService.markAllNotificationAsRead().subscribe({
+    next: () => this.loadNotifications(),
+    error: () => {},
+    complete: () => { this.isLoadingMarkAllRead = false; }
+  });
+}
 
   // Marquer une notification comme lue
-  markNotificationAsRead(id: number): void {
-    this.notificationService.markNotificationAsRead(id).subscribe(() => {
-      this.loadNotifications();
-    });
-  }
+ markNotificationAsRead(id: number): void {
+  this.isLoadingMarkRead = id;
+  this.notificationService.markNotificationAsRead(id).subscribe({
+    next: () => this.loadNotifications(),
+    error: () => {},
+    complete: () => { this.isLoadingMarkRead = null; }
+  });
+}
 
   // Ouvre/ferme la liste des projets dans le sidebar
   toggleProjects(): void {
