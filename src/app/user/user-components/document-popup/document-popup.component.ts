@@ -381,49 +381,10 @@ export class DocumentPopupComponent implements OnInit {
             }
           });
         } else {
-          // Utilisateur non existant, création puis ajout
-          const password = this.collaboratorForm.value.password;
-          if (!password) {
-            alert("Veuillez saisir un mot de passe pour créer l'utilisateur.");
-            this.isLoading = false;
-            return;
-          }
-          const newUser = { nom_user: name, email: email, password: password, role: 'user' };
-          this.userManagementService.createUser(newUser).subscribe({
-            next: (createdUser) => {
-              this.colService.addCollaborateur(
-                createdUser.nom_user,
-                createdUser.email,
-                this.id,
-                createdUser.id
-              ).subscribe({
-                next: () => alert("Utilisateur créé et collaborateur ajouté !"),
-                error: err => {
-                  console.error(err);
-                  alert("Erreur lors de l'ajout du collaborateur.");
-                },
-                complete: () => {
-                  this.isLoading = false;
-                  this.collaboratorForm.reset();
-                  this.foundUser = null;
-                  this.showPasswordField = false;
-                  this.collaboratorForm.get('email')?.enable();
-                  this.collaboratorForm.get('name')?.enable();
-                  this.collaboratorForm.get('password')?.reset();
-                  window.location.reload();
-                }
-              });
-            },
-            error: err => {
-              console.error(err);
-              alert("Erreur lors de la création de l'utilisateur.");
-              this.isLoading = false;
-              this.collaboratorForm.reset();
-              this.foundUser = null;
-              this.showPasswordField = false;
-              this.collaboratorForm.get('email')?.enable();
-            }
-          });
+          // Utilisateur non existant, afficher un message d'erreur
+          alert("L'utilisateur n'existe pas. Impossible d'ajouter ce collaborateur.");
+          this.isLoading = false;
+          return;
         }
       }
 

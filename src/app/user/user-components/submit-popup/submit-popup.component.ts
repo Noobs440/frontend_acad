@@ -444,73 +444,13 @@ export class SubmitPopupComponent implements OnInit {
           }
         });
       } else {
-        // Utilisateur non existant, création puis ajout
-        const password = this.collaboratorForm.value.password;
-        if (!password) {
+          // Utilisateur non existant, afficher un message d'erreur
           this.dialog.open(InfoDialogComponent, {
             width: '350px',
-            data: { title: 'Erreur', message: "Veuillez saisir un mot de passe pour créer l'utilisateur." }
+            data: { title: 'Erreur', message: "L'utilisateur n'existe pas. Impossible d'ajouter ce collaborateur." }
           });
           this.isLoading = false;
           return;
-        }
-  const newUser = { nom_user: name, email: email, password: password, role: 'user' };
-  this.userManagementService.createUser(newUser).subscribe({
-          next: (createdUser) => {
-            // Enchaîner directement avec l'ajout du collaborateur
-            this.colService.addCollaborateur(
-              createdUser.nom_user,
-              createdUser.email,
-              this.project_id,
-              createdUser.id
-            ).subscribe({
-              next: () => {
-                this.dialog.open(InfoDialogComponent, {
-                  width: '350px',
-                  data: { title: 'Succès', message: 'Utilisateur créé et collaborateur ajouté !' }
-                }).afterClosed().subscribe(() => {
-                  this.saveC = true;
-                  this.collaboratorForm.reset();
-                  this.foundUser = null;
-                  this.showPasswordField = false;
-                  this.formType = 'collaborator';
-                  this.currentStep = 5;
-                });
-              },
-              error: err => {
-                console.error(err);
-                this.dialog.open(InfoDialogComponent, {
-                  width: '350px',
-                  data: { title: 'Erreur', message: "Erreur lors de l'ajout du collaborateur." }
-                }).afterClosed().subscribe(() => {
-                  this.collaboratorForm.reset();
-                  this.foundUser = null;
-                  this.showPasswordField = false;
-                  this.formType = 'collaborator';
-                  this.currentStep = 5;
-                });
-              },
-              complete: () => {
-                this.isLoading = false;
-              }
-            });
-          },
-          error: err => {
-            console.error(err);
-            this.dialog.open(InfoDialogComponent, {
-              width: '350px',
-              data: { title: 'Erreur', message: "Erreur lors de la création de l'utilisateur." }
-            }).afterClosed().subscribe(() => {
-              // Réinitialiser le formulaire et revenir à l'étape collaborateur
-              this.collaboratorForm.reset();
-              this.foundUser = null;
-              this.showPasswordField = false;
-              this.formType = 'collaborator';
-              this.currentStep = 5;
-            });
-            this.isLoading = false;
-          }
-        });
       }
     }
 
