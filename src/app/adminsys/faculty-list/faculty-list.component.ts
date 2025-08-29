@@ -33,6 +33,8 @@ export class FacultyListComponent implements OnInit {
 
   searchField: string = 'nom_fac';
 
+  isSaving: boolean = false;
+
   constructor(private facultyService: FacultyService) {}
 
   ngOnInit(): void {
@@ -123,26 +125,29 @@ export class FacultyListComponent implements OnInit {
   }
 
   saveFaculty(): void {
-    if (!this.currentFaculty.nom_fac.trim()) return;
-
+    if (!this.currentFaculty.nom_fac?.trim() || !this.currentFaculty.email_fac?.trim() || !this.currentFaculty.tbl_universite_id) return;
+    this.isSaving = true;
+    const finalize = () => this.isSaving = false;
     if (this.isEditMode) {
       this.facultyService.updateFaculty(
         this.currentFaculty.id,
         this.currentFaculty.nom_fac,
         this.currentFaculty.email_fac,
         this.currentFaculty.tbl_universite_id
-      ).subscribe(() => {
-        this.loadFaculties();
-        this.closeModal();
+      ).subscribe({
+        next: () => { this.loadFaculties(); this.closeModal(); },
+        error: () => finalize(),
+        complete: () => finalize()
       });
     } else {
       this.facultyService.addFaculty(
         this.currentFaculty.nom_fac,
         this.currentFaculty.email_fac,
         this.currentFaculty.tbl_universite_id
-      ).subscribe(() => {
-        this.loadFaculties();
-        this.closeModal();
+      ).subscribe({
+        next: () => { this.loadFaculties(); this.closeModal(); },
+        error: () => finalize(),
+        complete: () => finalize()
       });
     }
   }

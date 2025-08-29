@@ -38,6 +38,8 @@ export class NiveauListComponent implements OnInit {
     changes: ''
   };
 
+  isSaving: boolean = false;
+
   constructor(private niveauService: NiveauService) {}
 
   ngOnInit(): void {
@@ -121,20 +123,23 @@ export class NiveauListComponent implements OnInit {
 
   saveNiveau(): void {
     if (!this.currentNiveau.code_niv.trim()) return;
-
+    this.isSaving = true;
+    const finalize = () => this.isSaving = false;
     if (this.isEditMode) {
       this.niveauService.updateniveau(
         this.currentNiveau.id,
         this.currentNiveau.code_niv
-      ).subscribe(() => {
-        this.loadNiveaux();
-        this.closeModal();
+      ).subscribe({
+        next: () => { this.loadNiveaux(); this.closeModal(); },
+        error: () => finalize(),
+        complete: () => finalize()
       });
     } else {
       this.niveauService.addniveau(this.currentNiveau.code_niv)
-        .subscribe(() => {
-          this.loadNiveaux();
-          this.closeModal();
+        .subscribe({
+          next: () => { this.loadNiveaux(); this.closeModal(); },
+          error: () => finalize(),
+          complete: () => finalize()
         });
     }
   }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProjetService } from '../../services/projet.service';
+import { UserManagementService } from '../../services/user-management.service';
 import { normalizeString } from '../../utils/string-utils';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { Subject, of } from 'rxjs';
@@ -13,7 +14,7 @@ export class ProjectListComponent implements OnInit {
 
   projects: any[] = [];
   filteredProjects: any[] = [];
-    niveaux: any[] = [];
+  niveaux: any[] = [];
   categories: any[] = [];
   utilisateurs: any[] = [];
 
@@ -39,6 +40,7 @@ export class ProjectListComponent implements OnInit {
   };
 
   selectedFile: File | null = null;
+  selectedUserName: string = '';
 
   // Confirmation modals
   showConfirmSaveModal = false;
@@ -49,46 +51,20 @@ export class ProjectListComponent implements OnInit {
   isSaving: boolean = false;
   isDeleting: boolean = false;
 
-  filters = {
-    action: '',
-    resource: '',
-    changes: ''
-  };
-
   userSearch$ = new Subject<string>();
 
-  constructor(private projetService: ProjetService) {}
+  constructor(private projetService: ProjetService, private userManage: UserManagementService) {}
 
   ngOnInit(): void {
     this.loadProjects();
     this.loadDropdowns();
+    this.loadUtilisateurs();
 
+    // Autocomplete utilisateur
     this.userSearch$.pipe(
       debounceTime(300),
       switchMap(term => term ? this.searchUsers(term) : of([]))
     ).subscribe(users => this.utilisateurs = users);
-    
-  }
-
-  loadDropdowns(): void {
-    this.projetService.getNiveaux().subscribe(n => this.niveaux = n);
-    this.projetService.getCategories().subscribe(c => this.categories = c);
-  }
-
-onUserSearch(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  const term = input.value;
-  this.userSearch$.next(term);
-}
-
-
-
-  searchUsers(term: string) {
-    return this.projetService.getSupervisedProjectsByEmail(term);
-  }
-
-  onFileSelected(event: any): void {
-    this.selectedFile = event.target.files[0];
   }
 
   loadProjects(): void {
@@ -98,27 +74,39 @@ onUserSearch(event: Event): void {
     });
   }
 
+  loadDropdowns(): void {
+    this.projetService.getNiveaux().subscribe(n => this.niveaux = n);
+    this.projetService.getCategories().subscribe(c => this.categories = c);
+  }
+
+  loadUtilisateurs(): void {
+    this.userManage.getUsers().subscribe(users => this.utilisateurs = users);
+  }
+
+  onUserSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectedUserName = input.value;
+    this.userSearch$.next(this.selectedUserName);
+  }
+
+  selectUser(user: any) {
+    this.currentProject.user_id = user.id;
+    this.selectedUserName = user.nom_user;
+    this.utilisateurs = [];
+  }
+
+  searchUsers(term: string) {
+    return this.userManage.searchUsers(term); // méthode côté service qui recherche les utilisateurs par nom/email
+  }
+
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+  }
+
   applyFilters(): void {
     let temp = this.projects.filter(p =>
       p.titre_projet.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
-
-    // Apply search filters
-    if (this.filters.action) {
-      temp = temp.filter(log =>
-        normalizeString(log.event).includes(normalizeString(this.filters.action))
-      );
-    }
-    if (this.filters.resource) {
-      temp = temp.filter(log =>
-        normalizeString(this.getResourceLabel(log)).includes(normalizeString(this.filters.resource))
-      );
-    }
-    if (this.filters.changes) {
-      temp = temp.filter(log =>
-        normalizeString(this.getChanges(log)).includes(normalizeString(this.filters.changes))
-      );
-    }
 
     temp.sort((a, b) => this.sortAsc
         ? a.titre_projet.localeCompare(b.titre_projet)
@@ -161,6 +149,7 @@ onUserSearch(event: Event): void {
       status: 'Not Submitted',
       image: ''
     };
+    this.selectedUserName = '';
     this.selectedFile = null;
     this.isModalOpen = true;
   }
@@ -168,6 +157,7 @@ onUserSearch(event: Event): void {
   openEditModal(project: any): void {
     this.isEditMode = true;
     this.currentProject = { ...project };
+    this.selectedUserName = project.nom_utilisateur || '';
     this.selectedFile = null;
     this.isModalOpen = true;
   }
@@ -177,11 +167,12 @@ onUserSearch(event: Event): void {
   }
 
   saveProject(): void {
-    if (!this.currentProject.titre_projet.trim() || !this.currentProject.descript_projet.trim()) {
+    if (!this.currentProject.titre_projet.trim() || !this.currentProject.descript_projet.trim() || !this.currentProject.user_id) {
       alert('Veuillez remplir tous les champs requis.');
       return;
     }
     this.showConfirmSaveModal = true;
+    this.confirmSave();
   }
 
   confirmSave(): void {
@@ -218,10 +209,6 @@ onUserSearch(event: Event): void {
     }
   }
 
-  cancelSave(): void {
-    this.showConfirmSaveModal = false;
-  }
-
   openConfirmDelete(project: any): void {
     this.projectToDelete = project;
     this.showConfirmDeleteModal = true;
@@ -241,17 +228,5 @@ onUserSearch(event: Event): void {
   cancelDelete(): void {
     this.showConfirmDeleteModal = false;
     this.projectToDelete = null;
-  }
-
-  openDescriptionModal(description: string): void {
-    alert(description);
-  }
-
-  getResourceLabel(log: any): string {
-    return log.resource || 'Unknown';
-  }
-
-  getChanges(log: any): string {
-    return log.changes || 'No changes';
   }
 }

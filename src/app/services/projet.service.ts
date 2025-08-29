@@ -92,6 +92,9 @@ export class ProjetService {
   return this.http.post<any>(`${this.API_BASE}/ressources/projets/${id}`, formData);
 }
 
+searchProjectsByTitle(term: string): Observable<any[]> {
+  return this.http.get<any[]>(`/api/projects?search=${term}`);
+}
 
 getProjectById(id: number) {
   return this.http.get<any>(`${this.API_BASE}/ressources/projets/${id}`);

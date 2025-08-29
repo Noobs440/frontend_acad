@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DocumentService } from '../../services/document.service';
+import { ProjetService } from '../../services/projet.service';
 
 @Component({
   selector: 'app-document-list',
@@ -10,6 +11,10 @@ export class DocumentListComponent implements OnInit {
 
   documents: any[] = [];
   filteredDocuments: any[] = [];
+
+  projects: any[] = []; // Tous les projets pour autocomplete
+  filteredProjectsList: any[] = [];
+  projectSearchTerm = '';
 
   // Pagination
   currentPage = 1;
@@ -28,14 +33,17 @@ export class DocumentListComponent implements OnInit {
     nom_doc: '',
     lien_doc: null,
     user_id: null,
-    tbl_projet_id: null
+    tbl_projet_id: null,
+    projectTitle: ''
   };
   selectedFile: File | null = null;
+  isSaving: boolean = false;
 
-  constructor(private documentService: DocumentService) { }
+  constructor(private documentService: DocumentService, private projetService: ProjetService) { }
 
   ngOnInit(): void {
     this.loadDocuments();
+    this.loadProjects();
   }
 
   loadDocuments(): void {
@@ -45,30 +53,22 @@ export class DocumentListComponent implements OnInit {
     });
   }
 
-  encodeURIComponent(value: string): string {
-  return encodeURIComponent(value);
-}
-
+  loadProjects(): void {
+    this.projetService.getAllProjects().subscribe(data => {
+      this.projects = data;
+    });
+  }
 
   applyFilters(): void {
     let temp = this.documents.filter(d =>
       d[this.searchField]?.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
 
-    temp.sort((a, b) => {
-      return this.sortAsc
-        ? a[this.searchField]?.localeCompare(b[this.searchField])
-        : b[this.searchField]?.localeCompare(a[this.searchField]);
-    });
+    temp.sort((a, b) => this.sortAsc
+      ? a[this.searchField]?.localeCompare(b[this.searchField])
+      : b[this.searchField]?.localeCompare(a[this.searchField])
+    );
 
-    // Apply search filters
-    if (this.searchTerm) {
-      temp = temp.filter(log =>
-        this.normalizeString(log.event).includes(this.normalizeString(this.searchTerm))
-      );
-    }
-
-    // Apply pagination
     this.totalPages = Math.ceil(temp.length / this.pageSize);
     this.currentPage = Math.min(this.currentPage, this.totalPages) || 1;
 
@@ -92,7 +92,7 @@ export class DocumentListComponent implements OnInit {
     this.applyFilters();
   }
 
-  // Modale
+  // Modal
 
   openAddModal(): void {
     this.isEditMode = false;
@@ -100,7 +100,8 @@ export class DocumentListComponent implements OnInit {
       nom_doc: '',
       lien_doc: null,
       user_id: null,
-      tbl_projet_id: null
+      tbl_projet_id: null,
+      projectTitle: ''
     };
     this.selectedFile = null;
     this.isModalOpen = true;
@@ -108,7 +109,10 @@ export class DocumentListComponent implements OnInit {
 
   openEditModal(doc: any): void {
     this.isEditMode = true;
-    this.currentDocument = { ...doc };
+    this.currentDocument = {
+      ...doc,
+      projectTitle: doc.projet?.titre_projet || ''
+    };
     this.selectedFile = null;
     this.isModalOpen = true;
   }
@@ -121,33 +125,46 @@ export class DocumentListComponent implements OnInit {
     this.selectedFile = event.target.files[0];
   }
 
+  onProjectSearch(): void {
+    const term = this.projectSearchTerm.toLowerCase();
+    this.filteredProjectsList = this.projects.filter(p =>
+      p.titre_projet.toLowerCase().includes(term)
+    );
+  }
+
+  selectProject(project: any): void {
+    this.currentDocument.tbl_projet_id = project.id;
+    this.currentDocument.projectTitle = project.titre_projet;
+    this.filteredProjectsList = [];
+  }
+
   saveDocument(): void {
-  if (!this.currentDocument.nom_doc?.trim()) return;
-
-  const formData = new FormData();
-  formData.append('nom_doc', this.currentDocument.nom_doc);
-  formData.append('tbl_projet_id', this.currentDocument.tbl_projet_id?.toString() || '');
-
-  if (this.selectedFile) {
-    formData.append('document', this.selectedFile);
+    if (!this.currentDocument.nom_doc?.trim() || !this.currentDocument.tbl_projet_id) return;
+    this.isSaving = true;
+    const finalize = () => this.isSaving = false;
+    const formData = new FormData();
+    formData.append('nom_doc', this.currentDocument.nom_doc);
+    formData.append('tbl_projet_id', this.currentDocument.tbl_projet_id.toString());
+    if (this.selectedFile) {
+      formData.append('document', this.selectedFile);
+    }
+    if (this.isEditMode) {
+      formData.append('_method', 'PUT');
+      this.documentService.updateDocumentMultipart(this.currentDocument.id, formData)
+        .subscribe({
+          next: () => { this.loadDocuments(); this.closeModal(); },
+          error: () => finalize(),
+          complete: () => finalize()
+        });
+    } else {
+      this.documentService.addDocumentMultipart(formData)
+        .subscribe({
+          next: () => { this.loadDocuments(); this.closeModal(); },
+          error: () => finalize(),
+          complete: () => finalize()
+        });
+    }
   }
-
-  if (this.isEditMode) {
-    formData.append('_method', 'PUT');
-    this.documentService.updateDocumentMultipart(this.currentDocument.id, formData)
-      .subscribe(() => {
-        this.loadDocuments();
-        this.closeModal();
-      });
-  } else {
-    this.documentService.addDocumentMultipart(formData)
-      .subscribe(() => {
-        this.loadDocuments();
-        this.closeModal();
-      });
-  }
-}
-
 
   deleteDocument(id: number): void {
     if (confirm('Confirmer la suppression ?')) {
@@ -157,7 +174,4 @@ export class DocumentListComponent implements OnInit {
     }
   }
 
-  private normalizeString(str: string): string {
-    return str ? str.toString().toLowerCase().trim() : '';
-  }
 }

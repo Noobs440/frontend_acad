@@ -7,12 +7,10 @@
       <option value="tbl_projet_id">Projet</option>
     </select>
     <input type="text" placeholder="Recherche" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
-
     <button (click)="toggleSort()">
       Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
     </button>
-
-    <button (click)="openAddModal()" disabled>Ajouter un collaborateur</button>
+    <button (click)="openAddModal()">Ajouter un collaborateur</button>
   </div>
 
   <table class="table">
@@ -21,7 +19,6 @@
         <th>Nom</th>
         <th>Email</th>
         <th>Projet</th>
-        <!--<th>Utilisateur (ID)</th>-->
         <th>Actions</th>
       </tr>
     </thead>
@@ -29,12 +26,10 @@
       <tr *ngFor="let collab of filteredCollaborators">
         <td>{{ collab.nom_collab }}</td>
         <td>{{ collab.email_collab }}</td>
-        <td>{{ getProjectName(collab.tbl_projet_id) }}</td>
-        <!--<td>{{ getUserName(collab.user_id) }}</td>-->
-
+        <td>{{ collab.tbl_projet_id }}</td>
         <td>
-          <button (click)="openEditModal(collab)" disabled>Modifier</button>
-          <button (click)="deleteCollaborator(collab.id)" disabled>Supprimer</button>
+          <button (click)="openEditModal(collab)">Modifier</button>
+          <button (click)="deleteCollaborator(collab.id)">Supprimer</button>
         </td>
       </tr>
     </tbody>
@@ -58,17 +53,30 @@
 
       <label>
         Email:
-        <input type="email" [(ngModel)]="currentCollaborator.email_collab" />
+        <input type="email" [(ngModel)]="currentCollaborator.email_collab" (input)="onEmailSearch($event)" />
       </label>
+      <ul *ngIf="userSuggestions.length">
+        <li *ngFor="let u of userSuggestions" (click)="selectUser(u)">
+          {{ u.nom }} - {{ u.email }}
+        </li>
+      </ul>
 
       <label>
-        Projet (ID):
-        <input type="number" [(ngModel)]="currentCollaborator.tbl_projet_id" />
+        Projet:
+        <input type="text" [(ngModel)]="currentCollaborator.tbl_projet_id" (input)="onProjectSearch($event)" />
       </label>
+      <ul *ngIf="projectSuggestions.length">
+        <li *ngFor="let p of projectSuggestions" (click)="selectProject(p)">
+          {{ p.titre_projet }}
+        </li>
+      </ul>
 
       <div class="modal-actions">
-        <button (click)="saveCollaborator()">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</button>
-        <button (click)="closeModal()">Annuler</button>
+        <button (click)="saveCollaborator()" [disabled]="isSaving">
+          <span *ngIf="!isSaving">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</span>
+          <span *ngIf="isSaving"><i class="spinner"></i> Chargement...</span>
+        </button>
+        <button (click)="closeModal()" [disabled]="isSaving">Annuler</button>
       </div>
     </div>
   </div>

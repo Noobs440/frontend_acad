@@ -27,8 +27,19 @@
         <td>{{ cat.nom_cat }}</td>
         <td>{{ cat.descript_cat || '-' }}</td>
         <td>
-          <button (click)="openEditModal(cat)">Modifier</button>
-          <button (click)="openDeleteConfirm(cat.id!)">Supprimer</button>
+          <!-- Bouton Modifier -->
+          <button (click)="openEditModal(cat)">
+            <span class="spinner" *ngIf="editingId === cat.id"></span>
+            Modifier
+          </button>
+
+          <!-- Bouton Supprimer -->
+          <button 
+            (click)="openDeleteConfirm(cat.id!)" 
+            [disabled]="isDeleting && deletingId === cat.id">
+            <span *ngIf="isDeleting && deletingId === cat.id" class="spinner"></span>
+            {{ isDeleting && deletingId === cat.id ? 'Suppression...' : 'Supprimer' }}
+          </button>
         </td>
       </tr>
     </tbody>
@@ -62,8 +73,11 @@
       </label>
 
       <div class="modal-actions">
-        <button (click)="saveCategory()">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</button>
-        <button (click)="closeModal()">Annuler</button>
+        <button (click)="saveCategory()" [disabled]="isSaving">
+          <span *ngIf="isSaving" class="spinner"></span>
+          {{ isSaving ? 'En cours...' : (isEditMode ? 'Enregistrer' : 'Ajouter') }}
+        </button>
+        <button (click)="closeModal()" [disabled]="isSaving">Annuler</button>
       </div>
     </div>
   </div>
@@ -74,8 +88,11 @@
       <h3>Confirmer la suppression</h3>
       <p>Voulez-vous vraiment supprimer ce Domaine ?</p>
       <div class="modal-actions">
-        <button (click)="confirmDelete()">Oui</button>
-        <button (click)="cancelDelete()">Non</button>
+        <button (click)="confirmDelete()" [disabled]="isDeleting">
+          <span *ngIf="isDeleting" class="spinner"></span>
+          {{ isDeleting ? 'Suppression...' : 'Oui' }}
+        </button>
+        <button (click)="cancelDelete()" [disabled]="isDeleting">Non</button>
       </div>
     </div>
   </div>

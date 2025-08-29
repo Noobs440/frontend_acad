@@ -28,6 +28,18 @@ export class UserManagementService {
   deleteUser(id: string): Observable<any> {
     return this.http.delete(`${this.API_BASE}/${id}`);
   }
+    searchUsers(term: string): Observable<any[]> {
+    if (!term.trim()) {
+      return new Observable<any[]>(observer => observer.next([]));
+    }
+    return this.http.get<any[]>(`${this.API_BASE}?search=${encodeURIComponent(term)}`);
+  }
+
+searchUsersByEmail(term: string): Observable<any[]> {
+  return this.http.get<any[]>(`/api/users?role=user&search=${term}`);
+}
+
+
 
     getFilieres(): Observable<any[]>{
       return this.http.get<any[]>('http://localhost:8000/api/ressources/filieres').pipe(

@@ -29,19 +29,12 @@
       <tr *ngFor="let doc of filteredDocuments">
         <td>{{ doc.nom_doc }}</td>
         <td>
-         <a 
-  [href]="doc.lien_doc" 
-  target="_blank" 
-  rel="noopener noreferrer"
-  [attr.download]="doc.nom_doc + '.pdf'"
->
-  📥 Télécharger
-</a>
-
+          <a [href]="doc.lien_doc" target="_blank" rel="noopener noreferrer" [attr.download]="doc.nom_doc + '.pdf'">
+            📥 Télécharger
+          </a>
         </td>
         <td>{{ doc.user?.nom_user || '-' }}</td>
         <td>{{ doc.projet?.titre_projet || '-' }}</td>
-
         <td>
           <button (click)="openEditModal(doc)">Modifier</button>
           <button (click)="deleteDocument(doc.id)">Supprimer</button>
@@ -69,18 +62,28 @@
       <label>
         Fichier:
         <input type="file" (change)="onFileSelected($event)" />
+        <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
       </label>
 
       <label>
-        Projet (ID):
-        <input type="number" [(ngModel)]="currentDocument.tbl_projet_id" />
+        Projet :
+        <input type="text" placeholder="Rechercher un projet..." [(ngModel)]="projectSearchTerm" (input)="onProjectSearch()" />
+        <ul *ngIf="filteredProjectsList.length > 0" class="autocomplete-list">
+          <li *ngFor="let p of filteredProjectsList" (click)="selectProject(p)">
+            {{ p.titre_projet }}
+          </li>
+        </ul>
       </label>
+      <div *ngIf="currentDocument.projectTitle">
+        Projet sélectionné : {{ currentDocument.projectTitle }}
+      </div>
 
       <div class="modal-actions">
-        <button (click)="saveDocument()">
-          {{ isEditMode ? 'Enregistrer' : 'Ajouter' }}
+        <button (click)="saveDocument()" [disabled]="isSaving || !currentDocument.tbl_projet_id">
+          <span *ngIf="!isSaving">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</span>
+          <span *ngIf="isSaving"><i class="spinner"></i> Chargement...</span>
         </button>
-        <button (click)="closeModal()">Annuler</button>
+        <button (click)="closeModal()" [disabled]="isSaving">Annuler</button>
       </div>
     </div>
   </div>

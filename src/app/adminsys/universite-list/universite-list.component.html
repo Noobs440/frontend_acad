@@ -55,13 +55,17 @@
       <label>Email :
         <input type="email" [(ngModel)]="currentUniversite.email_univ" />
       </label>
+      <div *ngIf="emailError" class="error-message">{{ emailError }}</div>
       <label>Boîte Postale :
         <input type="text" [(ngModel)]="currentUniversite.boite_postale" />
       </label>
 
       <div class="modal-actions">
-        <button (click)="saveUniversite()">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</button>
-        <button (click)="closeModal()">Annuler</button>
+        <button (click)="saveUniversite()" [disabled]="isSaving">
+          <span *ngIf="!isSaving">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</span>
+          <span *ngIf="isSaving"><i class="spinner"></i> Chargement...</span>
+        </button>
+        <button (click)="closeModal()" [disabled]="isSaving">Annuler</button>
       </div>
     </div>
   </div>
