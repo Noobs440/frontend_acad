@@ -15,6 +15,34 @@
               <li class="breadcrumb-item active" style="font-weight:700; color:#222;">{{ selectedProjectTitle }}</li>
             </ol>
           </nav>
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Enseignant Dashboard</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a [routerLink]="['/home']">Home</a></li>
+        <li class="breadcrumb-item"><a [routerLink]="['/admin/dashboard']">Admin Dashboard</a></li>
+        <li class="breadcrumb-item active">{{ selectedProjectTitle }}</li>
+      </ol>
+    </nav>
+  </div>
+
+  <section class="section dashboard">
+    <div class="project-detail-container">
+      <!-- Colonne gauche : image et infos projet -->
+      <div class="project-detail-left">
+        <img [src]="getFullImageUrl(projectImage)" alt="Project image" class="project-detail-img" />
+        <h3 class="project-title">{{ selectedProjectTitle }} <span class="type-badge">({{ type }})</span></h3>
+        <p class="project-desc">{{ description }}</p>
+        <ul class="project-meta">
+          <li><i class="bi bi-person-circle"></i> <span class="font-bold">{{ author }}</span></li>
+          <li><i class="fas fa-graduation-cap"></i> <span>{{ level }}</span></li>
+          <li><i class="fas fa-eye"></i> <span>{{ views }} Views - {{ projectStatus }}</span></li>
+        </ul>
+        <div class="contact-box">
+          <h4>Contact Author</h4>
+          <p><i class="bi bi-telephone me-2"></i> <span>+589 55488 55</span></p>
+          <p><i class="bi bi-envelope me-2"></i> <a href="mailto:{{ email }}">{{ email }}</a></p>
         </div>
         <div class="d-flex flex-wrap gap-3 mt-2">
           <!-- Actions enseignant -->
