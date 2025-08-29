@@ -14,6 +14,10 @@
   </nav>
 
   <main class="content">
+    <button class="btn btn-primary mb-3" (click)="showTraces = !showTraces">Afficher l'historique du projet</button>
+    <div *ngIf="showTraces">
+      <app-project-trace-list [projectId]="selectedProjectId"></app-project-trace-list>
+    </div>
     <router-outlet></router-outlet>
   </main>
 </div>

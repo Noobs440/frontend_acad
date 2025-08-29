@@ -9,18 +9,20 @@ import { CollaboratorListComponent } from './collaborator-list/collaborator-list
 import { FacultyListComponent } from './faculty-list/faculty-list.component';
 import { FiliereListComponent } from './filiere-list/filiere-list.component';
 import { NiveauListComponent } from './niveau-list/niveau-list.component';
+import { ProjectTraceListComponent } from './project-trace-list/project-trace-list.component';
 // autres composants à ajouter ici
 
 @NgModule({
   declarations: [
-    CategoryListComponent,
-    AdminsysComponent,
-    DocumentListComponent,
-    CollaboratorListComponent,
-    FacultyListComponent,
-    FiliereListComponent,
-    NiveauListComponent,
-    // autres composants
+  CategoryListComponent,
+  AdminsysComponent,
+  DocumentListComponent,
+  CollaboratorListComponent,
+  FacultyListComponent,
+  FiliereListComponent,
+  NiveauListComponent,
+  ProjectTraceListComponent,
+  // autres composants
   ],
   imports: [
     CommonModule,
