@@ -1,0 +1,68 @@
+
+
+<div class="row mb-3">
+  <div class="col-md-6 mb-2">
+    <input type="text" class="form-control" placeholder="Recherche par nom, titre du projet, auteur..." [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()">
+  </div>
+  <div class="col-md-4 mb-2">
+    <select class="form-select" [(ngModel)]="filterType" (change)="onTypeFilterChange()">
+      <option value="">Tous les types</option>
+      <option value="Création">Création</option>
+      <option value="Modification">Modification</option>
+      <option value="Suppression">Suppression</option>
+      <option value="Rejet">Rejet</option>
+      <option value="Resoumission">Resoumission</option>
+      <option value="Assignation admin">Assignation admin</option>
+    </select>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="text-center my-4">
+  <span class="spinner-border" role="status"></span> Chargement de l'historique...
+</div>
+
+<table *ngIf="!isLoading && pagedTraces.length" class="table">
+  <thead>
+    <tr>
+      <th>Auteur</th>
+      <th>Modification</th>
+      <th>Infos avant</th>
+      <th>Infos après</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let trace of pagedTraces">
+      <td>
+        <span class="author">
+          <i class="bi bi-person-circle author-icon"></i>
+          {{ trace.user?.nom_user || trace.user?.name || 'N/A' }}
+        </span>
+      </td>
+      <td><span class="modif-type">{{ trace.type_modification }}</span></td>
+      <td>
+        <div class="infos"><b>Avant :</b> <br>{{ trace.infos_avant | json }}</div>
+      </td>
+      <td>
+        <div class="infos"><b>Après :</b> <br>{{ trace.infos_apres | json }}</div>
+      </td>
+      <td><span class="date">{{ trace.date_modification | date:'dd/MM/yyyy HH:mm' }}</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<nav *ngIf="!isLoading && totalPages > 1" class="d-flex justify-content-center my-3">
+  <ul class="pagination">
+    <li class="page-item" [class.disabled]="page === 1">
+      <button class="page-link" (click)="onPageChange(page - 1)" [disabled]="page === 1">&laquo;</button>
+    </li>
+    <li class="page-item" *ngFor="let p of [].constructor(totalPages); let i = index" [class.active]="page === i + 1">
+      <button class="page-link" (click)="onPageChange(i + 1)">{{ i + 1 }}</button>
+    </li>
+    <li class="page-item" [class.disabled]="page === totalPages">
+      <button class="page-link" (click)="onPageChange(page + 1)" [disabled]="page === totalPages">&raquo;</button>
+    </li>
+  </ul>
+</nav>
+
+<div *ngIf="!isLoading && !filteredTraces.length" class="alert alert-info text-center mt-4">Aucune trace trouvée pour ce projet.</div>
