@@ -119,38 +119,38 @@
             <div class="card-body">
               <h4 class="fw-bold mb-3">Documents liés</h4>
               <div class="download-catalog">
-                <a
-                  *ngFor="let document of documents | slice:0:(isDocumentsExpanded ? documents.length : 2)"
-                  class="document-item d-flex justify-content-between align-items-center px-2 py-2 rounded-3 mb-2 bg-light border hover-shadow"
-                  href="#"
-                >
-                  <div>
-                    <i class="bi bi-filetype-pdf text-danger me-2"></i>
-                    <span
-                      (click)="$event.preventDefault(); openDocument(document.lien_doc)"
-                      class="document-link text-decoration-underline text-primary"
-                      style="cursor:pointer;"
-                    >
-                      {{ document.nom_doc }}
-                    </span>
-                  </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <i
-                      *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'"
-                      class="fas fa-edit text-primary ms-2"
-                      style="cursor: pointer"
-                      (click)="editDocument(document); $event.preventDefault()"
-                      title="Modifier"
-                    ></i>
-                    <i
-                      *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'"
-                      class="fas fa-trash-alt text-danger ms-2"
-                      style="cursor: pointer"
-                      (click)="confirmDeleteDocument(document)"
-                      title="Supprimer"
-                    ></i>
-                  </div>
-                </a>
+<div
+  *ngFor="let document of documents | slice:0:(isDocumentsExpanded ? documents.length : 2)"
+  class="document-item d-flex justify-content-between align-items-center px-2 py-2 rounded-3 mb-2 bg-light border hover-shadow"
+>
+  <div>
+    <i class="bi bi-filetype-pdf text-danger me-2"></i>
+    <span
+      (click)="openDocument(document.lien_doc)"
+      class="document-link text-decoration-underline text-primary"
+      style="cursor:pointer;"
+    >
+      {{ document.nom_doc }}
+    </span>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <!--<i
+      *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'"
+      class="fas fa-edit text-primary ms-2"
+      style="cursor: pointer"
+      (click)="editDocument(document)"
+      title="Modifier"
+    ></i>-->
+    <i
+      *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'"
+      class="fas fa-trash-alt text-danger ms-2"
+      style="cursor: pointer"
+      (click)="confirmDeleteDocument(document)"
+      title="Supprimer"
+    ></i>
+  </div>
+</div>
+
               </div>
               <div *ngIf="documents.length > 2" class="show-more text-center mt-2" (click)="isDocumentsExpanded = !isDocumentsExpanded" style="cursor:pointer;">
                 <i class="bi" [ngClass]="isDocumentsExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
@@ -264,7 +264,7 @@
       </p>
     </mat-dialog-content>
     <mat-dialog-actions class="delete-dialog-actions">
-      <button mat-button class="delete-dialog-button confirm-button" (click)="deleteProject(id)">
+      <button mat-button class="delete-dialog-button confirm-button" (click)="deleteDocumentByid(id)">
         Oui
       </button>
       <button mat-button class="delete-dialog-button cancel-button" (click)="onClose()">Annuler</button>

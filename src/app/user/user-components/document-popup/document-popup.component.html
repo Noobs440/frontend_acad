@@ -1,10 +1,10 @@
 <div class="w-full contain-content h-full max-w-lg p-6 pt-2 bg-white rounded-lg shadow-lg relative">
-    <!-- Bouton fermeture -->
-  <button *ngIf="formType === 'document' || formType === 'collaborator' || formType === 'supervisor'" (click)="onCancel()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+  <!-- Bouton fermeture -->
+  <button *ngIf="formType === 'document' || formType === 'collaborator' || formType === 'supervisor'"
+          (click)="onCancel()"
+          class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
     <i class="fas fa-times text-l"></i>
   </button>
-
-  
 
   <!-- ====== Document Form ====== -->
   <h2 *ngIf="formType === 'document'" class="mb-2 text-3xl font-bold text-center text-customBlue poppins-bold">
@@ -14,9 +14,13 @@
     <div class="flex justify-center mb-4">
       <img src="assets/img/docImage.png" alt="Document" class="w-full h-48 object-cover rounded-md" />
     </div>
+
     <!-- Bouton de suppression si modification -->
     <div *ngIf="isEditMode" class="flex justify-end mb-2">
-      <button type="button" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-800 flex items-center min-w-[120px] justify-center" (click)="confirmDeleteDocument(data.document)" [disabled]="isDeletingDocument">
+      <button type="button"
+              class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-800 flex items-center min-w-[120px] justify-center"
+              (click)="confirmDeleteDocument(data.document)"
+              [disabled]="isDeletingDocument">
         <ng-container *ngIf="!isDeletingDocument">
           <i class="fas fa-trash-alt mr-2"></i> Supprimer
         </ng-container>
@@ -44,7 +48,8 @@
       </small>
     </div>
 
-    <button type="submit" class="w-full py-2 mt-2 text-white bg-customBlue rounded hover:bg-blue-700 flex items-center justify-center"
+    <button type="submit"
+            class="w-full py-2 mt-2 text-white bg-customBlue rounded hover:bg-blue-700 flex items-center justify-center"
             [disabled]="documentForm.invalid || isLoading">
       <span *ngIf="!isLoading">Ajouter</span>
       <mat-spinner *ngIf="isLoading" [diameter]="24" class="ml-2"></mat-spinner>
@@ -55,7 +60,7 @@
   <h2 *ngIf="formType === 'collaborator'" class="mb-2 text-2xl font-bold text-center text-customBlue">
     {{ isEditMode ? 'Modifier un Collaborateur' : 'Ajouter un Collaborateur' }}
   </h2>
-<form *ngIf="formType === 'collaborator'" class="space-y-1" [formGroup]="collaboratorForm" (ngSubmit)="onSubmit()">
+  <form *ngIf="formType === 'collaborator'" class="space-y-1" [formGroup]="collaboratorForm" (ngSubmit)="onSubmit()">
     <div class="flex justify-center mb-4">
       <img src="assets/img/colImage2.jpg" alt="Header Image" class="w-full h-52 bg-cover object-cover" />
     </div>
@@ -77,16 +82,17 @@
             class="w-full px-2 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-customBlue"
             [ngClass]="{'border-red-500': submittedCollaborator && collaboratorFormControl['email'].invalid}"
           />
-          <small class="text-red-600" *ngIf="submittedCollaborator && collaboratorFormControl['email'].errors?.['required']">
-            Email requis
-          </small>
-          <small class="text-red-600" *ngIf="submittedCollaborator && collaboratorFormControl['email'].errors?.['email']">
-            Email invalide
-          </small>
-          <button type="button" (click)="onCollaboratorEmailInput()" class="px-3 py-1 bg-customBlue text-white rounded hover:bg-customBlue-dark flex items-center justify-center">
+          <button type="button" (click)="onCollaboratorEmailInput()"
+                  class="px-3 py-1 bg-customBlue text-white rounded hover:bg-customBlue-dark flex items-center justify-center">
             <i class="fas fa-search"></i>
           </button>
         </div>
+        <small class="text-red-600" *ngIf="submittedCollaborator && collaboratorFormControl['email'].errors?.['required']">
+          Email requis
+        </small>
+        <small class="text-red-600" *ngIf="submittedCollaborator && collaboratorFormControl['email'].errors?.['email']">
+          Email invalide
+        </small>
       </div>
 
       <div class="form-group mb-1">
@@ -125,7 +131,6 @@
     </div>
   </form>
 
-
   <!-- ====== Supervisor Form ====== -->
   <h2 *ngIf="formType === 'supervisor'" class="mb-2 text-2xl font-bold text-center text-customBlue">
     Ajouter un Superviseur
@@ -158,9 +163,11 @@
       </small>
     </div>
 
-    <button type="submit" class="w-full py-2 mt-2 text-white bg-customBlue rounded hover:bg-blue-700"
-            [disabled]="supervisorForm.invalid">
-      Ajouter
+    <button type="submit"
+            class="w-full py-2 mt-2 text-white bg-customBlue rounded hover:bg-blue-700 flex items-center justify-center"
+            [disabled]="supervisorForm.invalid || isLoading">
+      <span *ngIf="!isLoading">Ajouter</span>
+      <mat-spinner *ngIf="isLoading" [diameter]="24" class="ml-2"></mat-spinner>
     </button>
   </form>
 </div>

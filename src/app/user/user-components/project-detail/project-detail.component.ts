@@ -1,5 +1,5 @@
 import { ProjectHistoryService } from '../../../services/project-history.service';
-  
+import Swal from 'sweetalert2';
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
@@ -346,7 +346,7 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
-  deleteDocumentByid(id: string) {
+  deleteDocumentByid(id: number) {
     this.documentService.deleteDocument(id).subscribe({
       next: () => {
         this.documents = this.documents.filter(doc => doc.id !== id);
@@ -421,25 +421,31 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
-  confirmDeleteDocument(document: any) {
-    const dialogRef = this.dialog.open(InfoDialogComponent, {
-      width: '400px',
-      disableClose: true,
-      data: {
-        title: 'Confirmation de suppression',
-        message: `Êtes-vous sûr de vouloir supprimer le document <b>${document.nom_doc}</b> ?<br><br><span style='color:red;font-weight:bold;'>Cette action est irréversible.</span>`,
-        confirmButtonText: 'Oui, supprimer',
-        cancelButtonText: 'Annuler',
-        icon: 'warning',
-        color: 'warn'
-      }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.deleteDocumentByid(document.id);
-      }
-    });
-  }
+confirmDeleteDocument(document: any) {
+  Swal.fire({
+    title: 'Êtes-vous sûr ?',
+    html: `Voulez-vous vraiment supprimer le document <b>"${document.nom_doc}"</b> ?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Oui, supprimer',
+    cancelButtonText: 'Annuler',
+    reverseButtons: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.deleteDocumentByid(document.id);
+      Swal.fire({
+        title: 'Supprimé !',
+        text: 'Le document a été supprimé avec succès.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    }
+  });
+}
+
 
   onClose(): void {
     this.dialog.closeAll();
