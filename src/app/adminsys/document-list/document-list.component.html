@@ -79,10 +79,11 @@
       </div>
 
       <div class="modal-actions">
-        <button (click)="saveDocument()" [disabled]="!currentDocument.tbl_projet_id">
-          {{ isEditMode ? 'Enregistrer' : 'Ajouter' }}
+        <button (click)="saveDocument()" [disabled]="isSaving || !currentDocument.tbl_projet_id">
+          <span *ngIf="!isSaving">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</span>
+          <span *ngIf="isSaving"><i class="spinner"></i> Chargement...</span>
         </button>
-        <button (click)="closeModal()">Annuler</button>
+        <button (click)="closeModal()" [disabled]="isSaving">Annuler</button>
       </div>
     </div>
   </div>

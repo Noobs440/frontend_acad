@@ -37,6 +37,7 @@ export class DocumentListComponent implements OnInit {
     projectTitle: ''
   };
   selectedFile: File | null = null;
+  isSaving: boolean = false;
 
   constructor(private documentService: DocumentService, private projetService: ProjetService) { }
 
@@ -139,27 +140,28 @@ export class DocumentListComponent implements OnInit {
 
   saveDocument(): void {
     if (!this.currentDocument.nom_doc?.trim() || !this.currentDocument.tbl_projet_id) return;
-
+    this.isSaving = true;
+    const finalize = () => this.isSaving = false;
     const formData = new FormData();
     formData.append('nom_doc', this.currentDocument.nom_doc);
     formData.append('tbl_projet_id', this.currentDocument.tbl_projet_id.toString());
-
     if (this.selectedFile) {
       formData.append('document', this.selectedFile);
     }
-
     if (this.isEditMode) {
       formData.append('_method', 'PUT');
       this.documentService.updateDocumentMultipart(this.currentDocument.id, formData)
-        .subscribe(() => {
-          this.loadDocuments();
-          this.closeModal();
+        .subscribe({
+          next: () => { this.loadDocuments(); this.closeModal(); },
+          error: () => finalize(),
+          complete: () => finalize()
         });
     } else {
       this.documentService.addDocumentMultipart(formData)
-        .subscribe(() => {
-          this.loadDocuments();
-          this.closeModal();
+        .subscribe({
+          next: () => { this.loadDocuments(); this.closeModal(); },
+          error: () => finalize(),
+          complete: () => finalize()
         });
     }
   }

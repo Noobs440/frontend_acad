@@ -159,6 +159,10 @@ td button:last-child:hover {
   background: rgb(247, 75, 75);
 }
 
+.error-message {
+  color: #e74c3c;
+}
+
 /* Pagination */
 .pagination {
   display: flex;

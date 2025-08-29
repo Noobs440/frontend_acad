@@ -172,10 +172,10 @@ export class UserManagementComponent implements OnInit {
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+    // Regex email plus stricte
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(this.currentUser.email)) {
-      this.errorMessage = "L'email n'est pas valide.";
+      this.errorMessage = "Le format de l'email est invalide (ex: nom@domaine.com).";
       return;
     }
 

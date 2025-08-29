@@ -37,6 +37,8 @@ export class FiliereListComponent implements OnInit {
     changes: ''
   };
 
+  isSaving: boolean = false;
+
   constructor(private filiereService: FiliereService) {}
 
   ngOnInit(): void {
@@ -143,24 +145,27 @@ export class FiliereListComponent implements OnInit {
   }
 
   saveFiliere(): void {
-    if (!this.currentFiliere.nom_fil.trim()) return;
-
+    if (!this.currentFiliere.nom_fil?.trim() || !this.currentFiliere.tbl_faculte_id) return;
+    this.isSaving = true;
+    const finalize = () => this.isSaving = false;
     if (this.isEditMode) {
       this.filiereService.updateFiliere(
         this.currentFiliere.id,
         this.currentFiliere.nom_fil,
         this.currentFiliere.tbl_faculte_id
-      ).subscribe(() => {
-        this.loadFilieres();
-        this.closeModal();
+      ).subscribe({
+        next: () => { this.loadFilieres(); this.closeModal(); },
+        error: () => finalize(),
+        complete: () => finalize()
       });
     } else {
       this.filiereService.addFiliere(
         this.currentFiliere.nom_fil,
         this.currentFiliere.tbl_faculte_id
-      ).subscribe(() => {
-        this.loadFilieres();
-        this.closeModal();
+      ).subscribe({
+        next: () => { this.loadFilieres(); this.closeModal(); },
+        error: () => finalize(),
+        complete: () => finalize()
       });
     }
   }

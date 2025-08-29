@@ -21,6 +21,7 @@ export class UniversiteListComponent implements OnInit {
 
   isModalOpen = false;
   isEditMode = false;
+  isSaving: boolean = false;
 
   currentUniversite: any = {
     nom_univ: '',
@@ -43,6 +44,8 @@ export class UniversiteListComponent implements OnInit {
     resource: '',
     changes: ''
   };
+
+  emailError: string = '';
 
   constructor(private universityService: UniversityService) {}
 
@@ -132,11 +135,18 @@ export class UniversiteListComponent implements OnInit {
 
   // Demande confirmation avant sauvegarde
   saveUniversite(): void {
+    this.emailError = '';
     if (
       !this.currentUniversite.nom_univ.trim() ||
       !this.currentUniversite.localite_univ.trim()
     ) {
-      alert('Veuillez remplir tous les champs.');
+      // On peut ajouter d'autres erreurs si besoin
+      return;
+    }
+    // Contrôle du format email
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(this.currentUniversite.email_univ)) {
+      this.emailError = "Le format de l'email est invalide (ex: nom@domaine.com).";
       return;
     }
     this.showConfirmSaveModal = true;
@@ -145,6 +155,8 @@ export class UniversiteListComponent implements OnInit {
   // Confirmation enregistrer modal
   confirmSave(): void {
     this.showConfirmSaveModal = false;
+    this.isSaving = true;
+    const finalize = () => this.isSaving = false;
     if (this.isEditMode) {
       this.universityService.updateuniversity(
         this.currentUniversite.id,
@@ -152,9 +164,10 @@ export class UniversiteListComponent implements OnInit {
         this.currentUniversite.email_univ,
         this.currentUniversite.localite_univ,
         this.currentUniversite.boite_postale
-      ).subscribe(() => {
-        this.loadUniversites();
-        this.closeModal();
+      ).subscribe({
+        next: () => { this.loadUniversites(); this.closeModal(); },
+        error: () => finalize(),
+        complete: () => finalize()
       });
     } else {
       this.universityService.adduniversity(
@@ -162,9 +175,10 @@ export class UniversiteListComponent implements OnInit {
         this.currentUniversite.email_univ,
         this.currentUniversite.localite_univ,
         this.currentUniversite.boite_postale
-      ).subscribe(() => {
-        this.loadUniversites();
-        this.closeModal();
+      ).subscribe({
+        next: () => { this.loadUniversites(); this.closeModal(); },
+        error: () => finalize(),
+        complete: () => finalize()
       });
     }
   }

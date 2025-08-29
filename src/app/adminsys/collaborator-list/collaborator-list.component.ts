@@ -26,6 +26,7 @@ export class CollaboratorListComponent implements OnInit {
 
   isModalOpen = false;
   isEditMode = false;
+  isSaving: boolean = false;
   currentCollaborator: any = {
     nom_collab: '',
     email_collab: '',
@@ -157,7 +158,8 @@ export class CollaboratorListComponent implements OnInit {
       alert("Veuillez sélectionner un projet valide.");
       return;
     }
-
+    this.isSaving = true;
+    const finalize = () => this.isSaving = false;
     if (this.isEditMode) {
       this.collaborateurService.updateCollaborateur(
         this.currentCollaborator.id,
@@ -165,9 +167,10 @@ export class CollaboratorListComponent implements OnInit {
         this.currentCollaborator.email_collab,
         this.currentCollaborator.tbl_projet_id,
         this.currentCollaborator.user_id
-      ).subscribe(() => {
-        this.loadCollaborators();
-        this.closeModal();
+      ).subscribe({
+        next: () => { this.loadCollaborators(); this.closeModal(); },
+        error: () => finalize(),
+        complete: () => finalize()
       });
     } else {
       this.collaborateurService.addCollaborateur(
@@ -175,9 +178,10 @@ export class CollaboratorListComponent implements OnInit {
         this.currentCollaborator.email_collab,
         this.currentCollaborator.tbl_projet_id,
         this.currentCollaborator.user_id
-      ).subscribe(() => {
-        this.loadCollaborators();
-        this.closeModal();
+      ).subscribe({
+        next: () => { this.loadCollaborators(); this.closeModal(); },
+        error: () => finalize(),
+        complete: () => finalize()
       });
     }
   }

@@ -30,7 +30,13 @@ export class CategoryListComponent implements OnInit {
 
   searchField: string = 'nom_cat';
 
-  constructor(private categoryService: CategoryService) { }
+  // États de chargement
+  isSaving = false;
+  isDeleting = false;
+  deletingId: number | null = null;
+  editingId: number | null = null; // 🔹 Pour spinner sur le bouton Modifier
+
+  constructor(private categoryService: CategoryService) {}
 
   ngOnInit(): void {
     this.loadCategories();
@@ -86,7 +92,6 @@ export class CategoryListComponent implements OnInit {
     this.currentCategory = { nom_cat: '', descript_cat: '', icone: '' };
     this.selectedFile = null;
     this.isModalOpen = true;
-    console.log('Open add modal');
   }
 
   openEditModal(category: any): void {
@@ -106,6 +111,8 @@ export class CategoryListComponent implements OnInit {
       return;
     }
 
+    this.isSaving = true;
+
     const formData = new FormData();
     formData.append('nom_cat', this.currentCategory.nom_cat);
     formData.append('descript_cat', this.currentCategory.descript_cat);
@@ -114,21 +121,21 @@ export class CategoryListComponent implements OnInit {
       formData.append('icone', this.selectedFile);
     }
 
-    if (this.isEditMode) {
-      this.categoryService.updateCategoryMultipart(this.currentCategory.id, formData)
-        .subscribe(() => {
-          this.loadCategories();
-          this.closeModal();
-          this.selectedFile = null;
-        });
-    } else {
-      this.categoryService.addCategoryMultipart(formData)
-        .subscribe(() => {
-          this.loadCategories();
-          this.closeModal();
-          this.selectedFile = null;
-        });
-    }
+    const request = this.isEditMode
+      ? this.categoryService.updateCategoryMultipart(this.currentCategory.id, formData)
+      : this.categoryService.addCategoryMultipart(formData);
+
+    request.subscribe({
+      next: () => {
+        this.loadCategories();
+        this.closeModal();
+        this.selectedFile = null;
+        this.isSaving = false;
+      },
+      error: () => {
+        this.isSaving = false;
+      }
+    });
   }
 
   openDeleteConfirm(id: number): void {
@@ -143,10 +150,21 @@ export class CategoryListComponent implements OnInit {
 
   confirmDelete(): void {
     if (this.categoryToDeleteId !== null) {
+      this.isDeleting = true;
+      this.deletingId = this.categoryToDeleteId;
+
       this.categoryService.deleteCategory(this.categoryToDeleteId.toString())
-        .subscribe(() => {
-          this.loadCategories();
-          this.cancelDelete();
+        .subscribe({
+          next: () => {
+            this.loadCategories();
+            this.cancelDelete();
+            this.isDeleting = false;
+            this.deletingId = null;
+          },
+          error: () => {
+            this.isDeleting = false;
+            this.deletingId = null;
+          }
         });
     }
   }
