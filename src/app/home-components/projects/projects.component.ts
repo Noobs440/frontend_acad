@@ -139,47 +139,52 @@ export class ProjectsComponent implements OnInit {
   }
 
   applyFilters() {
-    // Adapter la liste des niveaux selon le département sélectionné
-    if (this.selectedFilliere) {
-      // Comparaison insensible à la casse pour éviter les soucis de correspondance
-      this.niveauxFiltres = this.niveaux.filter(niv =>
-        niv.nom_fil && niv.nom_fil.toLowerCase() === this.selectedFilliere.toLowerCase()
-      );
-      // Si le niveau sélectionné n'est plus dans la liste, le reset
-      if (!this.niveauxFiltres.some(niv => niv.code_niv === this.selectedNiveau)) {
-        this.selectedNiveau = '';
-      }
-    } else {
-      this.niveauxFiltres = this.niveaux;
+    // Si un filtre est utilisé, la recherche est vidée
+    if (this.selectedFilliere || this.selectedNiveau || this.selectedDomain) {
+      this.searchQuery = '';
     }
-
-    // 1. Appliquer les filtres (filière, niveau, domaine) en mode "ET"
+    // La liste des niveaux ne change jamais selon le département
+    this.niveauxFiltres = this.niveaux;
     let filtered = this.data;
     if (this.selectedFilliere) {
       filtered = filtered.filter(post => post.filiere === this.selectedFilliere);
-    }
-    if (this.selectedNiveau) {
+      // Si un niveau est sélectionné, ne garder que les projets du niveau ET du département
+      if (this.selectedNiveau) {
+        filtered = filtered.filter(post => post.niveau === this.selectedNiveau);
+      }
+    } else if (this.selectedNiveau) {
       filtered = filtered.filter(post => post.niveau === this.selectedNiveau);
     }
     if (this.selectedDomain) {
       filtered = filtered.filter(post => post.nom_categorie === this.selectedDomain);
     }
+    this.filteredPosts = filtered;
+    this.chunkedPosts = this.chunkArray(this.filteredPosts, this.itemsPerPage);
+    this.totalPages = this.chunkedPosts.length;
+    this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+    this.goToPage(1);
+    this.noResults = this.filteredPosts.length === 0;
+  }
 
-    // 2. Appliquer la recherche texte uniquement sur le résultat filtré, ou sur tout si aucun filtre
-    let finalPosts = filtered;
-    if (this.searchQuery) {
+  searchProjects() {
+    // Si la recherche est utilisée, les filtres sont désactivés
+    if (this.searchQuery && this.searchQuery.trim() !== '') {
+      this.selectedFilliere = '';
+      this.selectedNiveau = '';
+      this.selectedDomain = '';
+    }
+    this.rechercheService.searchProjects(this.searchQuery).subscribe(response => {
+      // Filtrage local sur description et collaborateurs
       const query = this.normalizeString(this.searchQuery);
-      finalPosts = filtered.filter(post => {
-        // Recherche sur le titre du projet
-        const titreMatch = post.titre_projet && this.normalizeString(post.titre_projet).includes(query);
-        // Recherche sur l'auteur du projet
-        const auteurMatch = post.nom_utilisateur && this.normalizeString(post.nom_utilisateur).includes(query);
-        // Recherche sur la catégorie
-        const categorieMatch = post.nom_categorie && this.normalizeString(post.nom_categorie).includes(query);
-        // Recherche sur le domaine (champ 'domaine' ou 'domain' ou similaire)
-        const domaineMatch = (post.domaine && this.normalizeString(post.domaine).includes(query)) || (post.domain && this.normalizeString(post.domain).includes(query));
+      let results = response.results || [];
+  results = results.filter((post: any) => {
         // Recherche sur la description
-        const descriptionMatch = (post.descript_projet && this.normalizeString(post.descript_projet).includes(query)) || (post.description && this.normalizeString(post.description).includes(query));
+        const descriptionMatch = (
+          (post.descript_projet && this.normalizeString(post.descript_projet).includes(query)) ||
+          (post.description && this.normalizeString(post.description).includes(query)) ||
+          (post.descriptif && this.normalizeString(post.descriptif).includes(query)) ||
+          (post.resume && this.normalizeString(post.resume).includes(query))
+        );
         // Recherche sur les collaborateurs (tableau ou string)
         let collabMatch = false;
         if (post.collaborateurs && Array.isArray(post.collaborateurs)) {
@@ -194,21 +199,10 @@ export class ProjectsComponent implements OnInit {
         } else if (post.collaborateurs && typeof post.collaborateurs === 'string') {
           collabMatch = this.normalizeString(post.collaborateurs).includes(query);
         }
-        return titreMatch || auteurMatch || categorieMatch || domaineMatch || descriptionMatch || collabMatch;
+        // Retourne uniquement si la description ou les collaborateurs correspondent
+        return descriptionMatch || collabMatch;
       });
-    }
-
-    this.filteredPosts = finalPosts;
-    this.chunkedPosts = this.chunkArray(this.filteredPosts, this.itemsPerPage);
-    this.totalPages = this.chunkedPosts.length;
-    this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
-    this.goToPage(1);
-    this.noResults = this.filteredPosts.length === 0;
-  }
-
-  searchProjects() {
-    this.rechercheService.searchProjects(this.searchQuery).subscribe(response => {
-      this.filteredPosts = response.results;
+      this.filteredPosts = results;
       this.chunkedPosts = this.chunkArray(this.filteredPosts, this.itemsPerPage);
       this.totalPages = this.chunkedPosts.length;
       this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);

@@ -6,16 +6,16 @@ h2{
 .level-card {
 	min-width: 200px;
 	border-radius: 18px;
-	border: none;
-	box-shadow: 0 4px 16px rgba(25, 118, 210, 0.08), 0 1.5px 4px rgba(0,0,0,0.04);
-	background: linear-gradient(135deg, #f8fafc 60%, #e3f0ff 100%);
-	transition: transform 0.18s, box-shadow 0.18s;
+	border: 2px solid #e0e0e0;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+	background: #fff;
+	transition: transform 0.18s, box-shadow 0.18s, border-color 0.2s;
 	cursor: pointer;
 }
 .level-card:hover {
 	transform: translateY(-6px) scale(1.04);
-	box-shadow: 0 8px 32px rgba(25, 118, 210, 0.18), 0 2px 8px rgba(0,0,0,0.08);
-	background: linear-gradient(135deg, #e3f0ff 60%, #f8fafc 100%);
+	box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+	border-color: #06BBCC;
 }
 .level-icon {
 	display: flex;
@@ -54,4 +54,70 @@ h2{
 	font-size: 0.95rem;
 	color: #90a4ae;
 	margin-bottom: 0.2em;
+}
+
+/* Style hérité de projects.component.css */
+.globalese {
+  position: sticky;
+  top: 6em;
+  z-index: 1050;
+  margin: 0 auto 2em auto;
+  width: 100%;
+  max-width: 40vw;
+  background: #fff;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  border-radius: 10px;
+  padding: 0.5em 1.2em 0.5em 1.2em;
+  display: flex;
+  align-items: right;
+  gap: 0.5em;
+  transition: box-shadow 0.2s;
+}
+.globalese .form-control.no-focus {
+  border: none;
+  background: #f5f5f5;
+  border-radius: 10px;
+  font-size: 1.08em;
+  box-shadow: none;
+  padding-left: 1em;
+}
+.globalese .btn-outline-primary {
+	border-radius: 10px;
+	font-size: 1.1em;
+	padding-left: 1.6em;
+	padding-right: 1.6em;
+	border-width: 3px;
+	border-color: #1976d2;
+}
+/* Filtres et select uniformisés */
+.form-select-lg {
+  font-size: 1.15em;
+  border-radius: 10px;
+  background: #f5f5f5;
+  box-shadow: none;
+  border: none;
+}
+
+/* Fond blanc et ombre pour la zone de recherche et de filtre */
+.filter-bg {
+	background: #fff;
+	border-radius: 16px;
+	box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+	padding: 1.2em 1.2em 1.2em 1.2em;
+	margin-bottom: 2em;
+	width: 100%;
+	border: 2px solid #06BBCC;
+	display: flex;
+	align-items: center;
+}
+
+.filter-bg .form-select,
+.filter-bg .form-select-lg {
+	border: 2px solid #3f4242;
+	border-radius: 10px;
+	background: #f5f5f5;
+	box-shadow: none;
+	width: 100%;
+	min-width: 500px;
+	max-width:1200px;
 }

@@ -42,20 +42,29 @@
               <span>{{ isExpanded ? 'Show Less' : 'Show More' }}</span>
             </div>
           </div>
+          <div class="service-box mt-4">
+            <h4>Collaborateurs</h4>
+            <div class="download-catalog">
+              <div *ngFor="let collab of collaborators | slice:0:(isExpanded2 ? collaborators.length : 4)">
+                <i class="bi bi-person-badge"></i>
+                <span>{{ collab.nom_collab || collab.name || collab }}</span>
+              </div>
+            </div>
+            <div *ngIf="collaborators.length > 4" class="show-more" (click)="toggleExpand2()">
+              <i class="bi" [ngClass]="isExpanded2 ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+              <span>{{ isExpanded2 ? 'Show Less' : 'Show More' }}</span>
+            </div>
+          </div>
         </div>
 
         <div class="col-lg-4" [@fadeUp]>
           <div class="service-box">
             <h4>Other Projects <span *ngIf="author" class="text-primary">({{author}})</span></h4>
             <div class="services-list">
-              <div class="services-list">
-  <a style="cursor:pointer;" *ngFor="let project of projects | slice:0:(isProjectExpanded2 ? projects.length : 4)">
-    <i class="bi bi-arrow-right-circle"></i>
-    <span (click)="updateProjectDetails(project)">{{project.titre}}</span>
-  </a>
-</div>
-
-
+              <a style="cursor:pointer;" *ngFor="let project of projects | slice:0:(isProjectExpanded2 ? projects.length : 4)">
+                <i class="bi bi-arrow-right-circle"></i>
+                <span (click)="updateProjectDetails(project)">{{project.titre}}</span>
+              </a>
             </div>
             <div *ngIf="projects.length > 4" class="show-more" (click)="toggleProjectExpand2()">
               <i class="bi" [ngClass]="isProjectExpanded2 ? 'bi-chevron-up' : 'bi-chevron-down'"></i>

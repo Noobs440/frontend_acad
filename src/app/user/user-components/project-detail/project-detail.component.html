@@ -1,43 +1,65 @@
-
-
 <main id="main" class="main">
   <div class="pagetitle mb-3">
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
       <div>
         <h1 class="fw-bold text-primary mb-0">{{ user_name | uppercase }} <span class="text-dark">Dashboard</span></h1>
-  <nav class="breadcrumb-fixed">
-    <ol class="breadcrumb bg-white rounded shadow-sm px-4 py-3 mb-0" style="font-size:1.15rem;">
-      <li class="breadcrumb-item">
-        <a [routerLink]="['/home']" style="font-weight:600; color:#06BBCC;">Home</a>
-      </li>
-      <li class="breadcrumb-item">
-        <a [routerLink]="['/user/dashboard']" style="font-weight:600; color:#06BBCC;">{{ user_name }} Dashboard</a>
-      </li>
-      <li class="breadcrumb-item active" style="font-weight:700; color:#222;">{{ selectedProjectTitle }}</li>
-    </ol>
-  </nav>
+        <nav class="breadcrumb-fixed">
+          <ol class="breadcrumb bg-white rounded shadow-sm px-4 py-3 mb-0" style="font-size:1.15rem;">
+            <li class="breadcrumb-item">
+              <a [routerLink]="['/home']" style="font-weight:600; color:#06BBCC;">Home</a>
+            </li>
+            <li class="breadcrumb-item">
+              <a [routerLink]="['/user/dashboard']" style="font-weight:600; color:#06BBCC;">{{ user_name }} Dashboard</a>
+            </li>
+            <li class="breadcrumb-item active" style="font-weight:700; color:#222;">{{ selectedProjectTitle }}</li>
+          </ol>
+        </nav>
       </div>
       <div class="d-flex flex-wrap gap-3 mt-2" *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'">
-  <button class="btn btn-action btn-outline-primary action-btn d-flex align-items-center shadow-lg fw-bold"
-    (click)="openDialog('document')" [disabled]="isLoadingAddDocument">
-    <span *ngIf="isLoadingAddDocument" class="spinner-border spinner-border-sm me-2"></span>
-    <i class="fas fa-plus me-2" *ngIf="!isLoadingAddDocument"></i> Ajouter un document
-  </button>
-  <button class="btn btn-action btn-outline-primary action-btn d-flex align-items-center shadow-lg fw-bold"
-    (click)="openDialog('collaborator')" [disabled]="isLoadingAddCollaborator">
-    <span *ngIf="isLoadingAddCollaborator" class="spinner-border spinner-border-sm me-2"></span>
-    <i class="fas fa-plus me-2" *ngIf="!isLoadingAddCollaborator"></i> Ajouter un collaborateur
-  </button>
-  <button class="btn btn-action btn-outline-danger action-btn d-flex align-items-center shadow-lg fw-bold"
-    (click)="openDeleteDialog(deleteDialog)" [disabled]="isLoadingDelete">
-    <span *ngIf="isLoadingDelete" class="spinner-border spinner-border-sm me-2"></span>
-    <i class="fas fa-trash me-2" *ngIf="!isLoadingDelete"></i> Supprimer le projet
-  </button>
+        <button class="btn btn-action btn-outline-danger action-btn d-flex align-items-center shadow-lg fw-bold"
+          (click)="openDeleteDialog(deleteDialog)" [disabled]="isLoadingDelete">
+          <ng-container *ngIf="isLoadingDelete; else trashIcon">
+            <span class="d-flex gap-1 align-items-center me-2">
+              <span class="spinner-grow spinner-grow-sm text-danger" style="width:1em; height:1em;"></span>
+              <span class="spinner-grow spinner-grow-sm text-warning" style="width:1em; height:1em;"></span>
+              <span class="spinner-grow spinner-grow-sm text-secondary" style="width:1em; height:1em;"></span>
+            </span>
+          </ng-container>
+          <ng-template #trashIcon>
+            <i class="fas fa-trash me-2"></i>
+          </ng-template>
+          Supprimer le projet
+        </button>
+        <button class="btn btn-action btn-outline-primary action-btn d-flex align-items-center shadow-lg fw-bold"
+          (click)="openEditProjectPopup()" [disabled]="isLoadingDraft">
+          <ng-container *ngIf="isLoadingDraft; else editIcon">
+            <span class="d-flex gap-1 align-items-center me-2">
+              <span class="spinner-grow spinner-grow-sm text-primary" style="width:1em; height:1em;"></span>
+              <span class="spinner-grow spinner-grow-sm text-info" style="width:1em; height:1em;"></span>
+              <span class="spinner-grow spinner-grow-sm text-success" style="width:1em; height:1em;"></span>
+            </span>
+          </ng-container>
+          <ng-template #editIcon>
+            <i class="fas fa-edit me-2"></i>
+          </ng-template>
+          Modifier le projet
+        </button>
       </div>
     </div>
   </div>
 
-  <section class="section dashboard">
+  <div *ngIf="isLoadingProject" class="w-100 d-flex justify-content-center align-items-center my-5" style="min-height: 180px;">
+    <div class="d-flex gap-2 justify-content-center align-items-center" style="min-height: 180px;">
+      <div class="spinner-grow text-primary" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+      <div class="spinner-grow text-success" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+      <div class="spinner-grow text-danger" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+      <div class="spinner-grow text-warning" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+      <div class="spinner-grow text-info" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+      <div class="spinner-grow text-secondary" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+    </div>
+  </div>
+
+  <section class="section dashboard" *ngIf="!isLoadingProject">
     <div class="row g-4">
       <div class="col-12 col-lg-6 order-lg-1">
         <div class="card shadow-sm rounded-4 border-0 mb-4 h-100">
@@ -84,24 +106,50 @@
             </div>
           </div>
         </div>
-       
       </div>
       <div class="col-12 col-lg-6 order-lg-2 d-flex flex-column align-items-lg-end align-items-start">
         <div class="d-flex flex-column gap-3 w-100">
           <div *ngIf="projectStatus === 'Rejected'" class="action-btn-group">
             <button class="btn btn-warning text-white fw-bold action-btn shadow-sm" (click)="resubmitProject()" [disabled]="isLoadingResubmit">
-              <span *ngIf="isLoadingResubmit" class="spinner-border spinner-border-sm me-2"></span>
-              <i class="fas fa-redo me-2" *ngIf="!isLoadingResubmit"></i> Resoumettre le projet
+              <ng-container *ngIf="isLoadingResubmit; else redoIcon">
+                <span class="d-flex gap-1 align-items-center me-2">
+                  <span class="spinner-grow spinner-grow-sm text-warning" style="width:1em; height:1em;"></span>
+                  <span class="spinner-grow spinner-grow-sm text-primary" style="width:1em; height:1em;"></span>
+                  <span class="spinner-grow spinner-grow-sm text-success" style="width:1em; height:1em;"></span>
+                </span>
+              </ng-container>
+              <ng-template #redoIcon>
+                <i class="fas fa-redo me-2"></i>
+              </ng-template>
+              Resoumettre le projet
             </button>
             <button class="btn btn-outline-secondary fw-bold action-btn shadow-sm" (click)="saveAsDraft()" [disabled]="isLoadingDraft">
-              <span *ngIf="isLoadingDraft" class="spinner-border spinner-border-sm me-2"></span>
-              <i class="fas fa-save me-2" *ngIf="!isLoadingDraft"></i> Enregistrer comme brouillon
+              <ng-container *ngIf="isLoadingDraft; else saveIcon">
+                <span class="d-flex gap-1 align-items-center me-2">
+                  <span class="spinner-grow spinner-grow-sm text-secondary" style="width:1em; height:1em;"></span>
+                  <span class="spinner-grow spinner-grow-sm text-info" style="width:1em; height:1em;"></span>
+                  <span class="spinner-grow spinner-grow-sm text-success" style="width:1em; height:1em;"></span>
+                </span>
+              </ng-container>
+              <ng-template #saveIcon>
+                <i class="fas fa-save me-2"></i>
+              </ng-template>
+              Enregistrer comme brouillon
             </button>
           </div>
           <div *ngIf="(projectStatus === 'Not Submitted') && !Submitted" class="action-btn-group">
             <button class="btn btn-action btn-outline-primary action-btn d-flex align-items-center shadow-lg fw-bold" (click)="submitProject()" [disabled]="isLoadingSubmit">
-              <span *ngIf="isLoadingSubmit" class="spinner-border spinner-border-sm me-2"></span>
-              <i class="fas fa-plus" *ngIf="!isLoadingSubmit"></i> Soumettre
+              <ng-container *ngIf="isLoadingSubmit; else plusIcon">
+                <span class="d-flex gap-1 align-items-center me-2">
+                  <span class="spinner-grow spinner-grow-sm text-primary" style="width:1em; height:1em;"></span>
+                  <span class="spinner-grow spinner-grow-sm text-success" style="width:1em; height:1em;"></span>
+                  <span class="spinner-grow spinner-grow-sm text-danger" style="width:1em; height:1em;"></span>
+                </span>
+              </ng-container>
+              <ng-template #plusIcon>
+                <i class="fas fa-plus"></i>
+              </ng-template>
+              Soumettre
             </button>
           </div>
           <div class="mb-3 admin-select-block" *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'">

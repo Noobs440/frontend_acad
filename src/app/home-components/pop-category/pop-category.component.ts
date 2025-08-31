@@ -20,6 +20,28 @@ import { RechercheService } from '../../services/recherche.service';
   ],
 })
 export class PopCategoryComponent implements OnInit {
+  searchText: string = '';
+  applySearchFilter(): void {
+    // Si la recherche est utilisée, les filtres sont désactivés
+    if (this.searchText && this.searchText.trim() !== '') {
+      this.selectedCategory = null;
+      this.selectedLevel = null;
+    }
+    let filtered = this.data;
+    if (this.searchText && this.searchText.trim() !== '') {
+      const txt = this.searchText.trim().toLowerCase();
+      filtered = filtered.filter((category: any) =>
+        category.nom_cat.toLowerCase().includes(txt) ||
+        category.descript_cat.toLowerCase().includes(txt)
+      );
+    }
+    this.filteredCategories = filtered;
+    this.chunkedCategories = this.chunkArray(this.filteredCategories, this.itemsPerPage);
+    this.totalPages = this.chunkedCategories.length;
+    this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+    this.goToPage(1);
+    this.noResults = this.filteredCategories.length === 0;
+  }
 
 
   // ...
@@ -92,6 +114,10 @@ export class PopCategoryComponent implements OnInit {
   }
 
   applyFilters(): void {
+    // Si un filtre est utilisé, la recherche est vidée
+    if (this.selectedCategory || this.selectedLevel) {
+      this.searchText = '';
+    }
     let filtered = this.data;
     if (this.selectedCategory && this.selectedCategory !== null) {
       filtered = filtered.filter((category: any) => category.nom_cat === this.selectedCategory);

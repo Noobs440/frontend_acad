@@ -13,7 +13,7 @@ import { AuthService } from '../../services/auth.service'; // adapte si tu as un
 @Component({
   selector: 'app-project-detail',
   templateUrl: './project-detail.component.html',
-  styleUrls: ['./project-detail.component.css'],  // <== corrigé ici
+  styleUrls: ['./project-detail.component.css'],  
   animations: [
     trigger('fadeUp', [
       state('void', style({ opacity: 0, transform: 'translateY(200px)' })),
@@ -23,6 +23,7 @@ import { AuthService } from '../../services/auth.service'; // adapte si tu as un
   ],
 })
 export class ProjectDetailComponent implements OnInit {
+  collaborators: any[] = [];
   commentsPage = 1;
   commentsPerPage = 6;
   commentsLastPage = 1;
@@ -115,6 +116,19 @@ export class ProjectDetailComponent implements OnInit {
         this.author = project.nom_utilisateur || project.author;
         this.level = project.niveau || project.level;
         this.email = project.email || '';
+        // Charger les collaborateurs du projet
+        if (project.collaborateurs) {
+          this.collaborators = project.collaborateurs;
+        } else {
+          // Si pas dans le projet, tente de charger via service si disponible
+          if (this.projetService.getCollaboratorsByProject) {
+            this.projetService.getCollaboratorsByProject(this.id).subscribe(collabs => {
+              this.collaborators = collabs;
+            });
+          } else {
+            this.collaborators = [];
+          }
+        }
       });
 
       this.loadComments(true);
@@ -205,6 +219,18 @@ export class ProjectDetailComponent implements OnInit {
     this.type = project.type;
     this.date = project.date;
     this.views = project.views;
+    // Recharge les collaborateurs
+    if (project.collaborateurs) {
+      this.collaborators = project.collaborateurs;
+    } else {
+      if (this.projetService.getCollaboratorsByProject) {
+        this.projetService.getCollaboratorsByProject(this.id).subscribe(collabs => {
+          this.collaborators = collabs;
+        });
+      } else {
+        this.collaborators = [];
+      }
+    }
 
     this.documentService.getDocumentsByProject(this.id).subscribe(response => {
       this.documents = response;

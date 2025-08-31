@@ -1,7 +1,11 @@
 <div class="w-full contain-content h-full max-w-lg p-6 pt-2 bg-white rounded-lg shadow-lg">
   <!-- Bouton fermeture -->
-  <button *ngIf="formType === 'project' || formType === 'document' || formType === 'collaborator' || formType === 'supervisor'" (click)="onCancel()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+  <button *ngIf="formType === 'project' || formType === 'document' || formType === 'collaborator' || formType === 'supervisor' || formType === 'admin'" (click)="onCancel()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
     <i class="fas fa-times text-l"></i>
+  </button>
+  <!-- Bouton quitter -->
+  <button type="button" (click)="onCancel()" class="fixed bottom-6 right-6 px-4 py-2 bg-danger text-white rounded-lg shadow-lg hover:bg-danger-dark z-50 flex items-center justify-center">
+    <i class="fas fa-sign-out-alt me-2"></i> Quitter
   </button>
 
   <!-- Titre général -->
@@ -68,9 +72,12 @@
           class="mt-1 px-4 py-2 text-white rounded-lg flex items-center justify-center transition-colors duration-200"
         >
           <span *ngIf="!isLoadingStep1">Next <i class="fas fa-chevron-right"></i></span>
-          <mat-spinner *ngIf="isLoadingStep1" [diameter]="22"></mat-spinner>
+          <mat-spinner *ngIf="isLoadingStep1" [diameter]="22" color="primary"></mat-spinner>
         </button>
         <span *ngIf="ErrorMessage" class="text-red-600 text-sm mt-2">{{ ErrorMessage }}</span>
+          <button type="button" (click)="onCancel()" class="mt-2 px-4 py-2 bg-danger text-white rounded-lg flex items-center justify-center hover:bg-danger-dark">
+            <i class="fas fa-sign-out-alt me-2"></i> Quitter
+          </button>
       </div>
     </div>
 
@@ -128,7 +135,7 @@
           [disabled]="isLoadingStep2"
         >
           <span *ngIf="!isLoadingStep2">Next <i class="fas fa-chevron-right"></i></span>
-          <mat-spinner *ngIf="isLoadingStep2" [diameter]="22"></mat-spinner>
+          <mat-spinner *ngIf="isLoadingStep2" [diameter]="22" color="primary"></mat-spinner>
         </button>
       </div>
     </div>
@@ -170,7 +177,7 @@
           [disabled]="isLoadingStep3"
         >
           <span *ngIf="!isLoadingStep3">Next <i class="fas fa-chevron-right"></i></span>
-          <span *ngIf="isLoadingStep3" class="flex items-center"><mat-spinner [diameter]="22"></mat-spinner><span class="ml-2">Création du projet...</span></span>
+          <span *ngIf="isLoadingStep3" class="flex items-center"><mat-spinner [diameter]="22" color="primary"></mat-spinner></span>
         </button>
       </div>
 
@@ -224,17 +231,21 @@
           [disabled]="isLoading"
         >
           <span *ngIf="!isLoading"><i class="fas fa-plus"></i> Add</span>
-          <mat-spinner *ngIf="isLoading" [diameter]="24"></mat-spinner>
+          <mat-spinner *ngIf="isLoading" [diameter]="24" color="primary"></mat-spinner>
         </button>
         <button
           type="button"
           (click)="nextStep(); formType='collaborator';"
-          class="mt-2 px-4 py-2 text-white bg-customBlue rounded-lg hover:bg-customBlue-dark flex items-center justify-center"
+          class="mt-2 px-4 py-2 text-white rounded-lg flex items-center justify-center"
+          [ngClass]="{'bg-gray-300 cursor-not-allowed': !saveD || isLoadingStep4, 'bg-customBlue hover:bg-customBlue-dark': saveD && !isLoadingStep4}"
           [disabled]="isLoadingStep4 || !saveD"
         >
           <span *ngIf="!isLoadingStep4">Next <i class="fas fa-chevron-right"></i></span>
-          <mat-spinner *ngIf="isLoadingStep4" [diameter]="22"></mat-spinner>
+          <mat-spinner *ngIf="isLoadingStep4" [diameter]="22" color="primary"></mat-spinner>
         </button>
+          <button type="button" (click)="onCancel()" class="mt-2 px-4 py-2 bg-danger text-white rounded-lg flex items-center justify-center hover:bg-danger-dark">
+            <i class="fas fa-sign-out-alt me-2"></i> Quitter
+          </button>
       </div>
     </div>
   </form>
@@ -293,7 +304,7 @@
           [disabled]="collaboratorForm.invalid || isLoading || (showPasswordField && !collaboratorForm.value.password)"
         >
           <span *ngIf="!isLoading"><i class="fas fa-plus"></i> Add</span>
-          <mat-spinner *ngIf="isLoading" [diameter]="24"></mat-spinner>
+          <mat-spinner *ngIf="isLoading" [diameter]="24" color="primary"></mat-spinner>
         </button>
         <button
           type="button"
@@ -302,8 +313,11 @@
           [disabled]="isLoadingStep5"
         >
           <span *ngIf="!isLoadingStep5">Next <i class="fas fa-chevron-right"></i></span>
-          <mat-spinner *ngIf="isLoadingStep5" [diameter]="22"></mat-spinner>
+          <mat-spinner *ngIf="isLoadingStep5" [diameter]="22" color="primary"></mat-spinner>
         </button>
+          <button type="button" (click)="onCancel()" class="mt-2 px-4 py-2 bg-danger text-white rounded-lg flex items-center justify-center hover:bg-danger-dark">
+            <i class="fas fa-sign-out-alt me-2"></i> Quitter
+          </button>
       </div>
     </div>
   </form>
@@ -355,10 +369,12 @@
           [disabled]="isLoadingStep6"
         >
           <span *ngIf="!isLoadingStep6">Soumettre <i class="fas fa-paper-plane"></i></span>
-          <mat-spinner *ngIf="isLoadingStep6" [diameter]="22"></mat-spinner>
+          <mat-spinner *ngIf="isLoadingStep6" [diameter]="22" color="primary"></mat-spinner>
         </button>
+          <button type="button" (click)="onCancel()" class="mt-2 px-4 py-2 bg-danger text-white rounded-lg flex items-center justify-center hover:bg-danger-dark">
+            <i class="fas fa-sign-out-alt me-2"></i> Quitter
+          </button>
       </div>
     </div>
   </form>
 </div>
-

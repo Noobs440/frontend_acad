@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NiveauService } from '../../services/niveau.service';
 import { AcceuilService } from '../../services/acceuil.service';
+import { RechercheService } from '../../services/recherche.service';
 
 @Component({
   selector: 'app-levels-listing',
@@ -9,6 +10,29 @@ import { AcceuilService } from '../../services/acceuil.service';
   styleUrls: ['./levels-listing.component.css']
 })
 export class LevelsListingComponent implements OnInit {
+  searchText: string = '';
+  noResults: boolean = false;
+  applySearchFilter(): void {
+    // Si la recherche est utilisée, le filtre est désactivé
+    if (this.searchText && this.searchText.trim() !== '') {
+      this.selectedNiveau = null;
+    }
+    let filtered = this.projectsPerLevel;
+    if (this.searchText && this.searchText.trim() !== '') {
+      const txt = this.searchText.trim().toLowerCase();
+      filtered = filtered.filter(lvl =>
+        lvl.code_niv.toLowerCase().includes(txt) ||
+        lvl.intitule_niv.toLowerCase().includes(txt) ||
+        lvl.description.toLowerCase().includes(txt)
+      );
+    }
+    this.noResults = filtered.length === 0;
+    // Affiche uniquement le(s) niveau(x) trouvé(s), pas de pagination multiple
+    this.totalPages = 1;
+    this.pages = [1];
+    this.currentPage = 1;
+    this.paginatedLevels = filtered;
+  }
   niveaux: any[] = [];
   projectsPerLevel: { code_niv: string, intitule_niv: string, count: number, description: string, icon: string }[] = [];
   paginatedLevels: { code_niv: string, intitule_niv: string, count: number, description: string, icon: string }[] = [];
@@ -29,7 +53,29 @@ export class LevelsListingComponent implements OnInit {
     'D':  { description: 'Doctorat : recherche et innovation.', icon: 'bi bi-flask' },
   };
 
-  constructor(private niveauService: NiveauService, private acceuilService: AcceuilService, private router: Router) {}
+  constructor(
+    private niveauService: NiveauService,
+    private acceuilService: AcceuilService,
+    private rechercheService: RechercheService,
+    private router: Router
+  ) {}
+  onSearchBackend(): void {
+    if (this.searchText && this.searchText.trim() !== '') {
+      this.isLoading = true;
+      this.rechercheService.searchProjects(this.searchText.trim()).subscribe({
+        next: (results) => {
+          this.paginatedLevels = Array.isArray(results) ? results : [];
+          this.noResults = this.paginatedLevels.length === 0;
+          this.isLoading = false;
+        },
+        error: () => {
+          this.paginatedLevels = [];
+          this.noResults = true;
+          this.isLoading = false;
+        }
+      });
+    }
+  }
   onLevelClick(level: any): void {
     // Navigue vers l'onglet projets avec le niveau sélectionné en query param
     this.router.navigate(['/home/projects-listing'], { queryParams: { niveau: level.code_niv } });
@@ -62,6 +108,10 @@ export class LevelsListingComponent implements OnInit {
   }
 
   applyLevelFilter(): void {
+    // Si le filtre est utilisé, la recherche est vidée
+    if (this.selectedNiveau) {
+      this.searchText = '';
+    }
     let filtered = this.projectsPerLevel;
     if (this.selectedNiveau) {
       filtered = filtered.filter(lvl => lvl.code_niv === this.selectedNiveau);

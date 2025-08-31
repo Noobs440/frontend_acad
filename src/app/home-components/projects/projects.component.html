@@ -2,8 +2,8 @@
         
 
         <div class="globalese">
-          <input type="text" class="form-control no-focus" placeholder="{{ 'SEARCH_PROJECT' | translate }}" [(ngModel)]="searchQuery" (keyup.enter)="applyFilters()">
-          <button class="btn btn-outline-primary" type="button" (click)="applyFilters()"><i class="fas fa-search"></i></button>
+          <input type="text" class="form-control no-focus" placeholder="{{ 'SEARCH_PROJECT' | translate }}" [(ngModel)]="searchQuery" (keyup.enter)="searchProjects()">
+          <button class="btn btn-outline-primary" type="button" (click)="searchProjects()"><i class="fas fa-search"></i></button>
         </div>
       
 <section id="recent-posts" class="recent-posts section" [ngStyle]="{'background-color': bgColor}">

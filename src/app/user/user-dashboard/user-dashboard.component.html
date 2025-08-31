@@ -27,23 +27,14 @@
     <input
       type="text"
       class="form-control filter-input"
-      placeholder="🔍 Rechercher un projet..."
+      placeholder="Rechercher un projet..."
       [value]="searchQuery"
       (input)="onSearchQueryChange($event)"
       aria-label="Recherche par titre"
     />
-
-    <select
-      class="form-select filter-select"
-      [value]="selectedTypeFilter"
-      (change)="onTypeFilterChange($event)"
-      aria-label="Filtrer par type"
-    >
-      <option value="all">📁 Tous</option>
-      <option value="projet">📘 Projet</option>
-      <option value="mémoire">📙 Mémoire</option>
-      <option value="article">📗 Article</option>
-    </select>
+      <button class="btn btn-outline-primary ms-2" type="button" style="border-width:3px;border-color:#1976d2;padding-left:1.6em;padding-right:1.6em;" disabled>
+        <i class="fas fa-search"></i>
+      </button>
   </div>
 </div>
 
@@ -94,6 +85,18 @@
     </div>
 
 <style>
+.filter-container {
+  position: sticky;
+  top: 5em;
+  z-index: 100;
+  background: #fff;
+  border-radius: 1em;
+  box-shadow: 0 2px 12px rgba(6,187,204,0.10);
+  border: 2px solid #e0e0e0;
+  margin: 2em;
+  padding: 2em;
+  height: 2em;
+}
 .dashboard-cards-bar {
   display: flex;
   flex-wrap: wrap;
@@ -101,6 +104,8 @@
   justify-content: center;
   align-items: stretch;
 }
+/* Barre de recherche sticky */
+
 .dashboard-card {
   min-width: 240px;
   max-width: 300px;
