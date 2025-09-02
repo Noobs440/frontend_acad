@@ -1,4 +1,4 @@
-  // ✅ Resoumettre un projet rejeté (endpoint dédié)
+// ✅ Resoumettre un projet rejeté (endpoint dédié)
   
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -132,5 +132,9 @@ getCategories(): Observable<any[]>{
         return of([]);
       })
     )
+  }
+
+  getCollaboratorsByProject(projectId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_BASE}/projects/${projectId}/collaborators`);
   }
 }

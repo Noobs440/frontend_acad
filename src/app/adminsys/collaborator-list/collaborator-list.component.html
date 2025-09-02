@@ -18,7 +18,6 @@
       <tr>
         <th>Nom</th>
         <th>Email</th>
-        <th>ID du projet</th>
         <th>Projet</th>
         <th>Actions</th>
       </tr>
@@ -27,7 +26,6 @@
       <tr *ngFor="let collab of filteredCollaborators">
         <td>{{ collab.nom_collab }}</td>
         <td>{{ collab.email_collab }}</td>
-        <td>{{ collab.tbl_projet_id }}</td>
         <td>{{ collab.projet?.titre_projet || '-' }}</td>
         <td>
           <button (click)="openEditModal(collab)">Modifier</button>

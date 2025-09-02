@@ -1,3 +1,39 @@
+
+<style>
+.maison-nav {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.home-btn {
+  margin-left: 45%;
+  margin-top: -2.5em;
+  padding: 3em;
+}
+.home-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1976d2;
+  color: #fff;
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  font-size: 2rem;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.12);
+  border: none;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  margin-right: 0.5em;
+}
+.home-btn:hover {
+  background: #1565c0;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.18);
+}
+</style>
 <main id="main" class="main">
   <div class="pagetitle">
     <h1>{{ name |
@@ -27,23 +63,14 @@
     <input
       type="text"
       class="form-control filter-input"
-      placeholder="🔍 Rechercher un projet..."
+      placeholder="Rechercher un projet..."
       [value]="searchQuery"
       (input)="onSearchQueryChange($event)"
       aria-label="Recherche par titre"
     />
-
-    <select
-      class="form-select filter-select"
-      [value]="selectedTypeFilter"
-      (change)="onTypeFilterChange($event)"
-      aria-label="Filtrer par type"
-    >
-      <option value="all">📁 Tous</option>
-      <option value="projet">📘 Projet</option>
-      <option value="mémoire">📙 Mémoire</option>
-      <option value="article">📗 Article</option>
-    </select>
+      <button class="btn btn-outline-primary ms-2" type="button" style="border-width:3px;border-color:#1976d2;padding-left:1.6em;padding-right:1.6em;" disabled>
+        <i class="fas fa-search"></i>
+      </button>
   </div>
 </div>
 
@@ -94,6 +121,18 @@
     </div>
 
 <style>
+.filter-container {
+  position: sticky;
+  top: 5em;
+  z-index: 100;
+  background: #fff;
+  border-radius: 1em;
+  box-shadow: 0 2px 12px rgba(6,187,204,0.10);
+  border: 2px solid #e0e0e0;
+  margin: 2em;
+  padding: 2em;
+  height: 2em;
+}
 .dashboard-cards-bar {
   display: flex;
   flex-wrap: wrap;
@@ -101,6 +140,8 @@
   justify-content: center;
   align-items: stretch;
 }
+/* Barre de recherche sticky */
+
 .dashboard-card {
   min-width: 240px;
   max-width: 300px;
@@ -178,9 +219,14 @@
 
     <div class="container">
       <div class="row">
-        <div *ngIf="isLoading" class="container d-flex projects p-4 justify-content-center align-items-center">
-          <div *ngFor="let spinner of [1,2,3,4,5,6,7]" class="spinner-grow text-info" role="status" aria-label="Loading">
-            <span class="visually-hidden">Loading...</span>
+        <div *ngIf="isLoading" class="container d-flex projects p-4 justify-content-center align-items-center" style="min-height: 220px;">
+          <div class="d-flex gap-3 justify-content-center align-items-center w-100">
+            <div class="spinner-grow text-primary" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+            <div class="spinner-grow text-success" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+            <div class="spinner-grow text-danger" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+            <div class="spinner-grow text-warning" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+            <div class="spinner-grow text-info" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
+            <div class="spinner-grow text-secondary" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
           </div>
         </div>
 

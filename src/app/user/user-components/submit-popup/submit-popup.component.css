@@ -1,3 +1,121 @@
+/* Style professionnel pour l'ouverture de la popup */
+.mat-dialog-container {
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 1.5px 6px rgba(0,0,0,0.10);
+  background: #fff;
+  animation: fadeInPopup 0.35s cubic-bezier(0.4,0,0.2,1);
+  padding: 0;
+  min-width: 420px;
+  max-width: 98vw;
+}
+/* Overlay sombre couvrant toute la page */
+.submit-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+/* Container du popup centré */
+.submit-popup-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  padding: 2rem 1.5rem;
+  max-width: 95vw;
+  width: 420px;
+  max-height: 90vh;
+  /* overflow-y: auto; */
+  position: relative;
+  z-index: 2100;
+  animation: popup-fade-in 0.25s;
+}
+
+@keyframes popup-fade-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Empêche le scroll du body quand le popup est ouvert */
+body.submit-popup-open {
+  overflow: hidden;
+}
+
+/* Bouton de fermeture en haut à droite */
+.submit-popup-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #888;
+  cursor: pointer;
+  z-index: 2200;
+  transition: color 0.2s;
+}
+.submit-popup-close-btn:hover {
+  color: #d32f2f;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .submit-popup-container {
+    width: 98vw;
+    padding: 1rem 0.5rem;
+  }
+}
+
+@keyframes fadeInPopup {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Overlay semi-transparent derrière la popup */
+.cdk-overlay-backdrop {
+  background: rgba(30, 41, 59, 0.25) !important;
+  backdrop-filter: blur(2px);
+}
+
+/* En-tête stylisé */
+.popup-header {
+  background: linear-gradient(90deg, #2563eb 0%, #1e293b 100%);
+  color: #fff;
+  padding: 18px 32px 12px 32px;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(30,41,59,0.08);
+  position: relative;
+}
+
+/* Contenu de la popup */
+.popup-content {
+  padding: 32px 32px 24px 32px;
+}
+
+/* Boutons en bas */
+.popup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 0 32px 24px 32px;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -11,6 +11,10 @@ import { ListingService } from '../../services/listing.service';
   styleUrls: ['./user-dashboard.component.css']
 })
 export class UserDashboardComponent implements OnInit {
+  onSearchButtonClick(): void {
+  this.currentPage = 1;
+  this.applyFilters();
+  }
 
   projectStates: string[]  = ['Not Submitted', 'Pending', 'Approved', 'Rejected'];
   stateCounts: {[key:string]: number} = {};

@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+
+ 
+
+
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
@@ -21,7 +25,7 @@ import { UserManagementService } from '../../../services/user-management.service
   styleUrls: ['./submit-popup.component.css'],
   providers: [DatePipe]
 })
-export class SubmitPopupComponent implements OnInit {
+export class SubmitPopupComponent implements OnInit, AfterViewInit {
   isLoadingStep1 = false;
   isLoadingStep2 = false;
   isLoadingStep3 = false;
@@ -140,7 +144,7 @@ export class SubmitPopupComponent implements OnInit {
       summary: ['', Validators.required],
     });
 
-        this.adminAdded = false; // Initialize adminAdded
+    this.adminAdded = false;
     this.documentForm = this.fb.group({
       title: ['', Validators.required],
       file: ['', Validators.required],
@@ -152,15 +156,15 @@ export class SubmitPopupComponent implements OnInit {
       password: ['']
     });
 
-  this.adminForm = this.fb.group({
-    admin: [null, Validators.required]
-  });
+    this.adminForm = this.fb.group({
+      admin: [null, Validators.required]
+    });
 
-  this.token = localStorage.getItem('token') || '';
-  this.name = localStorage.getItem('name') || '';
-  this.role = localStorage.getItem('role') || '';
-  this.id = localStorage.getItem('id') || '';
-  this.user_id = localStorage.getItem('id') || '';
+    this.token = localStorage.getItem('token') || '';
+    this.name = localStorage.getItem('name') || '';
+    this.role = localStorage.getItem('role') || '';
+    this.id = localStorage.getItem('id') || '';
+    this.user_id = localStorage.getItem('id') || '';
 
     this.today = this.datePipe.transform(new Date(), 'dd-MM-yyyy') || '';
 
@@ -188,7 +192,6 @@ export class SubmitPopupComponent implements OnInit {
       this.projet = data;
     });
 
-    // Récupération des admins (users avec le rôle admin)
     this.userService.getAdmins().subscribe({
       next: (admins) => {
         this.admins = admins;
@@ -197,11 +200,35 @@ export class SubmitPopupComponent implements OnInit {
         console.error('Erreur lors de la récupération des admins', err);
       }
     });
+
+    // Correction : si le popup reçoit un id projet et un startStep, on démarre à l'étape document
+    if (this.dialogRef && this.dialogRef._containerInstance && this.dialogRef._containerInstance._config.data) {
+      const data = this.dialogRef._containerInstance._config.data;
+      if (data.projectId) {
+        this.project_id = data.projectId;
+      }
+      if (data.startStep) {
+        this.currentStep = data.startStep;
+        this.formType = 'document';
+      }
+    }
   }
 
   get creationFormControl() {
     return this.creationForm.controls;
   }
+
+    closePopup() {
+      document.body.classList.remove('submit-popup-open');
+      this.dialogRef.close();
+    }
+
+
+
+     ngAfterViewInit(): void {
+    document.body.classList.add('submit-popup-open');
+  }
+
 
   get documentFormControl() {
     return this.documentForm.controls;
@@ -336,6 +363,7 @@ export class SubmitPopupComponent implements OnInit {
   }
 
   onCancel() {
+    document.body.classList.remove('submit-popup-open');
     this.dialogRef.close();
     window.location.reload();
   }

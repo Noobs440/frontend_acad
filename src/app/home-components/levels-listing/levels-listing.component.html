@@ -1,14 +1,22 @@
 <section class="section">
+    
   <div class="container section-title mb-4">
-    <h2>Liste des niveaux</h2>
-    <h5>Nombre de projets par niveau</h5>
+    <h2 class="text-white">Liste des niveaux</h2>
+    <h5 class="text-white">Nombre de projets par niveau</h5>
+  </div>
+  <div class="centre">
+        <div class="globalese d-flex w-100">
+          <input type="text" class="form-control no-focus" placeholder="Rechercher un niveau..." [(ngModel)]="searchText" (keyup.enter)="onSearchBackend()">
+          <button class="btn btn-outline-primary ms-2" type="button" (click)="onSearchBackend()"><i class="fas fa-search"></i></button>
+        </div>
   </div>
   <!-- Filtre par niveau stylisé -->
-  <div class="container mb-3">
-    <div class="row">
-      <div class="col-12">
-        <div class="p-3 bg-white rounded shadow-sm w-100" style="max-width: 600px; margin: 0 auto;">
-          <select class="form-select form-select-lg border-0 bg-white" [(ngModel)]="selectedNiveau" (change)="applyLevelFilter()">
+  <div class="container mb-3 filter-bg">
+    <div class="row mb-3 align-items-center">
+      
+      <div class="col-12 d-flex align-items-center">
+        <div class="p-3 bg-white rounded shadow-sm w-100">
+          <select class="form-select form-select-lg border border-primary bg-white w-100" [(ngModel)]="selectedNiveau" (change)="applyLevelFilter()" size="1" style="width:100%;">
             <option [ngValue]="null">Tous les niveaux</option>
             <option *ngFor="let niveau of niveaux" [ngValue]="niveau.code_niv">{{ niveau.code_niv }} - {{ niveau.intitule_niv }}</option>
           </select>
@@ -16,40 +24,69 @@
       </div>
     </div>
   </div>
+
   <div class="container mb-4">
-  <div class="row g-3 justify-content-start">
-      <div class="col-auto" *ngFor="let level of paginatedLevels">
-        <div class="level-card card text-center" style="cursor:pointer;" (click)="onLevelClick(level)">
-          <div class="card-body p-3">
-            <div class="level-icon mb-2">
-              <i [class]="level.icon" aria-hidden="true"></i>
+    <div class="bg-white rounded shadow-sm p-4">
+      <div class="row g-3 justify-content-start">
+        <ng-container *ngIf="!noResults; else noResultBlock">
+          <div class="col-auto" *ngFor="let level of paginatedLevels">
+            <div class="level-card card text-center" style="cursor:pointer;" (click)="onLevelClick(level)">
+              <div class="card-body p-3">
+                <div class="level-icon mb-2">
+                  <i [class]="level.icon" aria-hidden="true"></i>
+                </div>
+                <div class="level-title">{{ level.code_niv }} <span class="level-intitule">{{ level.intitule_niv }}</span></div>
+                <div class="level-count">{{ level.count }}</div>
+                <div class="level-projets">projets</div>
+                <div class="level-desc">{{ level.description }}</div>
+              </div>
             </div>
-            <div class="level-title">{{ level.code_niv }} <span class="level-intitule">{{ level.intitule_niv }}</span></div>
-            <div class="level-count">{{ level.count }}</div>
-            <div class="level-projets">projets</div>
-            <div class="level-desc">{{ level.description }}</div>
+          </div>
+        </ng-container>
+        <ng-template #noResultBlock>
+          <div class="col-12 text-center py-5">
+            <div class="alert alert-warning" role="alert">
+              Aucun résultat trouvé pour votre recherche.
+            </div>
+          </div>
+        </ng-template>
+        <div *ngIf="isLoading" class="text-center py-4">
+          <div class="d-flex justify-content-center align-items-center">
+            <div class="spinner-grow text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="spinner-grow text-secondary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="spinner-grow text-success" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="spinner-grow text-danger" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="spinner-grow text-warning" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="spinner-grow text-info" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
           </div>
         </div>
       </div>
-      <div *ngIf="isLoading" class="text-center py-4">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <!-- Pagination globale en bas de la liste -->
+      <nav *ngIf="totalPages > 1 && !noResults" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link" (click)="prevPage()">Précédent</a>
+          </li>
+          <li class="page-item" *ngFor="let page of pages" [class.active]="page === currentPage">
+            <a class="page-link" (click)="goToPage(page)">{{ page }}</a>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a class="page-link" (click)="nextPage()">Suivant</a>
+          </li>
+        </ul>
+      </nav>
     </div>
-    <!-- Pagination globale en bas de la liste -->
-    <nav *ngIf="totalPages > 1" class="mt-4">
-      <ul class="pagination justify-content-center">
-        <li class="page-item" [class.disabled]="currentPage === 1">
-          <a class="page-link" (click)="prevPage()">Précédent</a>
-        </li>
-        <li class="page-item" *ngFor="let page of pages" [class.active]="page === currentPage">
-          <a class="page-link" (click)="goToPage(page)">{{ page }}</a>
-        </li>
-        <li class="page-item" [class.disabled]="currentPage === totalPages">
-          <a class="page-link" (click)="nextPage()">Suivant</a>
-        </li>
-      </ul>
-    </nav>
   </div>
 </section>

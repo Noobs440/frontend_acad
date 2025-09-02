@@ -4,6 +4,7 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
 import { DocumentPopupComponent } from '../document-popup/document-popup.component';
+import { SubmitPopupComponent } from '../submit-popup/submit-popup.component';
 import { MatDialog } from '@angular/material/dialog';
 import { InfoDialogComponent } from '../../../shared/info-dialog/info-dialog.component';
 import { DocumentService } from '../../../services/document.service';
@@ -20,6 +21,51 @@ import { UserService } from '../../../services/user.service';
   styleUrls: ['./project-detail.component.css']
 })
 export class ProjectDetailComponent implements OnInit {
+  isLoadingProject = false;
+  openEditProjectPopupForDraft() {
+    const dialogRef = this.dialog.open(SubmitPopupComponent, {
+      width: '900px',
+      data: {
+        formType: 'edit',
+        projectId: this.selectedProjectId,
+        startStep: this.documents && this.documents.length > 0 ? 3 : 2,
+        documents: this.documents,
+        collaborators: this.collaborators,
+        adminId: this.selectedAdminId
+      }
+    });
+    dialogRef.afterClosed().subscribe((res: any) => {
+      if (res && res.updated) {
+        this.projetService.getProjectById(this.selectedProjectId).subscribe((project: any) => {
+          this.selectedProjectTitle = project.titre_projet || '';
+          this.projectStatus = project.status || '';
+          this.projectImage = project.image || '';
+          this.description = project.descript_projet || '';
+          this.author = project.nom_user || (project.user && project.user.name) || '';
+          this.category = project.tbl_categorie_id || '';
+          this.level = project.tbl_niveau_id || '';
+          this.type = project.type || '';
+          this.date = project.created_at || '';
+          this.views = project.views || 0;
+          this.email = project.user?.email || '';
+          this.rejection_reason = project.rejection_reason || '';
+        });
+      }
+    });
+  }
+    openEditProjectPopup() {
+      const dialogRef = this.dialog.open(SubmitPopupComponent, {
+          width: '700px',
+          disableClose: true,
+          data: {
+            projectId: this.selectedProjectId, // Passe l'id du projet existant
+            startStep: 4 // Démarre à l'étape document
+          }
+      });
+      dialogRef.afterClosed().subscribe((res: any) => {
+        // ...existing code...
+      });
+    }
   isDeletingCollaborator: string | null = null;
   isLoadingAddDocument = false;
   isLoadingAddCollaborator = false;
@@ -83,7 +129,7 @@ export class ProjectDetailComponent implements OnInit {
         this.admins = admins;
       },
       error: err => {
-        console.error('Erreur lors du chargement des admins', err);
+        console.error('Erreur lors du chargement des superviseurs', err);
       }
     });
   }
@@ -92,13 +138,13 @@ export class ProjectDetailComponent implements OnInit {
     if (!adminId) return;
     this.projetService.assignAdminToProject(this.id, adminId).subscribe({
       next: () => {
-        this.openCompleteDialog('Admin assigné avec succès.');
+        this.openCompleteDialog('Superviseur assigné avec succès.');
       },
       error: err => {
-        console.error("Erreur lors de l'assignation de l'admin", err);
+        console.error("Erreur lors de l'assignation du superviseur", err);
         this.dialog.open(InfoDialogComponent, {
           width: '350px',
-          data: { title: 'Erreur', message: "Erreur lors de l'assignation de l'admin." }
+          data: { title: 'Erreur', message: "Erreur lors de l'assignation du superviseur." }
         });
       }
     });
@@ -127,25 +173,23 @@ export class ProjectDetailComponent implements OnInit {
     this.user_role = localStorage.getItem('role');
     this.user_token = localStorage.getItem('token');
 
-    // Always try to load user profile from backend for up-to-date name
     this.userService.getUserProfile().subscribe(profile => {
-      if (profile && profile.nom_user) {
-        this.user_name = profile.nom_user;
-      } else {
-        this.user_name = localStorage.getItem('name') || '';
-      }
+      this.user_name = profile?.nom_user || localStorage.getItem('name') || '';
     });
 
-    // Récupérer l'ID du projet depuis l'URL
-    this.selectedProjectId = +this.route.snapshot.paramMap.get('id')!;
+    // S'abonner aux changements de paramètres pour recharger le projet
+    this.route.paramMap.subscribe(params => {
+      this.selectedProjectId = +params.get('id')!;
+      this.loadProjectDetails();
+    });
 
-    // Charger la liste des admins dès l'init
     this.fetchAdmins();
+  }
 
-    // Charger les infos du projet depuis l'API pour garantir la cohérence des champs
+  loadProjectDetails() {
+    this.isLoadingProject = true;
     this.projetService.getProjectById(this.selectedProjectId).subscribe({
       next: (project: any) => {
-        // Mapping strict selon la BDD/API Laravel
         this.id = project.id;
         this.selectedProjectTitle = project.titre_projet || '';
         this.projectStatus = project.status || '';
@@ -159,17 +203,16 @@ export class ProjectDetailComponent implements OnInit {
         this.views = project.views || 0;
         this.email = project.user?.email || '';
         this.rejection_reason = project.rejection_reason || '';
+        this.isLoadingProject = false;
       },
       error: err => {
         console.error('Erreur lors du chargement du projet', err);
+        this.isLoadingProject = false;
       }
     });
 
-    // Charger les documents et collaborateurs liés au projet
     this.documentService.getDocumentsByProject(this.selectedProjectId).subscribe(res => this.documents = res);
     this.collaborateurService.getCollaborateursByProject(this.selectedProjectId).subscribe(res => this.collaborators = res);
-
-    // Charger l'historique des modifications du projet
     this.projectHistoryService.getHistory(this.selectedProjectId).subscribe(history => {
       this.projectHistory = history;
     });
@@ -185,18 +228,18 @@ export class ProjectDetailComponent implements OnInit {
     if (!this.selectedAdminId) {
       this.dialog.open(InfoDialogComponent, {
         width: '350px',
-        data: { title: 'Attention', message: "Veuillez choisir un admin avant de resoumettre le projet !" }
+        data: { title: 'Attention', message: "Veuillez choisir un superviseur avant de resoumettre le projet !" }
       });
       return;
     }
-    // On envoie le motif du rejet à l'admin lors de la resoumission
+    // On envoie le motif du rejet au superviseur lors de la resoumission
   // L'API actuelle n'accepte que l'id, donc on ne peut pas transmettre adminId et motif ici sans adapter le backend
   this.projetService.resubmitProject(this.id).subscribe({
       next: () => {
         this.projectStatus = 'Pending';
         this.dialog.open(InfoDialogComponent, {
           width: '350px',
-          data: { title: 'Succès', message: 'Votre projet a été resoumis avec succès. Le motif du rejet a été transmis à l\'admin.' }
+          data: { title: 'Succès', message: 'Votre projet a été resoumis avec succès. Le motif du rejet a été transmis au superviseur.' }
         });
         this.reloadProject();
       },
@@ -253,13 +296,23 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   deleteProject(Projectid: any) {
+    this.isLoadingDelete = true;
     this.projetService.deleteProject(Projectid).subscribe({
-      next: () => this.openCompleteDialog("Project deleted completely."),
-      error: err => this.dialog.open(InfoDialogComponent, {
-        width: '350px',
-        data: { title: 'Erreur', message: err.status }
-      }),
-      complete: () => this.dialog.closeAll()
+      next: () => {
+        this.openCompleteDialog("Project deleted completely.");
+  this.router.navigate(['/user/dashboard']);
+      },
+      error: err => {
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Erreur', message: err.status }
+        });
+        this.isLoadingDelete = false;
+      },
+      complete: () => {
+        this.isLoadingDelete = false;
+        this.dialog.closeAll();
+      }
     });
   }
 
@@ -271,7 +324,7 @@ export class ProjectDetailComponent implements OnInit {
     if (!this.selectedAdminId) {
       this.dialog.open(InfoDialogComponent, {
         width: '350px',
-        data: { title: 'Attention', message: "Veuillez choisir un admin avant de soumettre le projet !" }
+        data: { title: 'Attention', message: "Veuillez choisir un superviseur avant de soumettre le projet !" }
       });
       return;
     }
@@ -289,7 +342,7 @@ export class ProjectDetailComponent implements OnInit {
           next: () => {
             this.dialog.open(InfoDialogComponent, {
               width: '350px',
-              data: { title: 'Succès', message: "Votre projet a été soumis à l'admin choisi et passe en attente." }
+              data: { title: 'Succès', message: "Votre projet a été soumis au superviseur choisi et passe en attente." }
             });
             this.Submitted = true;
             this.projectStatus = 'Pending';
