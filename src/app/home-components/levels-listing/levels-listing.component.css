@@ -64,9 +64,11 @@ h2{
 	position: sticky;
 	top: 6em;
 	z-index: 1;
-  margin: 0 auto 2em auto;
-  width: 100%;
-  max-width: 40vw;
+	margin: 0 auto 1.2em auto;
+	width: 100%;
+	justify-content: center;
+	align-items: center;
+	max-width: 40vw;
   background: #fff;
   box-shadow: 0 4px 24px rgba(0,0,0,0.10);
   border-radius: 10px;
@@ -83,6 +85,10 @@ h2{
   font-size: 1.08em;
   box-shadow: none;
   padding-left: 1em;
+}
+.centre{
+	margin-left: 25%;
+	margin-right: 25%;
 }
 .globalese .btn-outline-primary {
 	border-radius: 10px;

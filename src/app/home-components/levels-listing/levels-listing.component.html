@@ -1,16 +1,16 @@
 <section class="section">
+    
   <div class="container section-title mb-4">
     <h2 class="text-white">Liste des niveaux</h2>
     <h5 class="text-white">Nombre de projets par niveau</h5>
   </div>
-  <!-- Filtre par niveau stylisé -->
-   <div class="col-12 col-md-6 d-flex align-items-center order-md-1 order-2">
+  <div class="centre">
         <div class="globalese d-flex w-100">
           <input type="text" class="form-control no-focus" placeholder="Rechercher un niveau..." [(ngModel)]="searchText" (keyup.enter)="onSearchBackend()">
           <button class="btn btn-outline-primary ms-2" type="button" (click)="onSearchBackend()"><i class="fas fa-search"></i></button>
         </div>
-    </div>
-    
+  </div>
+  <!-- Filtre par niveau stylisé -->
   <div class="container mb-3 filter-bg">
     <div class="row mb-3 align-items-center">
       

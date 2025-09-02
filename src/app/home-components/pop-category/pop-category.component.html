@@ -8,10 +8,10 @@
 
   <!-- ... -->
   <!-- Filters -->
-  <div class="col-12 col-md-6 mb-2 mb-md-0">
+  <div class="centre">
     <div class="globalese d-flex p-3 bg-white rounded shadow-sm border border-primary">
       <input type="text" class="form-control no-focus" placeholder="Rechercher un domaine..." [(ngModel)]="searchText" (keyup.enter)="applySearchFilter()">
-  <button class="btn btn-outline-primary ms-2" type="button" (click)="applySearchFilter()" style="border-width:3px;border-color:#1976d2;padding-left:1.6em;padding-right:1.6em;"><i class="fas fa-search"></i></button>
+    <button class="btn btn-outline-primary ms-2" type="button" (click)="applySearchFilter()" style="border-width:3px;border-color:#1976d2;padding-left:1.6em;padding-right:1.6em;"><i class="fas fa-search"></i></button>
     </div>
   </div>
   <div class="container filters p-4" [@fadeUp]>

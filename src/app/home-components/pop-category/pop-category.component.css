@@ -4,6 +4,10 @@ a{
 .recent-posts{
   background: #06BBCC;
 }
+.centre{
+	margin-left: 25%;
+	margin-right: 25%;
+}
 .row{
   background-color: white;
   border-radius: 10px;

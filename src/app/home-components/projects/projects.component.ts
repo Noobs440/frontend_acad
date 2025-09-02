@@ -177,30 +177,45 @@ export class ProjectsComponent implements OnInit {
       // Filtrage local sur description et collaborateurs
       const query = this.normalizeString(this.searchQuery);
       let results = response.results || [];
-  results = results.filter((post: any) => {
+      results = results.filter((post: any) => {
+        const queryNorm = query;
+        // Recherche sur le titre
+        const titleMatch = (
+          (post.titre && this.normalizeString(post.titre).includes(queryNorm)) ||
+          (post.titre_projet && this.normalizeString(post.titre_projet).includes(queryNorm))
+        );
+        // Recherche sur l'auteur
+        const authorMatch = (
+          (post.nom_utilisateur && this.normalizeString(post.nom_utilisateur).includes(queryNorm)) ||
+          (post.auteur && this.normalizeString(post.auteur).includes(queryNorm))
+        );
+        // Recherche sur la catégorie
+        const categoryMatch = (
+          (post.nom_categorie && this.normalizeString(post.nom_categorie).includes(queryNorm))
+        );
         // Recherche sur la description
         const descriptionMatch = (
-          (post.descript_projet && this.normalizeString(post.descript_projet).includes(query)) ||
-          (post.description && this.normalizeString(post.description).includes(query)) ||
-          (post.descriptif && this.normalizeString(post.descriptif).includes(query)) ||
-          (post.resume && this.normalizeString(post.resume).includes(query))
+          (post.descript_projet && this.normalizeString(post.descript_projet).includes(queryNorm)) ||
+          (post.description && this.normalizeString(post.description).includes(queryNorm)) ||
+          (post.descriptif && this.normalizeString(post.descriptif).includes(queryNorm)) ||
+          (post.resume && this.normalizeString(post.resume).includes(queryNorm))
         );
         // Recherche sur les collaborateurs (tableau ou string)
         let collabMatch = false;
         if (post.collaborateurs && Array.isArray(post.collaborateurs)) {
           collabMatch = post.collaborateurs.some((c: any) => {
             if (typeof c === 'string') {
-              return this.normalizeString(c).includes(query);
+              return this.normalizeString(c).includes(queryNorm);
             } else if (c && c.nom) {
-              return this.normalizeString(c.nom).includes(query);
+              return this.normalizeString(c.nom).includes(queryNorm);
             }
             return false;
           });
         } else if (post.collaborateurs && typeof post.collaborateurs === 'string') {
-          collabMatch = this.normalizeString(post.collaborateurs).includes(query);
+          collabMatch = this.normalizeString(post.collaborateurs).includes(queryNorm);
         }
-        // Retourne uniquement si la description ou les collaborateurs correspondent
-        return descriptionMatch || collabMatch;
+        // Retourne si titre, auteur, catégorie, description ou collaborateurs correspondent
+        return titleMatch || authorMatch || categoryMatch || descriptionMatch || collabMatch;
       });
       this.filteredPosts = results;
       this.chunkedPosts = this.chunkArray(this.filteredPosts, this.itemsPerPage);
