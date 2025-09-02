@@ -173,7 +173,7 @@ export class DetailProjectComponent {
     // Ajoute /storage/ devant le nom du fichier
     return lien_doc.startsWith('http')
       ? lien_doc
-      : `http://localhost:8000/storage/${lien_doc.replace(/^\/+/, '')}`;
+      : `/storage/${lien_doc.replace(/^\/+/, '')}`;
   }
 
   actionCellRenderer() {

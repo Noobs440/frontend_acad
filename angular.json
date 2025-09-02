@@ -52,7 +52,6 @@
             "ssr": {
               "entry": "server.ts"
             }
-
           },
           "configurations": {
             "production": {
