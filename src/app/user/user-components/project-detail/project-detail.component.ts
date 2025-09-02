@@ -296,13 +296,23 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   deleteProject(Projectid: any) {
+    this.isLoadingDelete = true;
     this.projetService.deleteProject(Projectid).subscribe({
-      next: () => this.openCompleteDialog("Project deleted completely."),
-      error: err => this.dialog.open(InfoDialogComponent, {
-        width: '350px',
-        data: { title: 'Erreur', message: err.status }
-      }),
-      complete: () => this.dialog.closeAll()
+      next: () => {
+        this.openCompleteDialog("Project deleted completely.");
+  this.router.navigate(['/user/dashboard']);
+      },
+      error: err => {
+        this.dialog.open(InfoDialogComponent, {
+          width: '350px',
+          data: { title: 'Erreur', message: err.status }
+        });
+        this.isLoadingDelete = false;
+      },
+      complete: () => {
+        this.isLoadingDelete = false;
+        this.dialog.closeAll();
+      }
     });
   }
 

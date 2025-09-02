@@ -242,7 +242,7 @@
           <mat-spinner *ngIf="isLoadingStep4" [diameter]="22" color="primary"></mat-spinner>
         </button>
           <button type="button" (click)="onCancel()" class="mt-2 px-4 py-2 bg-danger text-white rounded-lg flex items-center justify-center hover:bg-danger-dark">
-            <i class="fas fa-sign-out-alt me-2"></i> Quitter
+            <i class="fas fa-sign-out-alt me-2"></i> SAVE
           </button>
       </div>
     </div>
@@ -308,7 +308,7 @@
           <mat-spinner *ngIf="isLoadingStep5" [diameter]="22" color="primary"></mat-spinner>
         </button>
           <button type="button" (click)="onCancel()" class="mt-2 px-4 py-2 bg-danger text-white rounded-lg flex items-center justify-center hover:bg-danger-dark">
-            <i class="fas fa-sign-out-alt me-2"></i> Quitter
+            <i class="fas fa-sign-out-alt me-2"></i> SAVE
           </button>
       </div>
     </div>
@@ -361,7 +361,26 @@
           [disabled]="isLoadingStep6"
         >
           <span *ngIf="!isLoadingStep6">Soumettre <i class="fas fa-paper-plane"></i></span>
-          <mat-spinner *ngIf="isLoadingStep6" [diameter]="22" color="primary"></mat-spinner>
+          <span *ngIf="isLoadingStep6" class="d-flex align-items-center justify-content-center w-100">
+            <span class="multicolor-spinner" style="width: 3.5rem; height: 3.5rem; display: inline-block;"></span>
+          </span>
+<style>
+  .multicolor-spinner {
+    border: 8px solid #eee;
+    border-top: 8px solid #1976d2;
+    border-right: 8px solid #43a047;
+    border-bottom: 8px solid #fbc02d;
+    border-left: 8px solid #e53935;
+    border-radius: 50%;
+    width: 3.5rem;
+    height: 3.5rem;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
         </button>
           <button type="button" (click)="onCancel()" class="mt-2 px-4 py-2 bg-danger text-white rounded-lg flex items-center justify-center hover:bg-danger-dark">
             <i class="fas fa-sign-out-alt me-2"></i> Quitter
