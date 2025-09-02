@@ -8,6 +8,70 @@
   min-width: 420px;
   max-width: 98vw;
 }
+/* Overlay sombre couvrant toute la page */
+.submit-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+/* Container du popup centré */
+.submit-popup-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  padding: 2rem 1.5rem;
+  max-width: 95vw;
+  width: 420px;
+  max-height: 90vh;
+  /* overflow-y: auto; */
+  position: relative;
+  z-index: 2100;
+  animation: popup-fade-in 0.25s;
+}
+
+@keyframes popup-fade-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Empêche le scroll du body quand le popup est ouvert */
+body.submit-popup-open {
+  overflow: hidden;
+}
+
+/* Bouton de fermeture en haut à droite */
+.submit-popup-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #888;
+  cursor: pointer;
+  z-index: 2200;
+  transition: color 0.2s;
+}
+.submit-popup-close-btn:hover {
+  color: #d32f2f;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .submit-popup-container {
+    width: 98vw;
+    padding: 1rem 0.5rem;
+  }
+}
 
 @keyframes fadeInPopup {
   from {

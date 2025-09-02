@@ -129,7 +129,7 @@ export class ProjectDetailComponent implements OnInit {
         this.admins = admins;
       },
       error: err => {
-        console.error('Erreur lors du chargement des admins', err);
+        console.error('Erreur lors du chargement des superviseurs', err);
       }
     });
   }
@@ -138,13 +138,13 @@ export class ProjectDetailComponent implements OnInit {
     if (!adminId) return;
     this.projetService.assignAdminToProject(this.id, adminId).subscribe({
       next: () => {
-        this.openCompleteDialog('Admin assigné avec succès.');
+        this.openCompleteDialog('Superviseur assigné avec succès.');
       },
       error: err => {
-        console.error("Erreur lors de l'assignation de l'admin", err);
+        console.error("Erreur lors de l'assignation du superviseur", err);
         this.dialog.open(InfoDialogComponent, {
           width: '350px',
-          data: { title: 'Erreur', message: "Erreur lors de l'assignation de l'admin." }
+          data: { title: 'Erreur', message: "Erreur lors de l'assignation du superviseur." }
         });
       }
     });
@@ -228,18 +228,18 @@ export class ProjectDetailComponent implements OnInit {
     if (!this.selectedAdminId) {
       this.dialog.open(InfoDialogComponent, {
         width: '350px',
-        data: { title: 'Attention', message: "Veuillez choisir un admin avant de resoumettre le projet !" }
+        data: { title: 'Attention', message: "Veuillez choisir un superviseur avant de resoumettre le projet !" }
       });
       return;
     }
-    // On envoie le motif du rejet à l'admin lors de la resoumission
+    // On envoie le motif du rejet au superviseur lors de la resoumission
   // L'API actuelle n'accepte que l'id, donc on ne peut pas transmettre adminId et motif ici sans adapter le backend
   this.projetService.resubmitProject(this.id).subscribe({
       next: () => {
         this.projectStatus = 'Pending';
         this.dialog.open(InfoDialogComponent, {
           width: '350px',
-          data: { title: 'Succès', message: 'Votre projet a été resoumis avec succès. Le motif du rejet a été transmis à l\'admin.' }
+          data: { title: 'Succès', message: 'Votre projet a été resoumis avec succès. Le motif du rejet a été transmis au superviseur.' }
         });
         this.reloadProject();
       },
@@ -314,7 +314,7 @@ export class ProjectDetailComponent implements OnInit {
     if (!this.selectedAdminId) {
       this.dialog.open(InfoDialogComponent, {
         width: '350px',
-        data: { title: 'Attention', message: "Veuillez choisir un admin avant de soumettre le projet !" }
+        data: { title: 'Attention', message: "Veuillez choisir un superviseur avant de soumettre le projet !" }
       });
       return;
     }
@@ -332,7 +332,7 @@ export class ProjectDetailComponent implements OnInit {
           next: () => {
             this.dialog.open(InfoDialogComponent, {
               width: '350px',
-              data: { title: 'Succès', message: "Votre projet a été soumis à l'admin choisi et passe en attente." }
+              data: { title: 'Succès', message: "Votre projet a été soumis au superviseur choisi et passe en attente." }
             });
             this.Submitted = true;
             this.projectStatus = 'Pending';

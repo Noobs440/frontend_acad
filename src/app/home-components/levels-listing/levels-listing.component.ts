@@ -13,7 +13,7 @@ export class LevelsListingComponent implements OnInit {
   searchText: string = '';
   noResults: boolean = false;
   applySearchFilter(): void {
-    // Si la recherche est utilisée, le filtre est désactivé
+    // Si la recherche est utilisée, le filtre est réinitialisé
     if (this.searchText && this.searchText.trim() !== '') {
       this.selectedNiveau = null;
     }
@@ -60,21 +60,15 @@ export class LevelsListingComponent implements OnInit {
     private router: Router
   ) {}
   onSearchBackend(): void {
-    if (this.searchText && this.searchText.trim() !== '') {
-      this.isLoading = true;
-      this.rechercheService.searchProjects(this.searchText.trim()).subscribe({
-        next: (results) => {
-          this.paginatedLevels = Array.isArray(results) ? results : [];
-          this.noResults = this.paginatedLevels.length === 0;
-          this.isLoading = false;
-        },
-        error: () => {
-          this.paginatedLevels = [];
-          this.noResults = true;
-          this.isLoading = false;
-        }
-      });
+    this.isLoading = true;
+    const code = this.selectedNiveau ? this.selectedNiveau : this.searchText.trim();
+    let filtered = this.projectsPerLevel;
+    if (code) {
+      filtered = filtered.filter(lvl => lvl.code_niv.toLowerCase().includes(code.toLowerCase()));
     }
+    this.paginatedLevels = filtered.slice(0, this.itemsPerPage);
+    this.noResults = this.paginatedLevels.length === 0;
+    this.isLoading = false;
   }
   onLevelClick(level: any): void {
     // Navigue vers l'onglet projets avec le niveau sélectionné en query param

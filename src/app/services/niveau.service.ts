@@ -9,6 +9,15 @@ import { Observable, tap, catchError, of } from 'rxjs';
 })
 export class NiveauService {
 
+    searchNiveaux(query: string): Observable<any[]> {
+      return this.http.get<any[]>(`http://localhost:8000/api/ressources/niveaux/search?q=${encodeURIComponent(query)}`).pipe(
+        catchError((error) => {
+          console.log(error);
+          return of([]);
+        })
+      );
+    }
+
   getLevelsWithProjectCount(): Observable<any[]> {
   return this.http.get<any[]>('http://localhost:8000/api/usecases/listing/levels-with-project-count');
   }

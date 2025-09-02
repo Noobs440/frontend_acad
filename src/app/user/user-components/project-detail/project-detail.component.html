@@ -121,21 +121,9 @@
               <ng-template #redoIcon>
                 <i class="fas fa-redo me-2"></i>
               </ng-template>
-              Resoumettre le projet
+              Resoumettre
             </button>
-            <button class="btn btn-outline-secondary fw-bold action-btn shadow-sm" (click)="saveAsDraft()" [disabled]="isLoadingDraft">
-              <ng-container *ngIf="isLoadingDraft; else saveIcon">
-                <span class="d-flex gap-1 align-items-center me-2">
-                  <span class="spinner-grow spinner-grow-sm text-secondary" style="width:1em; height:1em;"></span>
-                  <span class="spinner-grow spinner-grow-sm text-info" style="width:1em; height:1em;"></span>
-                  <span class="spinner-grow spinner-grow-sm text-success" style="width:1em; height:1em;"></span>
-                </span>
-              </ng-container>
-              <ng-template #saveIcon>
-                <i class="fas fa-save me-2"></i>
-              </ng-template>
-              Enregistrer comme brouillon
-            </button>
+          
           </div>
           <div *ngIf="(projectStatus === 'Not Submitted') && !Submitted" class="action-btn-group">
             <button class="btn btn-action btn-outline-primary action-btn d-flex align-items-center shadow-lg fw-bold" (click)="submitProject()" [disabled]="isLoadingSubmit">
@@ -153,10 +141,10 @@
             </button>
           </div>
           <div class="mb-3 admin-select-block" *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'">
-            <label for="adminSelect">Choisir un admin :</label>
+            <label for="adminSelect">Choisir un Superviseur:</label>
             <div class="input-group">
               <select id="adminSelect" class="form-select" [(ngModel)]="selectedAdminId">
-                <option [ngValue]="null" disabled selected>-- Choisir un admin --</option>
+                <option [ngValue]="null" disabled selected>Choisir un superviseur</option>
                 <option *ngFor="let admin of admins" [ngValue]="admin.id">
                   {{ admin.nom_user }}
                 </option>
@@ -251,57 +239,7 @@
     </div>
   </section>
 </main>
-      <!-- Légende de codage pour l'historique -->
-      <div class="col-12 mb-2">
-        <div class="legend-coding bg-white rounded-4 shadow-sm px-4 py-3 border">
-          <div class="row g-3 align-items-center">
-            <div class="col-12 col-md-6 d-flex align-items-center gap-3">
-              <span class="legend-icon bg-primary" style="width:18px; height:18px; display:inline-block; border-radius:4px;"></span>
-              <span class="legend-label">Champ modifié</span>
-            </div>
-            <div class="col-12 col-md-6 d-flex align-items-center gap-3">
-              <span class="legend-icon bg-danger" style="width:18px; height:18px; display:inline-block; border-radius:4px;"></span>
-              <span class="legend-label">Ancienne valeur</span>
-            </div>
-            <div class="col-12 col-md-6 d-flex align-items-center gap-3">
-              <span class="legend-icon bg-success" style="width:18px; height:18px; display:inline-block; border-radius:4px;"></span>
-              <span class="legend-label">Nouvelle valeur</span>
-            </div>
-            <div class="col-12 col-md-6 d-flex align-items-center gap-3">
-              <i class="fas fa-user-edit text-primary" style="font-size:1.2rem;"></i>
-              <span class="legend-label">Utilisateur ayant modifié</span>
-            </div>
-            <div class="col-12 col-md-6 d-flex align-items-center gap-3">
-              <i class="far fa-clock text-secondary" style="font-size:1.2rem;"></i>
-              <span class="legend-label">Date de modification</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 mt-4 mb-4">
-        <div class="card border-0 shadow-lg rounded-4 bg-white">
-          <div class="card-header bg-gradient text-white rounded-top-4" style="background: linear-gradient(90deg, #06BBCC 0%, #3b82f6 100%);">
-            <h4 class="mb-0 fw-bold"><i class="fas fa-history me-2"></i>Historique des modifications</h4>
-          </div>
-          <div class="card-body p-0">
-            <div *ngIf="projectHistory.length === 0" class="text-muted text-center py-4">Aucune modification enregistrée.</div>
-            <ul class="list-group list-group-flush" *ngIf="projectHistory.length > 0">
-              <li *ngFor="let h of projectHistory" class="list-group-item px-4 py-3 border-0 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center bg-light">
-                <div class="d-flex align-items-center gap-2">
-                  <i class="fas fa-user-edit text-primary"></i>
-                  <span class="fw-semibold">{{ h.user?.nom_user || 'Utilisateur inconnu' }}</span>
-                  <span class="ms-2">a modifié <span class="text-primary">{{ h.field }}</span></span>
-                  <span *ngIf="h.old_value !== null" class="ms-2">de <span class="text-danger">"{{ h.old_value }}"</span></span>
-                  <span class="ms-2">à <span class="text-success">"{{ h.new_value }}"</span></span>
-                </div>
-                <div class="text-muted small mt-2 mt-md-0 text-end">
-                  <i class="far fa-clock me-1"></i>{{ h.created_at | date:'dd/MM/yyyy HH:mm' }}
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      
 <!-- Delete Confirmation Dialog -->
 <ng-template #deleteDialog>
   <div class="delete-dialog-container">

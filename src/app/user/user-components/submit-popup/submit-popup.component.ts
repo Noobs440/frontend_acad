@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+
+ 
+
+
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
@@ -21,7 +25,7 @@ import { UserManagementService } from '../../../services/user-management.service
   styleUrls: ['./submit-popup.component.css'],
   providers: [DatePipe]
 })
-export class SubmitPopupComponent implements OnInit {
+export class SubmitPopupComponent implements OnInit, AfterViewInit {
   isLoadingStep1 = false;
   isLoadingStep2 = false;
   isLoadingStep3 = false;
@@ -214,6 +218,18 @@ export class SubmitPopupComponent implements OnInit {
     return this.creationForm.controls;
   }
 
+    closePopup() {
+      document.body.classList.remove('submit-popup-open');
+      this.dialogRef.close();
+    }
+
+
+
+     ngAfterViewInit(): void {
+    document.body.classList.add('submit-popup-open');
+  }
+
+
   get documentFormControl() {
     return this.documentForm.controls;
   }
@@ -347,6 +363,7 @@ export class SubmitPopupComponent implements OnInit {
   }
 
   onCancel() {
+    document.body.classList.remove('submit-popup-open');
     this.dialogRef.close();
     window.location.reload();
   }

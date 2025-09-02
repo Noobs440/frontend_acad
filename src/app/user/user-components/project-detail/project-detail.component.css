@@ -217,7 +217,7 @@ section.section.dashboard {
   top: 3em;
   right: 0;
   left: auto;
-  z-index: 1050;
+  z-index: 10;
   background: white;
   box-shadow: 0 4px 18px rgba(6,187,204,0.13);
   padding: 1.2rem 2.5rem;
