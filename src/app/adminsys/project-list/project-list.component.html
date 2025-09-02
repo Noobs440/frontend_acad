@@ -9,6 +9,7 @@
   <table class="table">
     <thead>
       <tr>
+        <th>ID du projet</th>
         <th>Titre</th>
         <th>Description</th>
         <th>Image</th>
@@ -22,6 +23,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let project of filteredProjects">
+        <td>{{ project.id }}</td>
         <td>{{ project.titre_projet }}</td>
         <td>
           <span *ngIf="!project.showFullDescription">

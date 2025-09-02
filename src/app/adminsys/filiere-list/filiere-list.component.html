@@ -13,6 +13,7 @@
       <tr>
         <th>Nom</th>
         <th>Faculté</th>
+        <th>Université</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -20,6 +21,7 @@
       <tr *ngFor="let fil of filteredFilieres">
         <td>{{ fil.nom_fil }}</td>
         <td>{{ getFacultyName(fil.tbl_faculte_id) }}</td>
+        <td>{{ getUniversityNameByFiliere(fil) }}</td>
         <td>
           <button (click)="openEditModal(fil)">Modifier</button>
           <button (click)="openConfirmDelete(fil)">Supprimer</button>

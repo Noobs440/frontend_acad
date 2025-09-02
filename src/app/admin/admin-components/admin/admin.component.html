@@ -9,14 +9,14 @@
       </a>
       <i #toggleSidebarBtn (click)="toggleSidebar()"  class="bi bi-list toggle-sidebar-btn d-lg-none"></i>
     </div><!-- End Logo -->
-
+<!--
     <div class="search-bar">
       <form class="search-form d-flex align-items-center" (submit)="$event.preventDefault()">
         <input type="text" name="query" placeholder="rechercher un projet..." title="Enter search keyword"
           [value]="searchQuery" (input)="onSearchInputChange($event)" autocomplete="off">
         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
       </form>
-    </div><!-- End Search Bar -->
+    </div> End Search Bar -->
 
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
@@ -132,7 +132,7 @@
       <li class="nav-item">
         <a class="nav-link " [routerLink]="['/admin/dashboard']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <i class="bi bi-grid"></i>
-          <span>Admin Dashboard</span>
+          <span>My Dashboard</span>
         </a>
       </li><!-- End Dashboard Nav -->
 

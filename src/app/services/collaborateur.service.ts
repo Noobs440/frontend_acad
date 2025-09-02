@@ -7,6 +7,8 @@ export interface Collaborateur {
   id?: number;
   nom_collab: string;
   email_collab: string;
+  tbl_projet_id?: number;
+  projet?: any;
 }
 
 @Injectable({

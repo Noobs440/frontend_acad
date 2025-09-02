@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FiliereService } from '../../services/filiere.service';
+import { FacultyService } from '../../services/faculty.service';
+import { UniversityService } from '../../services/university.service';
 import { normalizeString } from '../../utils/string-utils';
 
 @Component({
@@ -12,6 +14,7 @@ export class FiliereListComponent implements OnInit {
   filieres: any[] = [];
   filteredFilieres: any[] = [];
   faculties: any[] = [];
+  universities: any[] = [];
 
   searchTerm = '';
   sortAsc = true;
@@ -39,11 +42,12 @@ export class FiliereListComponent implements OnInit {
 
   isSaving: boolean = false;
 
-  constructor(private filiereService: FiliereService) {}
+  constructor(private filiereService: FiliereService, private facultyService: FacultyService, private universityService: UniversityService) {}
 
   ngOnInit(): void {
     this.loadFilieres();
     this.loadFaculties();
+    this.universityService.getUniversities().subscribe(data => this.universities = data);
   }
 
   loadFilieres(): void {
@@ -188,5 +192,12 @@ export class FiliereListComponent implements OnInit {
   cancelDelete(): void {
     this.showConfirmDeleteModal = false;
     this.filiereToDelete = null;
+  }
+
+  getUniversityNameByFiliere(filiere: any): string {
+    const fac = this.faculties.find(f => f.id === filiere.tbl_faculte_id);
+    if (!fac) return 'Université inconnue';
+    const univ = this.universities.find(u => u.id === fac.tbl_universite_id);
+    return univ ? univ.nom_univ : 'Université inconnue';
   }
 }

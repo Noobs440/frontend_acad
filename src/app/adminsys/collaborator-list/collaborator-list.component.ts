@@ -53,7 +53,16 @@ export class CollaboratorListComponent implements OnInit {
 
   loadCollaborators(): void {
     this.collaborateurService.getCollaborateurs().subscribe(data => {
-      this.collaborators = data;
+      // Associer le projet à chaque collaborateur si non déjà fait
+      this.collaborators = data.map(collab => {
+        if (!collab.projet && collab.tbl_projet_id) {
+          // Cherche le projet dans la liste des suggestions ou via le service
+          this.projetService.getProjectById(collab.tbl_projet_id).subscribe(proj => {
+            collab.projet = proj;
+          });
+        }
+        return collab;
+      });
       this.applyFilters();
     });
   }
