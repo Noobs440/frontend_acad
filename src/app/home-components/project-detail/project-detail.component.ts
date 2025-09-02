@@ -47,7 +47,7 @@ export class ProjectDetailComponent implements OnInit {
       },
       error: err => {
         this.loadingComments = false;
-        console.error('Erreur chargement commentaires', err);
+
       },
     });
   }
@@ -203,7 +203,7 @@ export class ProjectDetailComponent implements OnInit {
         this.loadComments(true);
       },
       error: err => {
-        console.error('Erreur ajout commentaire', err);
+
         this.commentErrors.comment = 'Erreur lors de l\'ajout du commentaire.';
       }
     });

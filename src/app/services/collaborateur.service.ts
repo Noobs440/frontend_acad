@@ -20,9 +20,9 @@ export class CollaborateurService {
 
   getCollaborateurs(): Observable<Collaborateur[]> {
     return this.http.get<Collaborateur[]>(this.apiUrl).pipe(
-      tap(response => console.table(response)),
+
       catchError(error => {
-        console.error('Erreur lors de la récupération des collaborateurs:', error);
+        
         return of([]);
       })
     );
@@ -43,9 +43,9 @@ updateCollaborateur(id: number, nom_collab:string, email_collab:string, tbl_proj
 
    getCollaborateursByProject(id:number): Observable<any[]>{
     return this.http.get<any[]>(`http://localhost:8000/api/usecases/listing/projet/collaborateurs/${id}`).pipe(
-      tap((response)=>console.table(response)),
+      
       catchError((error) =>{
-        console.log(error);
+        
         return of([]);
       })
     )

@@ -12,7 +12,7 @@ export class NiveauService {
     searchNiveaux(query: string): Observable<any[]> {
       return this.http.get<any[]>(`http://localhost:8000/api/ressources/niveaux/search?q=${encodeURIComponent(query)}`).pipe(
         catchError((error) => {
-          console.log(error);
+        
           return of([]);
         })
       );
@@ -27,9 +27,9 @@ export class NiveauService {
 
   getNiveaux(): Observable<any[]>{
     return this.http.get<any[]>('http://localhost:8000/api/ressources/niveaux').pipe(
-      tap((response)=>console.table(response)),
+      
       catchError((error) =>{
-        console.log(error);
+        
         return of([]);
       })
     )

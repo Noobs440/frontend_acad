@@ -104,7 +104,7 @@ export class LoginPopupComponent {
         this.successMessage = 'Votre mot de passe a été réinitialisé avec succès.';
       },
       error: err => {
-        console.error(err);
+
         this.isLoading = false;
         this.errorMessage = 'Aucun utilisateur trouver avec cette adresse email';
         alert(this.errorMessage);
@@ -130,7 +130,7 @@ export class LoginPopupComponent {
         this.showResetPasswordForm = true;
       },
       error: err => {
-        console.error(err);
+
         this.isLoading = false;
         this.errorMessage = 'Code de vérification invalide.';
         alert(this.errorMessage);
@@ -155,7 +155,7 @@ export class LoginPopupComponent {
         this.showVerification = true;
       },
       error: err => {
-        console.error(err);
+
         this.isLoading = true;
         this.errorMessage = 'Erreur lors de l\'envoi du code de vérification.';
         alert(this.errorMessage);
@@ -195,7 +195,7 @@ export class LoginPopupComponent {
       this.isLoading = true;
       this.userService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
         next: value => {
-          console.log(value)
+
 
           const queryParams = {
             token: value.access_token,
@@ -231,10 +231,10 @@ export class LoginPopupComponent {
           this.dialogRef.close();
         },
         error: err => {
-          console.error(err);
+
           this.isLoading = false;
           this.errorMessage = "Addresse email ou mot de passe invalide";
-          console.log('Erreur login, errorMessage:', this.errorMessage);
+
         },
         complete: () => {
           this.isLoading = false;
@@ -276,7 +276,7 @@ export class LoginPopupComponent {
     });
 
     dialogRef2.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+
     });
   }
 
@@ -289,7 +289,7 @@ export class LoginPopupComponent {
     });
 
     dialogRef3.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+
     });
   }
 }

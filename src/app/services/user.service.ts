@@ -165,7 +165,7 @@ isUserLoggedIn$() {
     this.http.get<any>(`${this.apiUrl}/user`, this.getAuthHeaders())
       .pipe(
         catchError(err => {
-          console.error('Erreur lors du chargement du profil', err);
+          
           return of(null);
         })
       )
@@ -203,14 +203,9 @@ isUserLoggedIn$() {
    */
   updatePhoto(formData: FormData): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/user/photo`, formData, this.getAuthHeaders()).pipe(
-      tap(res => {
-        if (res.photo) {
-          const currentUser = this.userSubject.value || {};
-          this.userSubject.next({ ...currentUser, photo: res.photo });
-        }
-      }),
+      
       catchError(err => {
-        console.error('Erreur update photo', err);
+      
         throw err;
       })
     );
