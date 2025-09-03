@@ -13,7 +13,7 @@ export interface Superviseur {
 })
 export class SuperviseurService {
 
-  private apiBaseUrl = 'http://localhost:8000/api/ressources/superviseurs';
+  private apiBaseUrl = 'https://backend-acad.onrender.com/api/ressources/superviseurs';
 
   constructor(private http: HttpClient) {}
 

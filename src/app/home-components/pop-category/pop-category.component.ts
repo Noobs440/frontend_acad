@@ -68,7 +68,7 @@ export class PopCategoryComponent implements OnInit {
   selectedLevel: string | null = null;
   // ...
 
-  private baseUrl: string = 'http://localhost:8000';
+  private baseUrl: string = 'https://backend-acad.onrender.com';
 
   constructor(
     private acceuilService: AcceuilService,

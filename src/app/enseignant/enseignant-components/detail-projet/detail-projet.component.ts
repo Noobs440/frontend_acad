@@ -15,9 +15,9 @@ export class DetailProjetComponent {
     if (!lien_doc) return '#';
     if (lien_doc.startsWith('http')) return lien_doc;
     if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
-      return `http://localhost:8000/${lien_doc.replace(/^\/+/, '')}`;
+      return `https://backend-acad.onrender.com/${lien_doc.replace(/^\/+/, '')}`;
     }
-    return `http://localhost:8000/storage/${lien_doc.replace(/^\/+/, '')}`;
+    return `https://backend-acad.onrender.com/storage/${lien_doc.replace(/^\/+/, '')}`;
   }
   documents: any[]=[];
 
@@ -66,7 +66,7 @@ export class DetailProjetComponent {
 
 
   getFullImageUrl(imagePath: string): string {
-    return `${'http://localhost:8000'}${imagePath}`;
+    return `${'https://backend-acad.onrender.com'}${imagePath}`;
   }
 
   actionCellRenderer() {

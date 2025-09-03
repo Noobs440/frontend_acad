@@ -10,18 +10,18 @@ export class ProjetstatusService {
   constructor(private http:HttpClient) { }
 
   approveProject(id:number):Observable<any>{
-    return this.http.get<any>(`http://localhost:8000/api/usecases/status/approved/pending/${id}`);
+    return this.http.get<any>(`https://backend-acad.onrender.com/api/usecases/status/approved/pending/${id}`);
   }
 
   rejectProject(id:number, reason:string):Observable<any>{
     // Utiliser PATCH pour la mise à jour du statut
-    return this.http.patch<any>(`http://localhost:8000/api/usecases/status/rejected/pending/${id}`,
+    return this.http.patch<any>(`https://backend-acad.onrender.com/api/usecases/status/rejected/pending/${id}`,
       { motif: reason }
     );
   }
 
   pendingProject(id:number):Observable<any>{
-    return this.http.get<any>(`http://localhost:8000/api/usecases/status/pending/${id}`);
+    return this.http.get<any>(`https://backend-acad.onrender.com/api/usecases/status/pending/${id}`);
   }
 
 

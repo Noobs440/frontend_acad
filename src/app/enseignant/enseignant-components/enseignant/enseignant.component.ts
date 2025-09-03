@@ -150,6 +150,6 @@ export class EnseignantComponent implements OnInit {
     if (!imagePath) {
       return 'assets/img/default-profile.png';
     }
-    return imagePath.startsWith('http') ? imagePath : `http://localhost:8000/${imagePath.replace(/^\/+/, '')}`;
+    return imagePath.startsWith('http') ? imagePath : `https://backend-acad.onrender.com/${imagePath.replace(/^\/+/, '')}`;
   }
 }
