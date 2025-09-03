@@ -71,7 +71,7 @@ export class HeroSectionComponent {
         this.isLoading=false;
       },
       error: (err) => {
-        console.error(err);
+
         this.isLoading=false;
       },
       complete: () =>{

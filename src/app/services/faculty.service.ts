@@ -12,9 +12,9 @@ export class FacultyService {
 
   getFaculties(): Observable<any[]>{
     return this.http.get<any[]>('http://localhost:8000/api/ressources/facultes').pipe(
-      tap((response)=>console.table(response)),
+    
       catchError((error) =>{
-        console.log(error);
+        
         return of([]);
       })
     )
@@ -34,9 +34,9 @@ export class FacultyService {
 
     getUniversities(): Observable<any[]>{
     return this.http.get<any[]>('http://localhost:8000/api/ressources/universites').pipe(
-      tap((response)=>console.table(response)),
+      
       catchError((error) =>{
-        console.log(error);
+        
         return of([]);
       })
     )

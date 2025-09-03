@@ -89,10 +89,10 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       this.userService.inscription(this.registerForm.value.username, this.registerForm.value.email, this.registerForm.value.password, this.registerForm.value.filiere,this.registerForm.value.matricule).subscribe({
         next: value => {
-          console.log(value);
+
         },
         error: err => {
-          console.error(err);
+
           this.verifyAccountMessage = "Ce compte d'utilisateur existe deja";
           this.isLoading = false;
         },
@@ -131,10 +131,10 @@ onVerifyCode() {
       verificationPayload.matricule
     ).subscribe({
       next: value => {
-        console.log('✅ Compte créé avec succès :', value);
+
       },
       error: err => {
-        console.error('❌ Erreur de vérification :', err);
+
         this.verifyCodeErrorMessage = "Code de vérification invalide ou informations incorrectes.";
         this.isLoading = false;
       },
@@ -155,7 +155,7 @@ onVerifyCode() {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+
     });
   }
   openLoginDialog(): void {

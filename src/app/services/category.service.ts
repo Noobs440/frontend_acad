@@ -12,9 +12,9 @@ export class CategoryService {
 
   getCategories(): Observable<any[]>{
     return this.http.get<any[]>('http://localhost:8000/api/ressources/categories').pipe(
-      tap((response)=>console.table(response)),
+      
       catchError((error) =>{
-        console.log(error);
+        
         return of([]);
       })
     )

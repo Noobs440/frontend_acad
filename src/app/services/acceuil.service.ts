@@ -12,9 +12,9 @@ export class AcceuilService {
 
   getProjectsByOrder(): Observable<any[]>{
     return this.http.get<any[]>('http://localhost:8000/api/usecases/acceuil/projets/ordre').pipe(
-      tap((response)=>console.table(response)),
+      
       catchError((error) =>{
-        console.log(error);
+  
         return of([]);
       })
     )
@@ -22,9 +22,9 @@ export class AcceuilService {
 
   getCategoriesWithProjectNumber(): Observable<any[]>{
     return this.http.get<any[]>('http://localhost:8000/api/usecases/acceuil/categories').pipe(
-      tap((response)=>console.table(response)),
+      
       catchError((error) =>{
-        console.log(error);
+        
         return of([]);
       })
     )

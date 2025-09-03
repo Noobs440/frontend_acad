@@ -28,7 +28,7 @@ export class NotificationService {
     return this.http.get<any[]>(`${this.baseUrl}/notifications`, this.getAuthHeaders())
       .pipe(
         catchError((error) => {
-          console.error('Erreur lors de la récupération des notifications', error);
+          
           return of([]);
         })
       );

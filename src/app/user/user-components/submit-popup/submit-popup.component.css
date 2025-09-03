@@ -71,8 +71,49 @@ body.submit-popup-open {
     width: 98vw;
     padding: 1rem 0.5rem;
   }
+  .submit-popup-close-btn {
+    top: 8px;
+    right: 8px;
+    font-size: 1.2rem;
+  }
+  h2 {
+    font-size: 1.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+  .form-group input,
+  .form-group select {
+    font-size: 1rem !important;
+    padding: 0.5rem !important;
+  }
+  .step.active {
+    padding: 0.5rem 0.2rem;
+  }
+  img {
+    height: 120px !important;
+    object-fit: cover;
+  }
+  .popup-actions {
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 0.5rem 1rem 0.5rem;
+  }
 }
 
+@media (max-width: 900px) {
+  .submit-popup-container {
+    width: 98vw;
+    max-width: 98vw;
+    padding: 1.2rem 0.7rem;
+  }
+  h2 {
+    font-size: 2rem !important;
+  }
+  .form-group input,
+  .form-group select {
+    font-size: 1.1rem !important;
+    padding: 0.7rem !important;
+  }
+}
 @keyframes fadeInPopup {
   from {
     opacity: 0;

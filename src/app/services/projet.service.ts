@@ -54,9 +54,7 @@ export class ProjetService {
   }
   getProjectsTypes(): Observable<any[]> {
     return this.http.get<any[]>(`${this.API_BASE}/usecases/listing/getprojectstype`).pipe(
-      tap((response) => console.table(response)),
-      catchError((error) => {
-        console.error(error);
+      catchError(() => {
         return of([]);
       })
     );
@@ -107,18 +105,18 @@ resubmitProject(id: number): Observable<any> {
   // ✅ Compter les projets par statut (utile pour les stats ou dashboard)
   countProjectsByStatus(): Observable<any[]> {
     return this.http.get<any[]>(`${this.API_BASE}/usecases/listing/count`).pipe(
-      tap((response) => console.table(response)),
+      
       catchError((error) => {
-        console.error(error);
+        
         return of([]);
       })
     );
   }
   getNiveaux(): Observable<any[]>{
     return this.http.get<any[]>('http://localhost:8000/api/ressources/niveaux').pipe(
-      tap((response)=>console.table(response)),
+      
       catchError((error) =>{
-        console.log(error);
+        
         return of([]);
       })
     )
@@ -126,9 +124,9 @@ resubmitProject(id: number): Observable<any> {
 
 getCategories(): Observable<any[]>{
     return this.http.get<any[]>('http://localhost:8000/api/ressources/categories').pipe(
-      tap((response)=>console.table(response)),
+      
       catchError((error) =>{
-        console.log(error);
+
         return of([]);
       })
     )
