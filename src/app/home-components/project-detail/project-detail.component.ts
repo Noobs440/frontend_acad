@@ -255,19 +255,19 @@ export class ProjectDetailComponent implements OnInit {
     if (!projectImage) {
       return '';
     }
-    return projectImage.startsWith('http') ? projectImage : `https://backend-acad.onrender.com/${projectImage.replace(/^\/+/, '')}`;
+    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
   }
 
   getFullDocumentUrl(lien_doc: string): string {
     if (!lien_doc) return '#';
     if (lien_doc.startsWith('http')) return lien_doc;
     if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
-      return `https://backend-acad.onrender.com/${lien_doc.replace(/^\/+/, '')}`;
+      return `http://localhost:8000/${lien_doc.replace(/^\/+/, '')}`;
     }
-    return `https://backend-acad.onrender.com/storage/${lien_doc.replace(/^\/+/, '')}`;
+    return `http://localhost:8000/storage/${lien_doc.replace(/^\/+/, '')}`;
   }
 
   getFullDocument(documentPath: string) {
-    return `https://backend-acad.onrender.com${documentPath}`;
+    return `http://localhost:8000${documentPath}`;
   }
 }

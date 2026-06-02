@@ -19,7 +19,7 @@ export interface Comment {
 })
 export class CommentService {
 
-  private apiUrl = 'https://backend-acad.onrender.com/api';
+  private apiUrl = 'http://localhost:8000/api';
 
   constructor(private http: HttpClient) { }
 

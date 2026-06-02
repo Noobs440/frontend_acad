@@ -16,7 +16,7 @@ export interface Collaborateur {
 })
 export class CollaborateurService {
 
-  private apiUrl = 'https://backend-acad.onrender.com/api/ressources/collaborateurs';
+  private apiUrl = 'http://localhost:8000/api/ressources/collaborateurs';
 
   constructor(private http: HttpClient) {}
 
@@ -32,7 +32,7 @@ export class CollaborateurService {
 
   // Ajout collaborateur via endpoint usecases/add/collaborateur/projet/{id}
   addCollaborateur(nom_collab: string, email_collab: string, projet_id: string, user_id: number): Observable<any> {
-    return this.http.post<any>(`https://backend-acad.onrender.com/api/usecases/add/collaborateur/projet/${projet_id}`, { nom_collab, email_collab, user_id });
+    return this.http.post<any>(`http://localhost:8000/api/usecases/add/collaborateur/projet/${projet_id}`, { nom_collab, email_collab, user_id });
   }
 
   deleteCollaborateur(id: number | string): Observable<void> {
@@ -40,11 +40,11 @@ export class CollaborateurService {
   }
 
 updateCollaborateur(id: number, nom_collab:string, email_collab:string, tbl_projet_id:number, user_id:number): Observable<any> {
-  return this.http.put<any>(`https://backend-acad.onrender.com/api/ressources/collaborateurs/${id}`,{nom_collab,email_collab,tbl_projet_id,user_id });
+  return this.http.put<any>(`http://localhost:8000/api/ressources/collaborateurs/${id}`,{nom_collab,email_collab,tbl_projet_id,user_id });
 }
 
    getCollaborateursByProject(id:number): Observable<any[]>{
-    return this.http.get<any[]>(`https://backend-acad.onrender.com/api/usecases/listing/projet/collaborateurs/${id}`).pipe(
+    return this.http.get<any[]>(`http://localhost:8000/api/usecases/listing/projet/collaborateurs/${id}`).pipe(
       
       catchError((error) =>{
         

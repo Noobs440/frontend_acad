@@ -11,7 +11,7 @@ export class CategoryService {
   constructor(private http:HttpClient , private router:Router) { }
 
   getCategories(): Observable<any[]>{
-    return this.http.get<any[]>('https://backend-acad.onrender.com/api/ressources/categories').pipe(
+    return this.http.get<any[]>('http://localhost:8000/api/ressources/categories').pipe(
       
       catchError((error) =>{
         
@@ -21,23 +21,23 @@ export class CategoryService {
   }
 
   addCategory(nom_cat:string , descript_cat:string, icone:string):Observable<any>{
-    return this.http.post<any>('https://backend-acad.onrender.com/api/ressources/categories', {nom_cat , descript_cat, icone});
+    return this.http.post<any>('http://localhost:8000/api/ressources/categories', {nom_cat , descript_cat, icone});
   }
 
   deleteCategory(id:string):Observable<any>{
-    return this.http.delete(`https://backend-acad.onrender.com/api/ressources/categories/${id}`);
+    return this.http.delete(`http://localhost:8000/api/ressources/categories/${id}`);
   }
 
   updateCategory(id:string ,nom_cat:string , descript_cat:string, icone:string):Observable<any>{
-    return this.http.put<any>(`https://backend-acad.onrender.com/api/ressources/categories/${id}`, {nom_cat , descript_cat, icone});
+    return this.http.put<any>(`http://localhost:8000/api/ressources/categories/${id}`, {nom_cat , descript_cat, icone});
   }
 addCategoryMultipart(formData: FormData) {
-  return this.http.post<any>('https://backend-acad.onrender.com/api/ressources/categories', formData);
+  return this.http.post<any>('http://localhost:8000/api/ressources/categories', formData);
 }
 
 updateCategoryMultipart(id: number, formData: FormData) {
   formData.append('_method', 'PUT'); // important !
-  return this.http.post<any>(`https://backend-acad.onrender.com/api/ressources/categories/${id}`, formData);
+  return this.http.post<any>(`http://localhost:8000/api/ressources/categories/${id}`, formData);
 }
 
 
