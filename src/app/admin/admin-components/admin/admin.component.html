@@ -36,44 +36,40 @@
             </span>
           </a>
 
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications p-0 border-0 shadow-lg" style="min-width: 350px; max-width: 400px; max-height: 420px; overflow-y: auto; background: #fff; border-radius: 16px;">
-            <li class="d-flex justify-content-between align-items-center px-3 pt-3 pb-2 border-bottom" style="background: #f5f6fa; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications-dropdown p-0 border-0 shadow-lg">
+            <li class="notifications-header d-flex justify-content-between align-items-center px-3 pt-3 pb-2 border-bottom">
               <span class="fw-bold text-primary"><i class="bi bi-bell me-1"></i> Notifications ({{ notifications.length }})</span>
-              <button class="btn btn-sm btn-outline-primary px-2 py-0" (click)="markAllNotificationAsRead()">Tout marquer comme lu</button>
+              <button class="btn btn-sm btn-outline-primary px-2 py-0" (click)="markAllNotificationAsRead()" [disabled]="notifications.length === 0">Tout marquer comme lu</button>
             </li>
 
-            <li *ngIf="notifications.length === 0" class="text-center text-muted py-4">
+            <li *ngIf="notifications.length === 0" class="notification-empty text-center">
               Aucune notification
             </li>
 
-            <ng-container *ngIf="notifications.length > 0; else noNotif">
-              <li *ngFor="let notification of notifications" class="dropdown-item notification-item px-3 py-3 mb-0 position-relative bg-white border-0 d-flex align-items-start gap-3 notification-fb-style" style="transition: background 0.2s; border-bottom: 1px solid #f0f0f0; cursor:pointer; border-radius:0;">
-                <div class="d-flex flex-shrink-0 align-items-center justify-content-center" style="width:44px; height:44px; background:#e7f3ff; border-radius:50%;">
-                  <i *ngIf="notification.data.status" class="bi bi-arrow-repeat text-info fs-4"></i>
-                  <i *ngIf="!notification.data.status && notification.data.type === 'collaborateur_added'" class="bi bi-person-plus text-primary fs-4"></i>
-                  <i *ngIf="!notification.data.status && notification.data.type !== 'collaborateur_added'" class="bi bi-info-circle text-info fs-4"></i>
+            <ng-container *ngIf="notifications.length > 0">
+              <li *ngFor="let notification of notifications" (click)="openProjectFromNotification(notification)" class="dropdown-item notification-item">
+                <div class="notification-badge">
+                  <i *ngIf="notification.data.type === 'project_submitted'" class="bi bi-envelope-check text-success fs-4"></i>
+                  <i *ngIf="notification.data.type === 'collaborateur_added'" class="bi bi-person-plus text-primary fs-4"></i>
+                  <i *ngIf="notification.data.type !== 'project_submitted' && notification.data.type !== 'collaborateur_added'" class="bi bi-info-circle text-info fs-4"></i>
                 </div>
-                <div class="flex-grow-1">
-                  <div class="d-flex align-items-center mb-1">
-                    <span *ngIf="notification.data.added_by_name" class="fw-semibold text-secondary me-2">{{ notification.data.added_by_name }}</span>
-                    <span class="fw-bold text-dark">{{ notification.data.project_title || 'Notification' }}</span>
+                <div class="flex-grow-1 notification-content">
+                  <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="notification-title">{{ notification.data.project_title || 'Notification' }}</span>
+                    <span class="notification-time">{{ notification.created_at | date:'medium' }}</span>
                   </div>
-                  <div class="text-muted small mb-1">{{ notification.created_at | date:'medium' }}</div>
                   <div class="mb-1">
-                    <span *ngIf="notification.data.status" class="badge bg-info me-2">Changement d'état</span>
-                    <span *ngIf="!notification.data.status && notification.data.type === 'collaborateur_added'" class="badge bg-primary me-2">Collaborateur ajouté</span>
-                    <span *ngIf="!notification.data.status && notification.data.type !== 'collaborateur_added'" class="badge bg-success me-2">Soumission</span>
+                    <span *ngIf="notification.data.status" class="badge bg-info notification-chip">Changement d'état</span>
+                    <span *ngIf="!notification.data.status && notification.data.type === 'collaborateur_added'" class="badge bg-primary notification-chip">Collaborateur ajouté</span>
+                    <span *ngIf="!notification.data.status && notification.data.type !== 'collaborateur_added'" class="badge bg-success notification-chip">Soumission</span>
                   </div>
-                  <div class="mb-1">{{ notification.data.message }}</div>
+                  <p class="notification-message mb-0">{{ notification.data.message }}</p>
                 </div>
                 <div class="align-self-center ms-2">
-                  <button class="btn btn-outline-primary btn-sm px-2 py-0" (click)="markNotificationAsRead(notification.id)"><i class="bi bi-check2"></i></button>
+                  <button class="btn btn-outline-primary btn-sm notification-action" (click)="markNotificationAsRead(notification.id); $event.stopPropagation()"><i class="bi bi-check2"></i></button>
                 </div>
               </li>
             </ng-container>
-            <ng-template #noNotif>
-              <li class="text-center text-muted py-4">Aucune notification</li>
-            </ng-template>
           </ul>
 
         </li><!-- End Notification Nav -->

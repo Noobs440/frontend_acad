@@ -36,7 +36,7 @@ export class UserManagementService {
   }
 
 searchUsersByEmail(term: string): Observable<any[]> {
-  return this.http.get<any[]>(`/api/users?role=user&search=${term}`);
+  return this.http.get<any[]>(`http://localhost:8000/api/users?role=user&search=${term}`);
 }
 
 

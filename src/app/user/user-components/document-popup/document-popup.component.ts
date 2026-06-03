@@ -14,8 +14,6 @@ import Swal from 'sweetalert2';
   styleUrls: ['./document-popup.component.css']
 })
 export class DocumentPopupComponent implements OnInit {
-  // Spinner pour la recherche de document
-  isLoadingSearch: boolean = false;
   // Spinner pour l'ajout de superviseur
   isLoadingSupervisor: boolean = false;
   isDeletingCollaborator: string | null = null;
@@ -36,10 +34,9 @@ export class DocumentPopupComponent implements OnInit {
   submittedSupervisor = false;
 
   foundUser: any = null;
-  showPasswordField: boolean = false;
+  userSuggestions: any[] = [];
   isLoading: boolean = false;
-  isLoadingStep5: boolean = false;
-  currentStep: number = 5;
+  isLoadingSearch: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -157,8 +154,7 @@ export class DocumentPopupComponent implements OnInit {
 
     this.collaboratorForm = this.fb.group({
       name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['']
+      email: ['', [Validators.required, Validators.email]]
     });
 
     this.supervisorForm = this.fb.group({
@@ -185,43 +181,51 @@ export class DocumentPopupComponent implements OnInit {
 
   onCollaboratorEmailInput() {
     const emailControl = this.collaboratorForm.get('email');
-    if (!emailControl || emailControl.invalid) {
-      emailControl?.markAsTouched();
-      this.submittedCollaborator = true;
+    if (!emailControl) {
       return;
     }
-    const email = emailControl.value;
-    this.userManagementService.findUserByEmail(email).subscribe(user => {
-      if (user) {
-        this.foundUser = user;
-        this.showPasswordField = false;
-        this.collaboratorForm.get('name')?.setValue(user.nom_user);
-        this.collaboratorForm.get('name')?.disable();
-        this.collaboratorForm.get('email')?.disable();
-      } else {
-        const confirmDialog = this.dialog.open(InfoDialogComponent, {
-          width: '350px',
-          data: {
-            title: 'Utilisateur introuvable',
-            message: "Cet email n'existe pas. Voulez-vous créer ce collaborateur ?",
-            confirm: true
-          }
-        });
-        confirmDialog.afterClosed().subscribe(result => {
-          if (result === true) {
-            this.foundUser = null;
-            this.showPasswordField = true;
-            this.collaboratorForm.get('name')?.reset();
-            this.collaboratorForm.get('name')?.enable();
-            this.collaboratorForm.get('email')?.enable();
-            this.collaboratorForm.get('password')?.reset();
-          } else {
-            this.foundUser = null;
-            this.showPasswordField = false;
-          }
-        });
+
+    const email = (emailControl.value || '').trim();
+    if (!email) {
+      this.userSuggestions = [];
+      this.foundUser = null;
+      this.collaboratorForm.get('name')?.enable();
+      return;
+    }
+
+    this.isLoadingSearch = true;
+    this.userManagementService.searchUsersByEmail(email).subscribe({
+      next: users => {
+        this.userSuggestions = users || [];
+        this.isLoadingSearch = false;
+
+        const exact = this.userSuggestions.find((u: any) => u.email?.toLowerCase() === email.toLowerCase());
+        if (exact) {
+          this.selectSuggestedUser(exact);
+        } else {
+          this.foundUser = null;
+          this.collaboratorForm.get('name')?.enable();
+        }
+      },
+      error: err => {
+        console.error('Erreur recherche utilisateur:', err);
+        this.userSuggestions = [];
+        this.isLoadingSearch = false;
+        this.foundUser = null;
+        this.collaboratorForm.get('name')?.enable();
       }
     });
+  }
+
+  selectSuggestedUser(user: any): void {
+    this.foundUser = user;
+    this.collaboratorForm.patchValue({
+      name: user.nom_user || user.name || '',
+      email: user.email
+    });
+    this.collaboratorForm.get('name')?.disable();
+    this.collaboratorForm.get('email')?.disable();
+    this.userSuggestions = [];
   }
 
   setFormType(type: string) {
@@ -273,50 +277,36 @@ export class DocumentPopupComponent implements OnInit {
       this.isLoading = true;
       const email = this.collaboratorForm.value.email;
       const name = this.collaboratorForm.value.name;
+      const userId = this.foundUser?.id || 0;
 
       const finishCollaboratorForm = () => {
         this.isLoading = false;
         this.collaboratorForm.reset();
         this.foundUser = null;
-        this.showPasswordField = false;
         this.collaboratorForm.get('email')?.enable();
         this.collaboratorForm.get('name')?.enable();
-        this.collaboratorForm.get('password')?.reset();
-        window.location.reload();
+        this.dialogRef.close(true);
       };
 
       if (this.isEditMode) {
         this.colService.updateCollaborateur(
-          this.data.collaborator.id, name, email, this.id, this.user_id
+          this.data.collaborator.id,
+          name,
+          email,
+          this.id,
+          this.data.collaborator.user_id || userId
         ).subscribe({
           next: () => Swal.fire('Succès', 'Collaborateur modifié avec succès.', 'success'),
           error: (err) => { console.error(err); Swal.fire('Erreur', 'Erreur lors de la modification du collaborateur.', 'error'); },
           complete: finishCollaboratorForm
         });
       } else {
-        if (this.foundUser) {
-          this.colService.addCollaborateur(this.foundUser.nom_user, this.foundUser.email, this.id, this.foundUser.id).subscribe({
-            next: () => Swal.fire('Succès', 'Collaborateur ajouté avec succès !', 'success'),
-            error: (err) => { console.error(err); Swal.fire('Erreur', 'Erreur lors de l\'ajout du collaborateur.', 'error'); },
-            complete: finishCollaboratorForm
-          });
-        } else {
-          const password = this.collaboratorForm.value.password;
-          if (!password) { Swal.fire('Erreur', 'Veuillez saisir un mot de passe pour créer l\'utilisateur.', 'error'); this.isLoading = false; return; }
-          const newUser = { nom_user: name, email: email, password: password, role: 'user' };
-          this.userManagementService.createUser(newUser).subscribe({
-            next: (createdUser) => {
-              this.colService.addCollaborateur(createdUser.nom_user, createdUser.email, this.id, createdUser.id).subscribe({
-                next: () => Swal.fire('Succès', 'Utilisateur créé et collaborateur ajouté !', 'success'),
-                error: (err) => { console.error(err); Swal.fire('Erreur', 'Erreur lors de l\'ajout du collaborateur.', 'error'); },
-                complete: finishCollaboratorForm
-              });
-            },
-            error: (err) => { console.error(err); Swal.fire('Erreur', 'Erreur lors de la création de l\'utilisateur.', 'error'); this.isLoading = false; }
-          });
-        }
+        this.colService.addCollaborateur(name, email, this.id, userId).subscribe({
+          next: () => Swal.fire('Succès', 'Collaborateur ajouté avec succès !', 'success'),
+          error: (err) => { console.error(err); Swal.fire('Erreur', 'Erreur lors de l\'ajout du collaborateur.', 'error'); },
+          complete: finishCollaboratorForm
+        });
       }
-
     } else if (this.formType === 'supervisor') {
       this.submittedSupervisor = true;
       if (this.supervisorForm.invalid) return;
@@ -329,8 +319,4 @@ export class DocumentPopupComponent implements OnInit {
     }
   }
 
-  nextStep() {
-    if (this.formType === 'collaborator') { this.formType = 'admin'; this.currentStep++; }
-    else if (this.formType === 'document') { this.formType = 'collaborator'; this.currentStep++; }
-  }
 }

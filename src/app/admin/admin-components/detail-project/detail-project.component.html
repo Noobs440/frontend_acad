@@ -71,11 +71,11 @@
                 <span class="field-label">Description :</span>
                 <span *ngIf="!isDescriptionExpanded">
                   <span class="desc-ellipsis">{{ description }}</span>
-                  <a *ngIf="description.length > 0" class="desc-toggle" (click)="isDescriptionExpanded = true">Voir plus</a>
+                  <a *ngIf="(description || '').length > 0" class="desc-toggle" (click)="isDescriptionExpanded = true">Voir plus</a>
                 </span>
                 <span *ngIf="isDescriptionExpanded">
                   {{ description }}
-                  <a *ngIf="description.length > 0" class="desc-toggle" (click)="isDescriptionExpanded = false">Voir moins</a>
+                  <a *ngIf="(description || '').length > 0" class="desc-toggle" (click)="isDescriptionExpanded = false">Voir moins</a>
                 </span>
               </div>
               <div *ngIf="!isMetaExpanded">
@@ -160,7 +160,12 @@
             <!-- Collaborateurs -->
             <div class="card shadow-sm rounded-4 border-0 mb-4 w-100">
               <div class="card-body">
-                <h4 class="fw-bold mb-3">Collaborateurs liés</h4>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h4 class="fw-bold mb-0">Collaborateurs liés</h4>
+                  <button *ngIf="projectStatus === 'Approved'" class="btn btn-sm btn-outline-primary" type="button" (click)="toggleAddCollaboratorForm()">
+                    + Ajouter un collaborateur
+                  </button>
+                </div>
                 <div class="download-catalog">
                   <div
                     *ngFor="let collaborator of collaborators | slice:0:(isCollaboratorsExpanded ? collaborators.length : 2)"
@@ -170,11 +175,88 @@
                       <i class="bi bi-person text-secondary me-2"></i>
                       <span>{{ collaborator.nom_collab }} <span class="text-muted">{{ collaborator.email_collab }}</span></span>
                     </div>
+                    <div *ngIf="projectStatus === 'Approved'">
+                      <button class="btn btn-sm btn-outline-danger" type="button" (click)="removeCollaborator(collaborator.id)">Supprimer</button>
+                    </div>
                   </div>
                 </div>
                 <div *ngIf="collaborators.length > 2" class="show-more text-center mt-2" (click)="isCollaboratorsExpanded = !isCollaboratorsExpanded" style="cursor:pointer;">
                   <i class="bi" [ngClass]="isCollaboratorsExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
                   <span class="ms-1">{{ isCollaboratorsExpanded ? 'Afficher moins' : 'Afficher plus' }}</span>
+                </div>
+
+                <div *ngIf="showAddCollaboratorForm" class="mt-3 p-3 bg-white border rounded-3">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Rechercher un utilisateur</label>
+                    <div class="input-group">
+                      <input
+                        class="form-control"
+                        type="email"
+                        [(ngModel)]="newCollaboratorEmail"
+                        placeholder="Entrez l'email du collaborateur"
+                        (input)="onNewCollaboratorEmailInput()"
+                        [disabled]="foundUser !== null"
+                      />
+                      <span class="input-group-text" *ngIf="isLoadingSearch">
+                        <span class="spinner-border spinner-border-sm text-primary"></span>
+                      </span>
+                    </div>
+                    <ul *ngIf="userSuggestions.length > 0 && foundUser === null" class="list-group mt-2 shadow-sm">
+                      <li
+                        *ngFor="let user of userSuggestions"
+                        class="list-group-item list-group-item-action"
+                        style="cursor: pointer; border-left: 4px solid #06bbcc;"
+                        (click)="selectSuggestedUser(user)"
+                      >
+                        <div class="d-flex align-items-center gap-2">
+                          <i class="bi bi-person-circle text-primary"></i>
+                          <div>
+                            <strong>{{ user.nom_user || user.nom || user.name }}</strong>
+                            <div class="text-muted small">{{ user.email }}</div>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">Nom</label>
+                    <input 
+                      class="form-control" 
+                      type="text" 
+                      [(ngModel)]="newCollaboratorName" 
+                      placeholder="Nom du collaborateur"
+                      [readonly]="foundUser !== null"
+                      [ngClass]="{'bg-light': foundUser !== null}"
+                    />
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button 
+                      class="btn btn-primary btn-sm" 
+                      type="button" 
+                      (click)="addCollaborator()" 
+                      [disabled]="isAddingCollaborator || !foundUser"
+                    >
+                      <i class="bi bi-check-circle me-1"></i>
+                      {{ isAddingCollaborator ? 'Ajout en cours...' : 'Ajouter' }}
+                    </button>
+                    <button 
+                      class="btn btn-outline-secondary btn-sm" 
+                      type="button" 
+                      (click)="toggleAddCollaboratorForm()"
+                      [disabled]="isAddingCollaborator"
+                    >
+                      <i class="bi bi-x-circle me-1"></i>Annuler
+                    </button>
+                    <button 
+                      *ngIf="foundUser !== null"
+                      class="btn btn-outline-danger btn-sm ms-auto" 
+                      type="button" 
+                      (click)="selectSuggestedUser(null); newCollaboratorEmail = ''; newCollaboratorName = '';foundUser=null"
+                      [disabled]="isAddingCollaborator"
+                    >
+                      <i class="bi bi-arrow-counterclockwise me-1"></i>Effacer
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -461,9 +461,10 @@ export class SubmitPopupComponent implements OnInit, AfterViewInit {
           },
           error: err => {
             console.error(err);
+            const message = err?.error?.message || "Erreur lors de l'ajout du collaborateur.";
             this.dialog.open(InfoDialogComponent, {
               width: '350px',
-              data: { title: 'Erreur', message: "Erreur lors de l'ajout du collaborateur." }
+              data: { title: 'Erreur', message }
             });
             this.collaboratorForm.get('email')?.enable();
           },
@@ -507,9 +508,10 @@ export class SubmitPopupComponent implements OnInit, AfterViewInit {
               },
               error: err => {
                 console.error(err);
+                const message = err?.error?.message || "Erreur lors de l'ajout du collaborateur.";
                 this.dialog.open(InfoDialogComponent, {
                   width: '350px',
-                  data: { title: 'Erreur', message: "Erreur lors de l'ajout du collaborateur." }
+                  data: { title: 'Erreur', message }
                 }).afterClosed().subscribe(() => {
                   this.collaboratorForm.reset();
                   this.foundUser = null;

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { EnseignantRoutingModule } from './enseignant.routing.module';
 
@@ -29,6 +30,7 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [
     AgGridModule,
     CommonModule,
+    FormsModule,
     EnseignantRoutingModule,
     MatTableModule,
     MatPaginatorModule,

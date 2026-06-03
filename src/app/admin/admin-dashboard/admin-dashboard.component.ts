@@ -38,6 +38,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   rejectError: boolean = false;
   rejectProjectId: number | null = null;
   isLoadingStatus: number | null = null;
+  isLoadingProjects = false;
 
   // ...autres propriétés...
   expandedDescription: { [sn: number]: boolean } = {};
@@ -299,6 +300,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
 
   // --- Chargement des projets ---
   loadAdminProjects() {
+    this.isLoadingProjects = true;
     this.projetService.getProjects().subscribe({
       next: (projects: any[]) => {
         const adminProjects = (projects || []).filter(p => String(p.admin_id) === String(this.adminId));
@@ -333,6 +335,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
         });
         this.uniqueCategories = this.getUniqueCategories();
         this.uniqueUsers = this.getUniqueUsers();
+        this.isLoadingProjects = false;
         setTimeout(() => this.renderDynamicChart(), 0);
       },
       error: (err) => {
@@ -343,6 +346,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
         this.approvedProjects = 0;
         this.pendingProjects = 0;
         this.rejectedProjects = 0;
+        this.isLoadingProjects = false;
       }
     });
   }
@@ -364,11 +368,25 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
 
   // --- Graphique dynamique ---
   renderDynamicChart() {
+    const canvas = document.getElementById('dynamicChart') as HTMLCanvasElement | null;
+    if (!canvas) {
+      return;
+    }
+
+    const existingChart = Chart.getChart(canvas);
+    if (existingChart) {
+      existingChart.destroy();
+    }
     if (this.dynamicChart) {
       this.dynamicChart.destroy();
+      this.dynamicChart = null;
     }
-    const ctx = (document.getElementById('dynamicChart') as HTMLCanvasElement)?.getContext('2d');
-    if (!ctx) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+
     let labels: string[] = [];
     let data: number[] = [];
     let label = '';

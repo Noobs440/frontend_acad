@@ -12,6 +12,11 @@ export class NotificationService {
 
   constructor(private http: HttpClient) {}
 
+  /** Envoyer une notification personnalisée (ex: resoumission) */
+  sendNotification(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/notifications`, payload, this.getAuthHeaders());
+  }
+
   /** 🔐 Utilitaire : récupère les headers avec le token JWT */
   private getAuthHeaders(): { headers: HttpHeaders } {
     const token = localStorage.getItem('token');
