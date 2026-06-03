@@ -82,6 +82,11 @@ export class AdminComponent implements OnInit {
       }
     });
     this.loadNotifications();
+
+    // S'abonner aux changements de statut des projets
+    this.projetService.projectStatusChanged$.subscribe((projectId) => {
+      this.getAllProjects();
+    });
   }
 
   checkLoginState(): void {

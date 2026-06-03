@@ -94,6 +94,11 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
     });
     this.isDarkTheme = localStorage.getItem('theme') === 'dark';
     this.updateThemeClass();
+
+    // S'abonner aux changements de statut des projets
+    this.projetService.projectStatusChanged$.subscribe((projectId) => {
+      this.loadAdminProjects();
+    });
   }
 
   ngAfterViewInit() {
@@ -126,6 +131,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       this.isLoadingStatus = this.rejectProjectId;
       this.projetstatusService.rejectProject(this.rejectProjectId, this.rejectReason).subscribe({
         next: () => {
+          this.projetService.notifyProjectChanged(this.rejectProjectId!);
           this.isLoadingStatus = null;
           this.loadAdminProjects();
         },
@@ -352,6 +358,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
     this.isLoadingStatus = projectId;
     this.projetService.updateProjectStatus(projectId, newStatus).subscribe({
       next: () => {
+        this.projetService.notifyProjectChanged(projectId);
         this.isLoadingStatus = null;
         this.loadAdminProjects();
       },

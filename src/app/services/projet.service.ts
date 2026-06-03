@@ -2,17 +2,25 @@
   
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap, catchError, of } from 'rxjs';
+import { Observable, tap, catchError, of, Subject } from 'rxjs';
 // ...existing code...
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjetService {
+  private projectStatusChangedSource = new Subject<number>();
+  public projectStatusChanged$ = this.projectStatusChangedSource.asObservable();
+
+  notifyProjectChanged(projectId: number): void {
+    this.projectStatusChangedSource.next(projectId);
+  }
 
   // Soumettre un projet (passe en attente si conditions backend OK)
   submitProject(id: number) {
-    return this.http.post(`${this.API_BASE}/usecases/submit/${id}`, {});
+    return this.http.post(`${this.API_BASE}/usecases/submit/${id}`, {}).pipe(
+      tap(() => this.notifyProjectChanged(id))
+    );
   }
   // Rejeter un projet avec un motif
   rejectProjectWithReason(projectId: number, reason: string): Observable<any> {
@@ -50,7 +58,9 @@ export class ProjetService {
   }
 
   updateProjectStatus(projectId: number, status: string): Observable<any> {
-    return this.http.put(`${this.API_BASE}/usecases/status/projects/${projectId}`, { status });
+    return this.http.put(`${this.API_BASE}/usecases/status/projects/${projectId}`, { status }).pipe(
+      tap(() => this.notifyProjectChanged(projectId))
+    );
   }
   getProjectsTypes(): Observable<any[]> {
     return this.http.get<any[]>(`${this.API_BASE}/usecases/listing/getprojectstype`).pipe(
@@ -99,7 +109,9 @@ getProjectById(id: number) {
 }
 
 resubmitProject(id: number): Observable<any> {
-    return this.http.post(`${this.API_BASE}/ressources/projets/${id}/resubmit`, {});
+    return this.http.post(`${this.API_BASE}/ressources/projets/${id}/resubmit`, {}).pipe(
+      tap(() => this.notifyProjectChanged(id))
+    );
   }
 
   // ✅ Compter les projets par statut (utile pour les stats ou dashboard)

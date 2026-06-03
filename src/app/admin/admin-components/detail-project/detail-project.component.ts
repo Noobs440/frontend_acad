@@ -131,6 +131,8 @@ confirmReject() {
   this.isLoadingReject = true;
   this.projetStatusService.rejectProject(this.selectedProjectId, this.rejectReason).subscribe({
     next: value => {
+      // Émettre l'événement de changement
+      this.projetService.notifyProjectChanged(this.selectedProjectId);
       this.dialog.open(InfoDialogComponent, {
         data: {
           title: 'Projet rejeté',
@@ -214,6 +216,8 @@ confirmReject() {
         this.isLoadingApprove = true;
         this.projetStatusService.approveProject(this.selectedProjectId).subscribe({
           next: value => {
+            // Émettre l'événement de changement
+            this.projetService.notifyProjectChanged(this.selectedProjectId);
             this.dialog.open(InfoDialogComponent, {
               data: {
                 title: 'Projet approuvé',
@@ -256,6 +260,8 @@ confirmReject() {
         this.isLoadingRestore = true;
         this.projetStatusService.pendingProject(this.selectedProjectId).subscribe({
           next: value => {
+            // Émettre l'événement de changement
+            this.projetService.notifyProjectChanged(this.selectedProjectId);
             this.dialog.open(InfoDialogComponent, {
               data: {
                 title: 'Projet restauré',
