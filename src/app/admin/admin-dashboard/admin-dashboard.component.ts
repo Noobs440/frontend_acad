@@ -24,6 +24,7 @@ interface RowData {
   created_at?: string;
   collaboratorsCount?: number;
   description?: string;
+  rejection_reason?: string;
 }
 
 @Component({
@@ -38,6 +39,54 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   rejectError: boolean = false;
   rejectProjectId: number | null = null;
   isLoadingStatus: number | null = null;
+
+  // --- Popup restauration projet ---
+showRestoreModal = false;
+restoreReason: string = '';
+restoreError: boolean = false;
+restoreProjectId: number | null = null;
+
+openRestoreModal(projectId: number) {
+  this.restoreProjectId = projectId;
+  this.restoreReason = '';
+  this.restoreError = false;
+  this.showRestoreModal = true;
+}
+
+closeRestoreModal() {
+  this.showRestoreModal = false;
+  this.restoreError = false;
+  this.restoreReason = '';
+  this.restoreProjectId = null;
+}
+
+confirmRestore() {
+  if (!this.restoreReason || this.restoreReason.trim().length === 0) {
+    this.restoreError = true;
+    return;
+  }
+  this.restoreError = false;
+  this.showRestoreModal = false;
+  if (this.restoreProjectId) {
+    this.isLoadingStatus = this.restoreProjectId;
+    // On réutilise updateProjectStatus mais avec le motif
+    this.projetService.updateProjectStatusWithReason(
+      this.restoreProjectId, 
+      'Pending',
+      this.restoreReason
+    ).subscribe({
+      next: () => {
+        this.projetService.notifyProjectChanged(this.restoreProjectId!);
+        this.isLoadingStatus = null;
+        this.loadAdminProjects();
+      },
+      error: (err: any) => {
+        this.isLoadingStatus = null;
+        console.error('Erreur lors de la restauration:', err);
+      }
+    });
+  }
+}
 
   // ...autres propriétés...
   expandedDescription: { [sn: number]: boolean } = {};
@@ -172,7 +221,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
           icon: 'bi bi-hourglass-split',
           class: 'btn btn-outline-warning btn-sm d-flex align-items-center',
           title: 'Mettre en attente',
-          onClick: () => this.updateProjectStatus(project.sn, 'Pending')
+          onClick: () => this.openRestoreModal(project.sn) // ← remplacer l'ancien appel
         });
       }
       if (project.status === 'Pending') {
@@ -321,7 +370,8 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
             nom_categorie: p.nom_categorie,
             created_at: p.created_at,
             collaboratorsCount: 0,
-            description: p.descript_projet || ''
+            description: p.descript_projet || '',
+            rejection_reason: p.rejection_reason || ''
           };
         });
         this.rowData = mapped;

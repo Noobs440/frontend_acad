@@ -22,6 +22,19 @@ export class ProjetService {
       tap(() => this.notifyProjectChanged(id))
     );
   }
+
+    updateProjectStatusWithReason(
+    projectId: number, 
+    status: string, 
+    reason: string
+  ): Observable<any> {
+    return this.http.patch(
+      `${this.API_BASE}/usecases/status/pending/${projectId}`, 
+      { rejection_reason: reason }
+    ).pipe(
+      tap(() => this.notifyProjectChanged(projectId))
+    );
+  }
   // Rejeter un projet avec un motif
   rejectProjectWithReason(projectId: number, reason: string): Observable<any> {
     return this.http.post(`${this.API_BASE}/ressources/projets/${projectId}/reject`, { rejection_reason: reason });

@@ -10,8 +10,9 @@ export class ProjetstatusService {
 
   constructor(private http:HttpClient, private projetService: ProjetService) { }
 
-  approveProject(id:number):Observable<any>{
-    return this.http.get<any>(`http://localhost:8000/api/usecases/status/approved/pending/${id}`).pipe(
+  approveProject(id:number, reason:string):Observable<any>{
+    return this.http.patch<any>(`http://localhost:8000/api/usecases/status/approved/pending/${id}`,
+      {motif:reason}).pipe(
       tap(() => this.projetService.notifyProjectChanged(id))
     );
   }
@@ -25,8 +26,9 @@ export class ProjetstatusService {
     );
   }
 
-  pendingProject(id:number):Observable<any>{
-    return this.http.get<any>(`http://localhost:8000/api/usecases/status/pending/${id}`).pipe(
+    pendingProject(id:number, reason:string):Observable<any>{
+    return this.http.patch<any>(`http://localhost:8000/api/usecases/status/pending/${id}`,
+      {motif:reason}).pipe(
       tap(() => this.projetService.notifyProjectChanged(id))
     );
   }

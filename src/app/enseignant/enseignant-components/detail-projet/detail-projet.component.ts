@@ -34,6 +34,7 @@ export class DetailProjetComponent {
   date!:string;
   email!:string;
   id!:number;
+  rejection_reason: string = '';
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -98,7 +99,7 @@ export class DetailProjetComponent {
       const userConfirmed = confirm("souhaitez vous approuver ce projet ? ");
 
       if (userConfirmed) {
-        this.projetStatusService.approveProject(this.selectedProjectId).subscribe({
+        this.projetStatusService.approveProject(this.selectedProjectId, this.rejection_reason).subscribe({
           next: value => {
             alert(`Le projet a été approuve et un email a été envoyé à ${this.author}, l'auteur du projet.`);
           },
@@ -138,7 +139,7 @@ export class DetailProjetComponent {
       });
       dialogRef.afterClosed().subscribe(userConfirmed => {
         if (userConfirmed) {
-          this.projetStatusService.pendingProject(this.selectedProjectId).subscribe({
+          this.projetStatusService.pendingProject(this.selectedProjectId, '').subscribe({
             next: value => {
               this.dialog.open(InfoDialogComponent, {
                 width: '350px',

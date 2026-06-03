@@ -51,6 +51,21 @@
     </div>
 
     <section class="section dashboard">
+      <div *ngIf="projectStatus === 'Pending' && rejection_reason"
+          style="background:#fff3cd; border:2px solid #f59e0b; border-radius:10px; 
+                  padding:14px 18px; margin-bottom:20px;
+                  box-shadow: 0 2px 8px rgba(245,158,11,0.2);">
+        <div style="font-size:1.05rem; font-weight:800; color:#b45309;">
+          ⚠️ Ce projet est en attente — une action précédente a été notée
+        </div>
+        <div style="color:#78350f; margin-top:6px;">
+          <strong>Motif :</strong>
+          <em style="margin-left:6px;">{{ rejection_reason }}</em>
+        </div>
+        <div style="color:#92400e; font-size:0.88em; margin-top:8px;">
+          Vérifiez si les corrections ont bien été apportées avant de statuer.
+        </div>
+      </div>
       <div class="row g-4">
         <div class="col-12 col-lg-6 order-lg-1">
           <div class="card shadow-sm rounded-4 border-0 mb-4 h-100">
@@ -183,6 +198,32 @@
       </div>
     </section>
   </main>
+
+<!-- Modal motif de restauration -->
+<div class="modal-pro modal" tabindex="-1" [ngClass]="{'show': showRestoreModal}" [ngStyle]="{'display': showRestoreModal ? 'flex' : 'none'}">
+  <div class="modal-pro-dialog">
+    <div class="modal-pro-content">
+      <div class="modal-pro-header">
+        <h5 class="modal-pro-title"><i class="bi bi-exclamation-triangle-fill"></i> Motif de la remise en attente</h5>
+        <button type="button" class="modal-pro-close" (click)="closeRestoreModal()" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-pro-body">
+        <label for="restoreMotif" class="modal-pro-label">Veuillez fournir le motif de la remise en attente :</label>
+        <textarea id="restoreMotif" [(ngModel)]="restoreReason" class="modal-pro-textarea" rows="4" required placeholder="Ex: Documents manquants, révision nécessaire..."></textarea>
+        <div *ngIf="restoreError" class="modal-pro-error">Le motif est obligatoire.</div>
+      </div>
+      <div class="modal-pro-footer">
+        <button type="button" class="modal-pro-btn modal-pro-btn-cancel" (click)="closeRestoreModal()" [disabled]="isLoadingRestore">Annuler</button>
+        <button type="button" class="modal-pro-btn modal-pro-btn-warning" (click)="confirmRestore()" [disabled]="isLoadingRestore">
+          <span *ngIf="isLoadingRestore" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+          Remettre en attente
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Modal motif de rejet -->
 <div class="modal-pro modal" tabindex="-1" [ngClass]="{'show': showRejectModal}" [ngStyle]="{'display': showRejectModal ? 'flex' : 'none'}">

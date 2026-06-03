@@ -109,6 +109,11 @@ export class DetailProjectComponent {
   rejectReason: string = '';
   rejectError: boolean = false;
 
+  // --- Modal de restauration ---
+  showRestoreModal = false;
+  restoreReason: string = '';
+  restoreError: boolean = false;
+
   openRejectModal() {
     this.rejectReason = '';
     this.rejectError = false;
@@ -157,6 +162,56 @@ confirmReject() {
     }
   });
 }
+
+  // --- Gestion modal restauration ---
+  openRestoreModal() {
+    this.restoreReason = '';
+    this.restoreError = false;
+    this.showRestoreModal = true;
+  }
+
+  closeRestoreModal() {
+    this.showRestoreModal = false;
+    this.restoreError = false;
+    this.restoreReason = '';
+  }
+
+  confirmRestore() {
+    if (!this.restoreReason || this.restoreReason.trim().length === 0) {
+      this.restoreError = true;
+      return;
+    }
+    this.restoreError = false;
+    this.showRestoreModal = false;
+    this.isLoadingRestore = true;
+    this.projetStatusService.pendingProject(this.selectedProjectId, this.restoreReason).subscribe({
+      next: value => {
+        this.projetService.notifyProjectChanged(this.selectedProjectId);
+        this.dialog.open(InfoDialogComponent, {
+          data: {
+            title: 'Projet restauré',
+            message: `Le projet a été restauré et un email a été envoyé à ${this.author}, l'auteur du projet.`
+          }
+        });
+        this.reloadProject();
+      },
+      error: err => {
+        this.dialog.open(InfoDialogComponent, {
+          data: {
+            title: 'Erreur',
+            message: `Le projet n'a pas été restauré, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`
+          }
+        });
+        console.error(err);
+        this.isLoadingRestore = false;
+      },
+      complete: () => {
+        this.isLoadingRestore = false;
+        this.router.navigate(['/admin']);
+      }
+    });
+  }
+
   toggleDocumentsExpand() {
     this.isDocumentsExpanded = !this.isDocumentsExpanded;
   }
@@ -214,7 +269,7 @@ confirmReject() {
     dialogRef.afterClosed().subscribe(userConfirmed => {
       if (userConfirmed) {
         this.isLoadingApprove = true;
-        this.projetStatusService.approveProject(this.selectedProjectId).subscribe({
+        this.projetStatusService.approveProject(this.selectedProjectId, this.rejection_reason).subscribe({
           next: value => {
             // Émettre l'événement de changement
             this.projetService.notifyProjectChanged(this.selectedProjectId);
@@ -248,47 +303,10 @@ confirmReject() {
 
 
   onRestore(): void {
-  if (this.projectStatus === "Approved" || this.projectStatus === "Rejected") {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Confirmation',
-        message: "Souhaitez-vous restaurer ce projet à l'état d'attente ?"
-      }
-    });
-    dialogRef.afterClosed().subscribe(userConfirmed => {
-      if (userConfirmed) {
-        this.isLoadingRestore = true;
-        this.projetStatusService.pendingProject(this.selectedProjectId).subscribe({
-          next: value => {
-            // Émettre l'événement de changement
-            this.projetService.notifyProjectChanged(this.selectedProjectId);
-            this.dialog.open(InfoDialogComponent, {
-              data: {
-                title: 'Projet restauré',
-                message: `Le projet a été restauré et un email a été envoyé à ${this.author}, l'auteur du projet.`
-              }
-            });
-            this.reloadProject();
-          },
-          error: err => {
-            this.dialog.open(InfoDialogComponent, {
-              data: {
-                title: 'Erreur',
-                message: `Le projet n'a pas été restauré, erreur lors de l'envoi de l'email. Vérifiez l'état de votre connexion.`
-              }
-            });
-            console.error(err);
-            this.isLoadingRestore = false;
-          },
-          complete: () => {
-            this.isLoadingRestore = false;
-            this.router.navigate(['/admin']);
-          }
-        });
-      }
-    });
+    if (this.projectStatus === "Approved" || this.projectStatus === "Rejected") {
+      this.openRestoreModal();
+    }
   }
-}
    getRejectionReason(): string {
     return this.rejection_reason && this.rejection_reason.trim() !== '' ? this.rejection_reason : 'Aucun motif fourni.';
   }
