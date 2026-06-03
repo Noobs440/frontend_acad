@@ -46,6 +46,9 @@ restoreReason: string = '';
 restoreError: boolean = false;
 restoreProjectId: number | null = null;
 
+  // --- Chargement des données ---
+  isLoadingProjects = false;
+
 openRestoreModal(projectId: number) {
   this.restoreProjectId = projectId;
   this.restoreReason = '';
@@ -354,8 +357,10 @@ confirmRestore() {
 
   // --- Chargement des projets ---
   loadAdminProjects() {
+    this.isLoadingProjects = true;
     this.projetService.getProjects().subscribe({
       next: (projects: any[]) => {
+        this.isLoadingProjects = false;
         const adminProjects = (projects || []).filter(p => String(p.admin_id) === String(this.adminId));
         const mapped = adminProjects.map((p, idx) => {
           const author = p.nom_user || '';
@@ -392,6 +397,7 @@ confirmRestore() {
         setTimeout(() => this.renderDynamicChart(), 0);
       },
       error: (err) => {
+        this.isLoadingProjects = false;
         console.error('Erreur lors du chargement des projets admin:', err);
         this.rowData = [];
         this.filteredData = [];
