@@ -52,7 +52,7 @@
               </li>
 
               <ng-container *ngIf="notifications.length > 0; else noNotif">
-                <li *ngFor="let notification of notifications" class="dropdown-item notification-item px-3 py-3 mb-0 position-relative bg-white border-0 d-flex align-items-start gap-3 notification-fb-style" style="transition: background 0.2s; border-bottom: 1px solid #f0f0f0; cursor:pointer; border-radius:0;">
+                <li *ngFor="let notification of notifications" class="dropdown-item notification-item px-3 py-3 mb-0 position-relative bg-white border-0 d-flex align-items-start gap-3 notification-fb-style" style="transition: background 0.2s; border-bottom: 1px solid #f0f0f0; cursor:pointer; border-radius:0;" (click)="openProjectFromNotification(notification)" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#fff'">
                   <div class="d-flex flex-shrink-0 align-items-center justify-content-center" style="width:44px; height:44px; background:#e7f3ff; border-radius:50%;">
                     <i *ngIf="notification.data.status" class="bi bi-arrow-repeat text-info fs-4"></i>
                     <i *ngIf="!notification.data.status && notification.data.type === 'collaborateur_added'" class="bi bi-person-plus text-primary fs-4"></i>
@@ -72,9 +72,9 @@
                     <div class="mb-1">{{ notification.data.message }}</div>
                   </div>
                   <div class="align-self-center ms-2">
-                    <button class="btn btn-outline-primary btn-sm px-2 py-0 d-flex align-items-center" (click)="markNotificationAsRead(notification.id)" [disabled]="isLoadingMarkRead === notification.id">
+                    <button class="btn btn-outline-primary btn-sm px-2 py-0 d-flex align-items-center" (click)="markNotificationAsRead(notification.id); $event.stopPropagation()" [disabled]="isLoadingMarkRead === notification.id">
                       <span *ngIf="isLoadingMarkRead === notification.id" class="spinner-border spinner-border-sm me-2"></span>
-                      <span *ngIf="isLoadingMarkRead !== notification.id"><i class="bi bi-check2"></i></span>
+                      <span *ngIf="isLoadingMarkRead !== notification.id"><i class="bi bi-x"></i></span>
                     </button>
                   </div>
                 </li>

@@ -1,19 +1,29 @@
 <div class="collaborator-list">
 
   <div class="controls">
-    <select [(ngModel)]="searchField" (change)="applyFilters()">
+    <select [(ngModel)]="searchField" (change)="applyFilters()" [disabled]="isLoading">
       <option value="nom_collab">Nom</option>
       <option value="email_collab">Email</option>
       <option value="tbl_projet_id">Projet</option>
     </select>
-    <input type="text" placeholder="Recherche" [(ngModel)]="searchTerm" (input)="onSearchChange()" />
-    <button (click)="toggleSort()">
+    <input type="text" placeholder="Recherche" [(ngModel)]="searchTerm" (input)="onSearchChange()" [disabled]="isLoading" />
+    <button (click)="toggleSort()" [disabled]="isLoading">
       Trier: {{ sortAsc ? 'A → Z' : 'Z → A' }}
     </button>
-    <button (click)="openAddModal()">Ajouter un collaborateur</button>
+    <button (click)="openAddModal()" title="Ajouter un collaborateur" class="icon-button add-button" [disabled]="isLoading">
+      <svg xmlns="http://www.w3.org/2000/svg" class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      <span class="button-label">Ajouter</span>
+    </button>
   </div>
 
-  <table class="table">
+  <div *ngIf="isLoading" class="loading-message">
+    <div class="spinner"></div>
+    Chargement des collaborateurs...
+  </div>
+
+  <table class="table" *ngIf="!isLoading">
     <thead>
       <tr>
         <th>Nom</th>
@@ -23,19 +33,32 @@
       </tr>
     </thead>
     <tbody>
+      <tr *ngIf="filteredCollaborators.length === 0">
+        <td colspan="4" class="empty-message">
+          {{ collaborators.length === 0 ? 'Aucun collaborateur trouvé' : 'Aucun résultat pour cette recherche' }}
+        </td>
+      </tr>
       <tr *ngFor="let collab of filteredCollaborators">
         <td>{{ collab.nom_collab }}</td>
         <td>{{ collab.email_collab }}</td>
         <td>{{ collab.projet?.titre_projet || '-' }}</td>
-        <td>
-          <button (click)="openEditModal(collab)">Modifier</button>
-          <button (click)="deleteCollaborator(collab.id)">Supprimer</button>
+        <td class="actions-cell">
+          <button (click)="openEditModal(collab)" title="Modifier" class="icon-action-button edit-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon-action" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </button>
+          <button (click)="deleteCollaborator(collab.id)" title="Supprimer" class="icon-action-button delete-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon-action" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
         </td>
       </tr>
     </tbody>
   </table>
 
-  <div class="pagination">
+  <div class="pagination" *ngIf="!isLoading">
     <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Précédent</button>
     <span>Page {{ currentPage }} / {{ totalPages }}</span>
     <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Suivant</button>

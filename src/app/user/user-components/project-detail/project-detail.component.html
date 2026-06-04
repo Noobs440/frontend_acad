@@ -195,7 +195,17 @@
           </div>
           <div class="card shadow-sm rounded-4 border-0 mb-4 w-100">
             <div class="card-body">
-              <h4 class="fw-bold mb-3">Collaborateurs liés</h4>
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h4 class="fw-bold mb-0">Collaborateurs liés</h4>
+                <button
+                  *ngIf="projectStatus === 'Rejected' || projectStatus === 'Not Submitted'"
+                  class="btn btn-sm btn-outline-primary"
+                  type="button"
+                  (click)="openDialog('collaborator')"
+                >
+                  + Ajouter un collaborateur
+                </button>
+              </div>
               <div class="download-catalog">
                 <div
                   *ngFor="let collaborator of collaborators | slice:0:(isCollaboratorsExpanded ? collaborators.length : 2)"

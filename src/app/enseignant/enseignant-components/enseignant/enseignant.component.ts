@@ -93,23 +93,45 @@ export class EnseignantComponent implements OnInit {
 
   loadNotifications(): void {
     this.notificationService.getNotifications().subscribe(notifications => {
-      this.notifications = notifications;
+      // Éviter les doublons en utilisant l'ID comme clé unique
+      const uniqueNotifications = Array.from(
+        new Map(notifications.map(n => [n.id, n])).values()
+      );
+      this.notifications = uniqueNotifications;
     });
   }
 
-  // Fonctions existantes...
+  // Marquer une notification comme lue sans recharger la liste
   markNotificationAsRead(notificationId: number): void {
     this.notificationService.markNotificationAsRead(notificationId).subscribe(() => {
       console.log('Notification marked as read successfully.');
-      this.loadNotifications();
+      // Retirer la notification du tableau sans recharger
+      this.notifications = this.notifications.filter(n => n.id !== notificationId);
     });
   }
 
+  // Marquer toutes les notifications comme lues
   markAllNotificationAsRead(): void {
     this.notificationService.markAllNotificationAsRead().subscribe(() => {
       console.log('All notifications marked as read successfully.');
-      this.loadNotifications();
+      // Vider le tableau des notifications
+      this.notifications = [];
     });
+  }
+
+  // Ouvrir les détails du projet en cliquant sur une notification
+  openProjectFromNotification(notification: any): void {
+    if (notification?.data?.project_id) {
+      // Marquer la notification comme lue puis naviguer
+      this.notificationService.markNotificationAsRead(notification.id).subscribe(() => {
+        // Retirer la notification du tableau
+        this.notifications = this.notifications.filter(n => n.id !== notification.id);
+        // Naviguer vers les détails du projet
+        this.router.navigate(['/enseignant/dashboard/projet-detail', notification.data.project_id]);
+      });
+    } else {
+      console.warn('Project ID not found in notification data', notification);
+    }
   }
 
   deconnexion(): void {

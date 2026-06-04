@@ -164,7 +164,11 @@ isLoadingLogout = false;
   loadNotifications(): void {
     this.notificationService.getNotifications().subscribe({
       next: (data) => {
-        this.notifications = data || [];
+        // Éviter les doublons en utilisant l'ID comme clé unique
+        const uniqueNotifications = Array.from(
+          new Map((data || []).map(n => [n.id, n])).values()
+        );
+        this.notifications = uniqueNotifications;
       },
       error: (err) => {
         console.error('Erreur chargement notifications:', err);
@@ -214,23 +218,49 @@ isLoadingLogout = false;
 
   // Marquer toutes les notifications comme lues
   markAllNotificationAsRead(): void {
-  this.isLoadingMarkAllRead = true;
-  this.notificationService.markAllNotificationAsRead().subscribe({
-    next: () => this.loadNotifications(),
-    error: () => {},
-    complete: () => { this.isLoadingMarkAllRead = false; }
-  });
-}
+    this.isLoadingMarkAllRead = true;
+    this.notificationService.markAllNotificationAsRead().subscribe({
+      next: () => {
+        // Vider le tableau des notifications au lieu de recharger
+        this.notifications = [];
+      },
+      error: () => {},
+      complete: () => { this.isLoadingMarkAllRead = false; }
+    });
+  }
 
   // Marquer une notification comme lue
- markNotificationAsRead(id: number): void {
-  this.isLoadingMarkRead = id;
-  this.notificationService.markNotificationAsRead(id).subscribe({
-    next: () => this.loadNotifications(),
-    error: () => {},
-    complete: () => { this.isLoadingMarkRead = null; }
-  });
-}
+  markNotificationAsRead(id: number): void {
+    this.isLoadingMarkRead = id;
+    this.notificationService.markNotificationAsRead(id).subscribe({
+      next: () => {
+        // Retirer la notification du tableau au lieu de recharger
+        this.notifications = this.notifications.filter(n => n.id !== id);
+      },
+      error: () => {},
+      complete: () => { this.isLoadingMarkRead = null; }
+    });
+  }
+
+  // Ouvrir les détails du projet en cliquant sur une notification
+  private resolveNotificationProjectId(notification: any): number | null {
+    if (!notification) {
+      return null;
+    }
+    return notification.data?.project_id || notification.data?.projet_id || notification.project_id || notification.data?.project?.id || null;
+  }
+
+  openProjectFromNotification(notification: any): void {
+    const projectId = this.resolveNotificationProjectId(notification);
+    if (projectId) {
+      this.notificationService.markNotificationAsRead(notification.id).subscribe(() => {
+        this.notifications = this.notifications.filter(n => n.id !== notification.id);
+        this.router.navigate(['/user/dashboard/project-detail', projectId]);
+      });
+    } else {
+      console.warn('Project ID not found in notification data', notification);
+    }
+  }
 
   // Ouvre/ferme la liste des projets dans le sidebar
   toggleProjects(): void {

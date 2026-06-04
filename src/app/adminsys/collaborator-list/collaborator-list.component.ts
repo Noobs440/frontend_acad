@@ -27,6 +27,7 @@ export class CollaboratorListComponent implements OnInit {
   isModalOpen = false;
   isEditMode = false;
   isSaving: boolean = false;
+  isLoading: boolean = true;
   currentCollaborator: any = {
     nom_collab: '',
     email_collab: '',
@@ -52,18 +53,36 @@ export class CollaboratorListComponent implements OnInit {
   }
 
   loadCollaborators(): void {
-    this.collaborateurService.getCollaborateurs().subscribe(data => {
-      // Associer le projet à chaque collaborateur si non déjà fait
-      this.collaborators = data.map(collab => {
-        if (!collab.projet && collab.tbl_projet_id) {
-          // Cherche le projet dans la liste des suggestions ou via le service
-          this.projetService.getProjectById(collab.tbl_projet_id).subscribe(proj => {
-            collab.projet = proj;
+    this.isLoading = true;
+    this.collaborateurService.getCollaborateurs().subscribe({
+      next: (data) => {
+        if (data && Array.isArray(data)) {
+          this.collaborators = data.map(collab => {
+            // Charger les projets associés si manquants
+            if (!collab.projet && collab.tbl_projet_id) {
+              this.projetService.getProjectById(collab.tbl_projet_id).subscribe({
+                next: (proj) => {
+                  collab.projet = proj;
+                },
+                error: (err) => {
+                  console.error('Erreur chargement projet:', err);
+                }
+              });
+            }
+            return collab;
           });
+        } else {
+          this.collaborators = [];
         }
-        return collab;
-      });
-      this.applyFilters();
+        this.applyFilters();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Erreur chargement collaborateurs:', error);
+        this.collaborators = [];
+        this.filteredCollaborators = [];
+        this.isLoading = false;
+      }
     });
   }
 

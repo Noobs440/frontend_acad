@@ -10,6 +10,7 @@ import { InfoDialogComponent } from '../../../shared/info-dialog/info-dialog.com
 import { DocumentService } from '../../../services/document.service';
 import { SubmitProjectService } from '../../../services/submit-project.service';
 import { ProjetService } from '../../../services/projet.service';
+import { NotificationService } from '../../../services/notification.service';
 import { CollaborateurService } from '../../../services/collaborateur.service';
 import { CompleteDialogComponent } from '../complete-dialog/complete-dialog.component';
 import { CollaborateurEditPopupComponent } from '../../collaborateur-edit-popup/collaborateur-edit-popup.component'
@@ -81,6 +82,7 @@ export class ProjectDetailComponent implements OnInit {
   isCollaboratorsExpanded = false;
   admins: any[] = [];
   selectedAdminId: string | null = null;
+  projectAdminId: number | null = null;
   @ViewChild('confirmDialog') confirmDialog!: TemplateRef<any>;
 
   collaborators: any[] = [];
@@ -121,6 +123,7 @@ export class ProjectDetailComponent implements OnInit {
     private projetStatusService: ProjetstatusService,
     private userService: UserService,
     private projectHistoryService: ProjectHistoryService,
+    private notificationService: NotificationService,
   ) {}
 
   fetchAdmins() {
@@ -203,6 +206,7 @@ export class ProjectDetailComponent implements OnInit {
         this.views = project.views || 0;
         this.email = project.user?.email || '';
         this.rejection_reason = project.rejection_reason || '';
+        this.projectAdminId = project.admin_id || null;
         this.isLoadingProject = false;
       },
       error: err => {
@@ -225,13 +229,6 @@ export class ProjectDetailComponent implements OnInit {
 
 
   resubmitProject() {
-    if (!this.selectedAdminId) {
-      this.dialog.open(InfoDialogComponent, {
-        width: '350px',
-        data: { title: 'Attention', message: "Veuillez choisir un superviseur avant de resoumettre le projet !" }
-      });
-      return;
-    }
     // On envoie le motif du rejet au superviseur lors de la resoumission
   // L'API actuelle n'accepte que l'id, donc on ne peut pas transmettre adminId et motif ici sans adapter le backend
   this.projetService.resubmitProject(this.id).subscribe({
@@ -240,6 +237,22 @@ export class ProjectDetailComponent implements OnInit {
         this.dialog.open(InfoDialogComponent, {
           width: '350px',
           data: { title: 'Succès', message: 'Votre projet a été resoumis avec succès. Le motif du rejet a été transmis au superviseur.' }
+        });
+        // Envoyer notification personnalisée indiquant la resoumission au bon admin
+        const notifPayload = {
+          type: 'resubmitted',
+          project_id: this.id,
+          project_title: this.selectedProjectTitle,
+          message: `Le projet "${this.selectedProjectTitle}" (id:${this.id}) a été resoumis par l'auteur.`,
+          recipient_id: this.projectAdminId
+        };
+        this.notificationService.sendNotification(notifPayload).subscribe({
+          next: () => {
+            // Optionnel: recharger notifications ou informer l'utilisateur
+          },
+          error: err => {
+            console.error('Erreur envoi notification resoumission:', err);
+          }
         });
         this.reloadProject();
       },

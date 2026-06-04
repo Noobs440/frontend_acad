@@ -152,9 +152,9 @@ export class EnseignantDashboardComponent {
     this.paginatedData = data.slice(start, end);
   }
   showDetail(selectedRow: any) {
-    this.selectedProjectId = selectedRow.sn;
-    this.selectedProjectTitle = selectedRow.title;
-  this.router.navigate(['/enseignant/dashboard/project-detail', this.selectedProjectId]);
+    this.selectedProjectId = selectedRow.id;
+    this.selectedProjectTitle = selectedRow.titre_projet;
+    this.router.navigate(['/enseignant/dashboard/projet-detail', this.selectedProjectId]);
   }
 
 }

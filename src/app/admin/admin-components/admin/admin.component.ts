@@ -185,20 +185,62 @@ export class AdminComponent implements OnInit {
 
   loadNotifications(): void {
     this.notificationService.getNotifications().subscribe(notifications => {
-      this.notifications = notifications;
+      const uniqueNotifications = new Map<string, any>();
+      (notifications || []).forEach((notification: any) => {
+        const key = this.getNotificationKey(notification);
+        if (key && !uniqueNotifications.has(key)) {
+          uniqueNotifications.set(key, notification);
+        }
+      });
+      this.notifications = Array.from(uniqueNotifications.values());
     });
+  }
+
+  private getNotificationKey(notification: any): string {
+    if (!notification) {
+      return '';
+    }
+    if (notification.id !== undefined && notification.id !== null) {
+      return String(notification.id);
+    }
+    const type = notification.data?.type ?? '';
+    const projectId = notification.data?.project_id ?? notification.data?.projet_id ?? notification.project_id ?? '';
+    const message = notification.data?.message ?? '';
+    const createdAt = notification.created_at ?? '';
+    return `${type}|${projectId}|${message}|${createdAt}`;
   }
 
   markNotificationAsRead(notificationId: number): void {
     this.notificationService.markNotificationAsRead(notificationId).subscribe(() => {
-      this.loadNotifications();
+      // remove locally instead of reloading
+      this.notifications = this.notifications.filter(n => n.id !== notificationId);
     });
   }
 
   markAllNotificationAsRead(): void {
     this.notificationService.markAllNotificationAsRead().subscribe(() => {
-      this.loadNotifications();
+      // clear list locally
+      this.notifications = [];
     });
+  }
+
+  private resolveNotificationProjectId(notification: any): number | null {
+    if (!notification) {
+      return null;
+    }
+    return notification.data?.project_id || notification.data?.projet_id || notification.project_id || notification.data?.project?.id || null;
+  }
+
+  openProjectFromNotification(notification: any): void {
+    const projectId = this.resolveNotificationProjectId(notification);
+    if (projectId) {
+      this.notificationService.markNotificationAsRead(notification.id).subscribe(() => {
+        this.notifications = this.notifications.filter(n => n.id !== notification.id);
+        this.router.navigate(['/admin/dashboard/project-detail', projectId]);
+      });
+    } else {
+      console.warn('Notification has no project id', notification);
+    }
   }
 
   deconnexion(): void {

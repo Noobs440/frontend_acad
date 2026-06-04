@@ -39,6 +39,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   rejectError: boolean = false;
   rejectProjectId: number | null = null;
   isLoadingStatus: number | null = null;
+  isLoadingProjects = false;
 
   // --- Popup restauration projet ---
 showRestoreModal = false;
@@ -47,8 +48,6 @@ restoreError: boolean = false;
 restoreProjectId: number | null = null;
 
   // --- Chargement des données ---
-  isLoadingProjects = false;
-
 openRestoreModal(projectId: number) {
   this.restoreProjectId = projectId;
   this.restoreReason = '';
@@ -394,6 +393,7 @@ confirmRestore() {
         });
         this.uniqueCategories = this.getUniqueCategories();
         this.uniqueUsers = this.getUniqueUsers();
+        this.isLoadingProjects = false;
         setTimeout(() => this.renderDynamicChart(), 0);
       },
       error: (err) => {
@@ -405,6 +405,7 @@ confirmRestore() {
         this.approvedProjects = 0;
         this.pendingProjects = 0;
         this.rejectedProjects = 0;
+        this.isLoadingProjects = false;
       }
     });
   }
@@ -427,11 +428,25 @@ confirmRestore() {
 
   // --- Graphique dynamique ---
   renderDynamicChart() {
+    const canvas = document.getElementById('dynamicChart') as HTMLCanvasElement | null;
+    if (!canvas) {
+      return;
+    }
+
+    const existingChart = Chart.getChart(canvas);
+    if (existingChart) {
+      existingChart.destroy();
+    }
     if (this.dynamicChart) {
       this.dynamicChart.destroy();
+      this.dynamicChart = null;
     }
-    const ctx = (document.getElementById('dynamicChart') as HTMLCanvasElement)?.getContext('2d');
-    if (!ctx) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+
     let labels: string[] = [];
     let data: number[] = [];
     let label = '';
