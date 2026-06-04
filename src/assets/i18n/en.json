@@ -9,8 +9,8 @@
   "SIGN_IN": "Sign In",
 
 
-  "WELCOME_MESSAGE": "Welcome to CollabFacultyRise",
-  "WELCOME_DESCRIPTION": "CollabFacultyRise facilitates academic projects research of Dschang's University by providing access to previous academic projects and enhancing collaboration among researchers.",
+  "WELCOME_MESSAGE": "Welcome to Dschang's SchoolHub",
+  "WELCOME_DESCRIPTION": "Dschang's SchoolHub facilitates academic projects research of Dschang's University by providing access to previous academic projects and enhancing collaboration among researchers.",
   "SEARCH_PLACEHOLDER": "Enter a keyword, author or collaborator about a project",
   "PROJECTS_LABEL": "Projects",
   "DOMAINS_LABEL": "Domains",
@@ -52,7 +52,7 @@
     "PHONE": "Phone:",
     "EMAIL": "Email:",
     "ALL_RIGHTS_RESERVED": "All Rights Reserved",
-    "FOOTER_ABOUT": "CollabFacultyRise is an online platform dedicated to the publication and management of academic works, including theses, research projects, and end-of-semester works. Designed to meet the needs of students, researchers, and teachers,  offers an integrated solution for the dissemination and search of academic documents.",
+    "FOOTER_ABOUT": "Dschang's SchoolHub is an online platform dedicated to the publication and management of academic works, including theses, research projects, and end-of-semester works. Designed to meet the needs of students, researchers, and teachers,  offers an integrated solution for the dissemination and search of academic documents.",
 
   "CONSULT_BY_DOMAINS": "Consult By Domains",
   "ACCESS_TO_ALL_DOMAINS": "Here you get access to all our domains available",
