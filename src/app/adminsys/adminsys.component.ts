@@ -10,7 +10,7 @@ import { LogoutConfirmDialogComponent } from '../shared/logout-confirm-dialog/lo
 })
 export class AdminsysComponent implements OnInit {
   userName: string = '';
-  userPhoto: string = 'assets/img/default-profile.png';
+  userPhoto: string = 'assets/img/default.png';
 
   constructor(private userService: UserService, private dialog: MatDialog) {}
 
@@ -23,14 +23,14 @@ export class AdminsysComponent implements OnInit {
       },
       error: () => {
         this.userName = 'Utilisateur';
-        this.userPhoto = 'assets/img/default-profile.png';
+        this.userPhoto = 'assets/img/default.png';
       }
     });
   }
 
   getFullImageUrl(imagePath: string): string {
     if (!imagePath) {
-      return 'assets/img/default-profile.png';
+      return 'assets/img/default.png';
     }
     return imagePath.startsWith('http') ? imagePath : `http://localhost:8000/${imagePath.replace(/^\/+/g, '')}`;
   }

@@ -28,7 +28,7 @@ export class AdminComponent implements OnInit {
   matricule!: string;
   tbl_filiere_id!: string;
   email!: string;
-  photo: string = 'assets/img/default-profile.png'; // photo par défaut
+  photo: string = 'assets/img/default.png'; // photo par défaut
 
   constructor(
     private route: ActivatedRoute,
@@ -76,7 +76,7 @@ export class AdminComponent implements OnInit {
         }
       },
       error: () => {
-        this.photo = 'assets/img/default-profile.png';
+        this.photo = 'assets/img/default.png';
         this.projects = [];
         this.filteredProjects = [];
       }
@@ -276,7 +276,7 @@ export class AdminComponent implements OnInit {
 
   getFullImageUrl(imagePath: string): string {
     if (!imagePath) {
-      return 'assets/img/default-profile.png';
+      return 'assets/img/default.png';
     }
     return imagePath.startsWith('http') ? imagePath : `http://localhost:8000/${imagePath.replace(/^\/+/, '')}`;
   }

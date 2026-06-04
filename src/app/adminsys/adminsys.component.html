@@ -1,7 +1,7 @@
 <div class="adminsys-layout">
   <nav class="sidebar">
     <div class="user-info">
-      <img [src]="userPhoto" alt="User Avatar" class="avatar" *ngIf="userPhoto !== 'assets/img/default-profile.png'; else defaultIcon">
+      <img [src]="userPhoto" alt="User Avatar" class="avatar" *ngIf="userPhoto !== 'assets/img/default.png'; else defaultIcon">
       <ng-template #defaultIcon>
         <i class="fas fa-user-circle avatar-icon"></i>
       </ng-template>

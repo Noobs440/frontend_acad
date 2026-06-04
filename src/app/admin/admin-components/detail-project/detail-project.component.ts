@@ -11,6 +11,8 @@ import { ProjetService } from '../../../services/projet.service';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
 import { Router } from '@angular/router';
 import { DocumentService } from '../../../services/document.service';
+import { forkJoin } from 'rxjs';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-detail-project',
@@ -62,6 +64,7 @@ export class DetailProjectComponent {
   isAddingCollaborator = false;
   isLoadingSearch = false;
   foundUser: any = null;
+  isLoading = false;
 
   get showMoreDocuments(): boolean {
     return this.documents && this.documents.length > 1;
@@ -79,7 +82,8 @@ export class DetailProjectComponent {
     private projetStatusService: ProjetstatusService,
     private collaborateurService: CollaborateurService,
     private userService: UserManagementService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -87,32 +91,51 @@ export class DetailProjectComponent {
     this.reloadProject();
   }
 
-  reloadProject() {
-    this.projetService.getProjectById(this.selectedProjectId).subscribe({
-      next: (project: any) => {
-        this.id = project.id;
-        this.selectedProjectTitle = project.titre_projet || '';
-        this.projectStatus = project.status || '';
-        this.projectImage = project.image || '';
-        this.description = project.descript_projet || '';
-        this.author = project.nom_user || (project.user && project.user.name) || '';
-        this.category = project.tbl_categorie_id || '';
-        this.level = project.tbl_niveau_id || '';
-        this.type = project.type || '';
-        this.date = project.created_at || '';
-        this.views = project.views || 0;
-        this.email = project.user?.email || '';
-        this.rejection_reason = project.rejection_reason || '';
-      }
-    });
-    this.documentService.getDocumentsByProject(this.selectedProjectId).subscribe(response => {
-      this.documents = response;
-    });
-    this.collaborateurService.getCollaborateursByProject(this.selectedProjectId).subscribe(response => {
-      this.collaborators = response;
-    });
-    this.actionCellRenderer();
-  }
+reloadProject() {
+  this.isLoading = true;
+
+  forkJoin({
+    project: this.projetService.getProjectById(this.selectedProjectId),
+    documents: this.documentService.getDocumentsByProject(this.selectedProjectId),
+    collaborators: this.collaborateurService.getCollaborateursByProject(this.selectedProjectId)
+  }).subscribe({
+    next: ({ project, documents, collaborators }) => {
+      // Projet
+      this.id = project.id;
+      this.selectedProjectTitle = project.titre_projet || '';
+      this.projectStatus = project.status || '';
+      this.projectImage = project.image || '';
+      this.description = project.descript_projet || '';
+      this.author = project.nom_user || (project.user && project.user.name) || '';
+      this.category = project.tbl_categorie_id || '';
+      this.level = project.tbl_niveau_id || '';
+      this.type = project.type || '';
+      this.date = project.created_at || '';
+      this.views = project.views || 0;
+      this.email = project.user?.email || '';
+      this.rejection_reason = project.rejection_reason || '';
+
+      // Documents & Collaborateurs
+      this.documents = documents;
+      this.collaborators = collaborators;
+
+      this.actionCellRenderer();
+    },
+    error: () => {
+      this.isLoading = false;
+      this.dialog.open(InfoDialogComponent, {
+        data: {
+          title: 'Erreur',
+          message: 'Impossible de charger les détails du projet. Vérifiez votre connexion.'
+        }
+      });
+      this.router.navigate(['/admin']);
+    },
+    complete: () => {
+      this.isLoading = false;
+    }
+  });
+}
 
 
 
