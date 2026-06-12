@@ -71,7 +71,7 @@ isLoadingLogout = false;
 
     const storedPhoto = localStorage.getItem('photo');
     this.photo = storedPhoto && storedPhoto !== 'null' && storedPhoto !== 'undefined'
-      ? (storedPhoto.startsWith('http') ? storedPhoto : `http://localhost:8000/${storedPhoto}`)
+      ? (storedPhoto.startsWith('http') ? storedPhoto : `https://backend-acad.onrender.com/${storedPhoto}`)
       : 'assets/img/default.png';
 
     // Mets à jour le UserService si besoin
@@ -92,7 +92,7 @@ isLoadingLogout = false;
         if (profile.photo) {
           this.photo = profile.photo.startsWith('http')
             ? profile.photo
-            : `http://localhost:8000/${profile.photo}`;
+            : `https://backend-acad.onrender.com/${profile.photo}`;
         }
       }
     });

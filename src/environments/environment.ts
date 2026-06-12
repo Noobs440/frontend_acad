@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  backendUrl: 'http://localhost:8000/api',  // <-- enlever /api ici
-  assetUrl: 'http://localhost:8000/images'
+  backendUrl: 'https://backend-acad.onrender.com/api',  // <-- enlever /api ici
+  assetUrl: 'https://backend-acad.onrender.com/images'
 };

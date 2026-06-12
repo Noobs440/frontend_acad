@@ -11,7 +11,7 @@ export class FiliereService {
 
 
   getFilieres(): Observable<any[]>{
-    return this.http.get<any[]>('http://localhost:8000/api/ressources/filieres').pipe(
+    return this.http.get<any[]>('https://backend-acad.onrender.com/api/ressources/filieres').pipe(
       
       catchError((error) =>{
         
@@ -21,19 +21,19 @@ export class FiliereService {
   }
 
   addFiliere(nom_fil:string , tbl_faculte_id:string):Observable<any>{
-    return this.http.post<any>('http://localhost:8000/api/ressources/filieres', {nom_fil , tbl_faculte_id});
+    return this.http.post<any>('https://backend-acad.onrender.com/api/ressources/filieres', {nom_fil , tbl_faculte_id});
   }
 
   deleteFiliere(id:string):Observable<any>{
-    return this.http.delete(`http://localhost:8000/api/ressources/filieres/${id}`);
+    return this.http.delete(`https://backend-acad.onrender.com/api/ressources/filieres/${id}`);
   }
 
   updateFiliere(id:string ,nom_fil:string , tbl_faculte_id:string):Observable<any>{
-    return this.http.put<any>(`http://localhost:8000/api/ressources/filieres/${id}`, {nom_fil , tbl_faculte_id});
+    return this.http.put<any>(`https://backend-acad.onrender.com/api/ressources/filieres/${id}`, {nom_fil , tbl_faculte_id});
   }
 
     getFaculties(): Observable<any[]>{
-    return this.http.get<any[]>('http://localhost:8000/api/ressources/facultes').pipe(
+    return this.http.get<any[]>('https://backend-acad.onrender.com/api/ressources/facultes').pipe(
   
       catchError((error) =>{
         

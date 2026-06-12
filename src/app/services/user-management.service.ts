@@ -9,7 +9,7 @@ import { Observable, tap, catchError, of, map } from 'rxjs';
 })
 export class UserManagementService {
 
-  private API_BASE = 'http://localhost:8000/api/user-management';
+  private API_BASE = 'https://backend-acad.onrender.com/api/user-management';
 
   constructor(private http: HttpClient) {}
 
@@ -36,13 +36,13 @@ export class UserManagementService {
   }
 
 searchUsersByEmail(term: string): Observable<any[]> {
-  return this.http.get<any[]>(`http://localhost:8000/api/users?role=user&search=${encodeURIComponent(term)}`);
+  return this.http.get<any[]>(`https://backend-acad.onrender.com/api/users?role=user&search=${encodeURIComponent(term)}`);
 }
 
 
 
     getFilieres(): Observable<any[]>{
-      return this.http.get<any[]>('http://localhost:8000/api/ressources/filieres').pipe(
+      return this.http.get<any[]>('https://backend-acad.onrender.com/api/ressources/filieres').pipe(
         
         catchError((error) =>{
           

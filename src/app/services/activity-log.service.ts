@@ -27,7 +27,7 @@ export interface ActivityLog {
   providedIn: 'root'
 })
 export class ActivityLogService {
-  private apiUrl = 'http://localhost:8000/api/activity-logs';
+  private apiUrl = 'https://backend-acad.onrender.com/api/activity-logs';
 
   constructor(private http: HttpClient) {}
 

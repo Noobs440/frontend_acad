@@ -25,7 +25,7 @@ export class RecentPostComponent implements OnInit {
 
   chunkedPosts: any[] = [];
   data: any[] = [];
-  private baseUrl: string = 'http://localhost:8000';
+  private baseUrl: string = 'https://backend-acad.onrender.com';
   maxElements: number = 16;
   allProjects:any;
   isLoading=false;
@@ -64,7 +64,7 @@ export class RecentPostComponent implements OnInit {
     if (!projectImage) {
       return '';
     }
-    return projectImage.startsWith('http') ? projectImage : `http://localhost:8000/${projectImage.replace(/^\/+/, '')}`;
+    return projectImage.startsWith('http') ? projectImage : `https://backend-acad.onrender.com/${projectImage.replace(/^\/+/, '')}`;
   }
 
   getFullDocumentUrl(lien_doc: string): string {
@@ -73,9 +73,9 @@ export class RecentPostComponent implements OnInit {
     if (lien_doc.startsWith('http')) return lien_doc;
     // Si le lien commence par /public ou public, ajoute le préfixe
     if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
-      return `http://localhost:8000/${lien_doc.replace(/^\/+/, '')}`;
+      return `https://backend-acad.onrender.com/${lien_doc.replace(/^\/+/, '')}`;
     }
     // Sinon, ajoute /storage/
-    return `http://localhost:8000/storage/${lien_doc.replace(/^\/+/, '')}`;
+    return `https://backend-acad.onrender.com/storage/${lien_doc.replace(/^\/+/, '')}`;
   }
 }
