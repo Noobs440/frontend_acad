@@ -409,6 +409,41 @@ h6 {
     display: block;
   }
 
+  .mobile-nav-active .navmenu {
+    overflow-y: auto;
+    padding-top: 90px;
+  }
+
+  .mobile-nav-active .navmenu>ul {
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+
+  .mobile-nav-active .navmenu a,
+  .mobile-nav-active .navmenu a:focus {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 18px;
+  }
+
+  .mobile-nav-active .navmenu .dropdown ul {
+    margin: 0;
+    padding-left: 1rem;
+    border: none;
+    background-color: transparent;
+  }
+
+  .mobile-nav-active .navmenu .dropdown>.dropdown-active {
+    display: block;
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .mobile-nav-toggle {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    z-index: 10001;
+  }
 
 }
 

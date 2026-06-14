@@ -313,12 +313,12 @@ confirmReject() {
 
   addCollaborator(): void {
     if (!this.foundUser) {
-      alert('Veuillez sélectionner un utilisateur dans la liste de suggestions.');
+      this.dialog.open(InfoDialogComponent, { width: '380px', data: { title: 'Erreur', message: 'Veuillez sélectionner un utilisateur dans la liste de suggestions.' } });
       return;
     }
     
     if (!this.newCollaboratorUserId) {
-      alert('Utilisateur introuvable. Veuillez le rechercher à nouveau.');
+      this.dialog.open(InfoDialogComponent, { width: '380px', data: { title: 'Erreur', message: 'Utilisateur introuvable. Veuillez le rechercher à nouveau.' } });
       return;
     }
     
@@ -335,7 +335,7 @@ confirmReject() {
       },
       error: err => {
         console.error('Erreur ajout collaborateur:', err);
-        alert('Impossible d\'ajouter le collaborateur. Vérifiez votre connexion.');
+        this.dialog.open(InfoDialogComponent, { width: '420px', data: { title: 'Erreur', message: 'Impossible d\'ajouter le collaborateur. Vérifiez votre connexion.' } });
       },
       complete: () => {
         this.isAddingCollaborator = false;
@@ -344,13 +344,16 @@ confirmReject() {
   }
 
   removeCollaborator(collabId: number | string): void {
-    if (!confirm('Confirmez-vous la suppression de ce collaborateur ?')) return;
-    this.collaborateurService.deleteCollaborateur(collabId).subscribe({
-      next: () => this.reloadProject(),
-      error: err => {
-        console.error('Erreur suppression collaborateur:', err);
-        alert('Impossible de supprimer ce collaborateur.');
-      }
+    const ref = this.dialog.open(ConfirmDialogComponent, { width: '380px', data: { title: 'Confirmation', message: 'Confirmez-vous la suppression de ce collaborateur ?' } });
+    ref.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
+      this.collaborateurService.deleteCollaborateur(collabId).subscribe({
+        next: () => this.reloadProject(),
+        error: err => {
+          console.error('Erreur suppression collaborateur:', err);
+          this.dialog.open(InfoDialogComponent, { width: '420px', data: { title: 'Erreur', message: 'Impossible de supprimer ce collaborateur.' } });
+        }
+      });
     });
   }
 

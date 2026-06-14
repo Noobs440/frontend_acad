@@ -24,6 +24,7 @@ export class LoginPopupComponent implements OnInit {
   isLoading = false;
   submitted = false;
   showVerification = false;
+  showPasswordReset = false;
   showResetPasswordForm = false;
   showSuccessMessage = false;
   showPassword = false;

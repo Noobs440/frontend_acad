@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 
 export interface User {
@@ -14,20 +15,29 @@ export class AuthService {
   private readonly USER_KEY = 'currentUser';
   private readonly TOKEN_KEY = 'token';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
+
+  private get storage(): Storage | null {
+    return isPlatformBrowser(this.platformId) && typeof sessionStorage !== 'undefined'
+      ? sessionStorage
+      : null;
+  }
 
   // Appelé après login réussi depuis LoginPopupComponent
   setSession(token: string, user: User): void {
-    sessionStorage.setItem(this.TOKEN_KEY, token);
-    sessionStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    this.storage?.setItem(this.TOKEN_KEY, token);
+    this.storage?.setItem(this.USER_KEY, JSON.stringify(user));
   }
 
   getToken(): string | null {
-    return sessionStorage.getItem(this.TOKEN_KEY);
+    return this.storage?.getItem(this.TOKEN_KEY) ?? null;
   }
 
   getUser(): User | null {
-    const userStr = sessionStorage.getItem(this.USER_KEY);
+    const userStr = this.storage?.getItem(this.USER_KEY);
     if (!userStr) return null;
     try {
       return JSON.parse(userStr);
@@ -50,8 +60,8 @@ export class AuthService {
   }
 
   logout(): void {
-    sessionStorage.removeItem(this.TOKEN_KEY);
-    sessionStorage.removeItem(this.USER_KEY);
+    this.storage?.removeItem(this.TOKEN_KEY);
+    this.storage?.removeItem(this.USER_KEY);
     this.router.navigate(['/']);
   }
 }

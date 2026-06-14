@@ -1,5 +1,6 @@
 import { MatDialog } from '@angular/material/dialog';
 import { InfoDialogComponent } from '../../../shared/info-dialog/info-dialog.component';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ProjetService } from '../../../services/projet.service';
 import { NotificationService } from '../../../services/notification.service';
@@ -135,26 +136,33 @@ export class EnseignantComponent implements OnInit {
   }
 
   deconnexion(): void {
-    const result = confirm('Voulez-vous vous déconnecter?');
-    if (result) {
-      this.userService.logout().subscribe({
-        next: value => {
-          console.log(value);
-          this.dialog.open(InfoDialogComponent, {
-            width: '350px',
-            data: { title: 'Succès', message: 'Déconnexion effectuée' }
-          });
-        },
-        error: err => {
-          console.log(err);
-        },
-        complete: () => {
-          localStorage.removeItem('token');
-          this.router.navigate(['/home']);
-          console.log("Déconnexion réussie");
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '380px',
+      data: { title: 'Confirmation', message: 'Voulez-vous vous déconnecter?' }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.userService.logout().subscribe({
+          next: value => {
+            console.log(value);
+            this.dialog.open(InfoDialogComponent, {
+              width: '350px',
+              data: { title: 'Succès', message: 'Déconnexion effectuée' }
+            });
+          },
+          error: err => {
+            console.log(err);
+          },
+          complete: () => {
+            if (typeof localStorage !== 'undefined') {
+              localStorage.removeItem('token');
+            }
+            this.router.navigate(['/home']);
+            console.log("Déconnexion réussie");
+          }
+        });
+      }
+    });
   }
 
 

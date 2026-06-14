@@ -5,6 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { InfoDialogComponent } from '../../shared/info-dialog/info-dialog.component';
 
 @Component({
   selector: 'app-profile',
@@ -22,7 +24,8 @@ export class ProfileComponent implements OnInit {
   constructor(
     private userService: UserService,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -72,11 +75,11 @@ export class ProfileComponent implements OnInit {
           // La photo est mise à jour automatiquement via BehaviorSubject,
           // mais on met aussi à jour localement pour réactivité immédiate
           this.user.photo = res.photo;
-          alert('Photo mise à jour avec succès.');
+          this.dialog.open(InfoDialogComponent, { width: '350px', data: { title: 'Succès', message: 'Photo mise à jour avec succès.' } });
         },
         error: (err) => {
           console.error(err);
-          alert('Erreur lors de l’envoi de la photo.');
+          this.dialog.open(InfoDialogComponent, { width: '350px', data: { title: 'Erreur', message: 'Erreur lors de l’envoi de la photo.' } });
         }
       });
     }

@@ -43,10 +43,68 @@
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
+html {
+  box-sizing: border-box;
+  font-family: var(--default-font);
+  text-rendering: optimizeLegibility;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
 body {
+  min-width: 0;
+  overflow-x: hidden;
   color: var(--default-color);
   background-color: var(--background-color);
   font-family: var(--default-font);
+}
+
+img, picture, svg, video, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+input[type="search"],
+input[type="text"],
+textarea {
+  min-width: 0;
+}
+
+
+button, input, textarea, select {
+  max-width: 100%;
+}
+
+.header .container-fluid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.header .logo {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.header .navmenu {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+.header .btn-getstarted {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.navmenu ul {
+  width: 100%;
+  max-width: 100%;
+  flex-wrap: wrap;
 }
 
 a {
@@ -167,8 +225,18 @@ h6 {
 --------------------------------------------------------------*/
 /* Navmenu - Desktop */
 @media (min-width: 1200px) {
+  .header .container-fluid {
+    /* Keep logo, nav and action button on a single line */
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
   .navmenu {
     padding: 0;
+    /* Allow nav to grow between logo and button */
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-right: 16px;
   }
 
   .navmenu ul {
@@ -177,6 +245,55 @@ h6 {
     display: flex;
     list-style: none;
     align-items: center;
+    justify-content: flex-start; /* keep nav items immediately after logo */
+    gap: 8px;
+  }
+
+  /* Align CTA to the extreme right on desktop */
+  .navmenu ul li.nav-item-cta {
+    margin-left: auto;
+  }
+
+  .navmenu ul li.nav-item-cta .btn-getstarted {
+    padding: 10px 26px;
+    font-size: 15px;
+    background: black;
+    color: var(--contrast-color);
+    border-radius: 6px;
+  }
+
+  /* Professional alignment and spacing for nav links */
+  .navmenu ul li {
+    display: flex;
+    align-items: center;
+  }
+
+  .navmenu ul li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--nav-color);
+    font-family: var(--nav-font);
+    font-size: 16px;
+    padding: 14px 12px;
+    text-align: left;
+    line-height: 1.2;
+    transition: background-color 0.15s, color 0.15s;
+  }
+
+  .navmenu ul li a i {
+    min-width: 22px;
+    text-align: center;
+    color: inherit;
+    font-size: 16px;
+  }
+
+  /* Hover and focus states for better UX */
+  .navmenu a:hover,
+  .navmenu a:focus {
+    color: var(--nav-hover-color);
+    background-color: color-mix(in srgb, var(--nav-hover-color), transparent 92%);
+    border-radius: 6px;
   }
 
   .navmenu li {
@@ -275,6 +392,14 @@ h6 {
     left: -100%;
     visibility: visible;
   }
+
+  /* Ensure action button sits at the far right of the header on desktop */
+  .header .btn-getstarted {
+    margin-left: auto; /* pushes button to the extreme right */
+    margin-right: 8px; /* small gap from viewport edge */
+    padding: 10px 28px; /* more professional touch */
+    font-size: 15px;
+  }
 }
 
 /* Navmenu - Mobile */
@@ -286,6 +411,14 @@ h6 {
     margin-right: 10px;
     cursor: pointer;
     transition: color 0.3s;
+    z-index: 12000 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute !important;
+    top: 16px !important;
+    right: 16px !important;
+    pointer-events: auto !important;
   }
 
   .navmenu {
@@ -305,6 +438,46 @@ h6 {
     transition: 0.3s;
     z-index: 9998;
     box-shadow: 0px 0px 30px color-mix(in srgb, var(--default-color), transparent 90%);
+  }
+
+  /* Mobile link styling: full-width, readable, and aligned */
+  .mobile-nav-active .navmenu>ul li a,
+  .navmenu ul li.nav-item-cta .btn-getstarted {
+    text-align: left;
+  }
+
+  .mobile-nav-active .navmenu>ul li a {
+    display: block;
+    padding: 16px 24px;
+    font-size: 18px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    color: var(--nav-dropdown-color);
+    background: transparent;
+  }
+
+  .mobile-nav-active .navmenu>ul li a i {
+    margin-right: 10px;
+    width: 26px;
+    display: inline-block;
+    text-align: left;
+  }
+
+  /* Make links full-width and obviously clickable on mobile */
+  .navmenu ul li a {
+    display: block;
+    width: 100%;
+    padding: 14px 20px;
+    pointer-events: auto;
+  }
+
+  .navmenu ul li.nav-item-cta .btn-getstarted {
+    display: inline-block;
+    width: auto;
+    padding: 10px 20px;
+    margin: 8px 20px;
+    background: black;
+    color: var(--contrast-color);
+    border-radius: 6px;
   }
 
   .navmenu a,
@@ -398,20 +571,37 @@ h6 {
     z-index: 9999;
   }
 
+  /* Active mobile overlay: full-screen menu */
   .mobile-nav-active .navmenu {
     position: fixed;
     overflow: hidden;
     inset: 0;
-    background: rgba(33, 37, 41, 0.8);
+    background: rgba(33, 37, 41, 0.85);
     transition: 0.3s;
+    z-index: 11000;
   }
 
   .mobile-nav-active .navmenu>ul {
     display: block;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    padding-top: 90px; /* leave space for header/hamburger */
+    margin: 0;
+    left: 0;
+    right: 0;
   }
 
+  /* Ensure hamburger stays clickable above overlay */
+  .mobile-nav-toggle {
+    z-index: 12000 !important;
+  }
 
 }
+  /* Ensure hamburger stays clickable above overlay */
+  .mobile-nav-toggle {
+    z-index: 12000 !important;
+  }
+
 
 /*--------------------------------------------------------------
 # Global Footer
@@ -794,12 +984,159 @@ section,
 }
 
 @media (max-width: 768px) {
+  .hero {
+    min-height: auto;
+    padding: 100px 0 40px;
+  }
+
   .hero h2 {
     font-size: 32px;
   }
 
   .hero p {
     font-size: 18px;
+  }
+
+  .hero .container {
+    padding: 0 1rem;
+  }
+
+  .hero .row {
+    gap: 1.5rem;
+  }
+
+  .hero .sign-up-form {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+  }
+
+  .hero .sign-up-form .form-control {
+    width: 100%;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero .sign-up-form button {
+    width: 100%;
+    padding: 0.85rem 1rem;
+  }
+
+  .search-overlay-wrapper {
+    width: 100%;
+  }
+
+  .overlay-content {
+    max-height: 180px;
+  }
+
+  .carousel-container {
+    padding: 0 0.75rem;
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 38px;
+    height: 38px;
+    top: calc(50% - 19px);
+  }
+
+  .carousel-control-prev {
+    left: 8px;
+  }
+
+  .carousel-control-next {
+    right: 8px;
+  }
+
+  .category {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 18px;
+  }
+
+  .category .uil,
+  .category .bai {
+    margin-right: 12px;
+  }
+
+  .footer .footer-top {
+    padding-top: 30px;
+  }
+
+  .footer .footer-top .row {
+    gap: 24px;
+  }
+
+  .footer .footer-about,
+  .footer .footer-links,
+  .footer .footer-contact {
+    text-align: center;
+  }
+
+  .footer .footer-contact.text-md-start {
+    text-align: center !important;
+  }
+
+  .footer .footer-about .logo span {
+    font-size: 26px;
+  }
+
+  .section {
+    padding: 40px 0;
+  }
+
+  .section-title {
+    padding-bottom: 40px;
+  }
+
+  .section-title h2 {
+    font-size: 28px;
+  }
+
+  .page-title .heading {
+    padding: 50px 0;
+  }
+
+  .page-title h1 {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero h2 {
+    font-size: 28px;
+  }
+
+  .hero p {
+    font-size: 16px;
+  }
+
+  .hero .sign-up-form {
+    padding: 10px;
+  }
+
+  .hero .sign-up-form .form-control {
+    margin-bottom: 0.6rem;
+  }
+
+  .hero .sign-up-form button {
+    padding: 0.75rem 1rem;
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 34px;
+    height: 34px;
+  }
+
+  .footer .footer-top {
+    padding-top: 24px;
+  }
+
+  .footer .footer-links ul li {
+    padding: 8px 0;
   }
 }
 

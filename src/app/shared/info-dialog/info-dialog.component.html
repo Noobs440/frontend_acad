@@ -1,13 +1,21 @@
-<div class="dialog-header" [ngClass]="data.color === 'warn' ? 'warn' : ''">
-  <mat-icon *ngIf="data.icon" color="warn" style="font-size:32px;vertical-align:middle;">{{data.icon}}</mat-icon>
-  <!-- Texte interpolé avec {{ }} — Angular échappe automatiquement le HTML -->
-  <h2 mat-dialog-title>{{data.title}}</h2>
+<div class="info-dialog-container">
+  <div class="info-dialog-icon-wrapper" [ngClass]="getIconClass()">
+    <mat-icon class="info-dialog-icon" [color]="getIconColor()">{{ getIconName() }}</mat-icon>
+  </div>
+
+  <h2 class="info-dialog-title">{{ data.title }}</h2>
+
+  <div class="info-dialog-message">
+    <p>{{ data.message }}</p>
+  </div>
+
+  <div class="info-dialog-actions">
+    <button 
+      mat-raised-button 
+      class="btn-primary" 
+      mat-dialog-close
+      (click)="onClose()">
+      {{ data.confirmButtonText || 'OK' }}
+    </button>
+  </div>
 </div>
-<mat-dialog-content>
-  <div>{{data.message}}</div>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close="false" *ngIf="data.cancelButtonText">{{data.cancelButtonText}}</button>
-  <button mat-raised-button color="warn" mat-dialog-close="true" *ngIf="data.confirmButtonText">{{data.confirmButtonText}}</button>
-  <button mat-button mat-dialog-close *ngIf="!data.confirmButtonText && !data.cancelButtonText">OK</button>
-</mat-dialog-actions>

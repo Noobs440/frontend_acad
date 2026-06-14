@@ -1,7 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { CollaborateurService } from '../../services/collaborateur.service';
+import { InfoDialogComponent } from '../../shared/info-dialog/info-dialog.component';
 
 @Component({
   selector: 'app-collaborateur-edit-popup',
@@ -16,7 +17,8 @@ export class CollaborateurEditPopupComponent implements OnInit {
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<CollaborateurEditPopupComponent>,
     private collaborateurService: CollaborateurService,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -52,16 +54,16 @@ export class CollaborateurEditPopupComponent implements OnInit {
     };
 
     this.collaborateurService.updateCollaborateur(id, nom_collab,email_collab,tbl_projet_id,tbl_user_id).subscribe({
-      next: () => alert('Collaborateur modifié avec succès'),
+      next: () => this.dialog.open(InfoDialogComponent, { width: '350px', data: { title: 'Succès', message: 'Collaborateur modifié avec succès' } }),
       error: err => {
         console.error('Erreur API complète:', err);
         if (err.error?.errors) {
           const messages = Object.values(err.error.errors).flat().join('\n');
-          alert('Erreur lors de la modification :\n' + messages);
+          this.dialog.open(InfoDialogComponent, { width: '450px', data: { title: 'Erreur', message: 'Erreur lors de la modification :\n' + messages } });
         } else if (err.error?.message) {
-          alert('Message : ' + err.error.message);
+          this.dialog.open(InfoDialogComponent, { width: '450px', data: { title: 'Erreur', message: 'Message : ' + err.error.message } });
         } else {
-          alert('Erreur inconnue lors de la modification.');
+          this.dialog.open(InfoDialogComponent, { width: '350px', data: { title: 'Erreur', message: 'Erreur inconnue lors de la modification.' } });
         }
       },
       complete: () => {

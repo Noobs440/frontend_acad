@@ -1,5 +1,6 @@
 import { MatDialog } from '@angular/material/dialog';
 import { InfoDialogComponent } from '../../../shared/info-dialog/info-dialog.component';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjetstatusService } from '../../../services/projetstatus.service';
@@ -131,7 +132,7 @@ export class DetailProjetComponent {
 
   addDocument(): void {
     if (!this.newDocumentTitle.trim() || !this.newDocumentLink.trim()) {
-      alert('Le titre et le lien du document sont obligatoires.');
+      this.dialog.open(InfoDialogComponent, { width: '400px', data: { title: 'Erreur', message: 'Le titre et le lien du document sont obligatoires.' } });
       return;
     }
 
@@ -193,7 +194,7 @@ export class DetailProjetComponent {
 
   addCollaborator(): void {
     if (!this.newCollaboratorUserId) {
-      alert('Selectionnez un collaborateur existant avant d ajouter.');
+      this.dialog.open(InfoDialogComponent, { width: '400px', data: { title: 'Erreur', message: 'Selectionnez un collaborateur existant avant d ajouter.' } });
       return;
     }
 
@@ -212,7 +213,7 @@ export class DetailProjetComponent {
         },
         error: err => {
           console.error('Erreur ajout collaborateur:', err);
-          alert('Impossible d ajouter ce collaborateur.');
+          this.dialog.open(InfoDialogComponent, { width: '400px', data: { title: 'Erreur', message: 'Impossible d ajouter ce collaborateur.' } });
         },
         complete: () => {
           this.isAddingCollaborator = false;
@@ -239,7 +240,7 @@ export class DetailProjetComponent {
     if (!this.editingCollaboratorId || !this.editingCollaboratorData) return;
 
     if (!this.editingCollaboratorName.trim() || !this.editingCollaboratorEmail.trim()) {
-      alert('Le nom et l email sont obligatoires.');
+      this.dialog.open(InfoDialogComponent, { width: '400px', data: { title: 'Erreur', message: 'Le nom et l email sont obligatoires.' } });
       return;
     }
 
@@ -265,7 +266,7 @@ export class DetailProjetComponent {
         },
         error: err => {
           console.error('Erreur modification collaborateur:', err);
-          alert('Impossible de modifier ce collaborateur.');
+          this.dialog.open(InfoDialogComponent, { width: '400px', data: { title: 'Erreur', message: 'Impossible de modifier ce collaborateur.' } });
           this.isUpdatingCollaborator = false;
         },
         complete: () => {
@@ -275,16 +276,17 @@ export class DetailProjetComponent {
   }
 
   removeCollaborator(id: number | string): void {
-    if (!confirm('Confirmez-vous la suppression de ce collaborateur ?')) {
-      return;
-    }
+    const delDialogRef = this.dialog.open(ConfirmDialogComponent, { width: '380px', data: { title: 'Confirmation', message: 'Confirmez-vous la suppression de ce collaborateur ?' } });
+    delDialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
 
     this.collaborateurService.deleteCollaborateur(id).subscribe({
       next: () => this.loadCollaborators(),
       error: err => {
         console.error('Erreur suppression collaborateur:', err);
-        alert('Impossible de supprimer ce collaborateur.');
+        this.dialog.open(InfoDialogComponent, { width: '400px', data: { title: 'Erreur', message: 'Impossible de supprimer ce collaborateur.' } });
       }
+    });
     });
   }
 
@@ -293,20 +295,22 @@ export class DetailProjetComponent {
       return;
     }
 
-    const userConfirmed = confirm('Souhaitez-vous approuver ce projet ?');
-    if (!userConfirmed) {
-      return;
-    }
-
-    this.projetStatusService.approveProject(this.selectedProjectId, this.rejection_reason).subscribe({
-      next: () => {
-        alert(`Le projet a ete approuve et un email a ete envoye a ${this.author}.`);
-        this.projectStatus = 'Approved';
-      },
-      error: err => {
-        alert(`Le projet n'a pas ete approuve, erreur lors de l'envoi de l'email.`);
-        console.error(err);
+    const approveRef = this.dialog.open(ConfirmDialogComponent, { width: '380px', data: { title: 'Confirmation', message: 'Souhaitez-vous approuver ce projet ?' } });
+    approveRef.afterClosed().subscribe(userConfirmed => {
+      if (!userConfirmed) {
+        return;
       }
+
+      this.projetStatusService.approveProject(this.selectedProjectId, this.rejection_reason).subscribe({
+        next: () => {
+          this.dialog.open(InfoDialogComponent, { width: '450px', data: { title: 'Succès', message: `Le projet a ete approuve et un email a ete envoye a ${this.author}.` } });
+          this.projectStatus = 'Approved';
+        },
+        error: err => {
+          this.dialog.open(InfoDialogComponent, { width: '450px', data: { title: 'Erreur', message: `Le projet n'a pas ete approuve, erreur lors de l'envoi de l'email.` } });
+          console.error(err);
+        }
+      });
     });
   }
 
