@@ -32,7 +32,7 @@ export class AdminsysComponent implements OnInit {
     if (!imagePath) {
       return 'assets/img/default.png';
     }
-    return imagePath.startsWith('http') ? imagePath : `http://localhost:8000/${imagePath.replace(/^\/+/g, '')}`;
+    return imagePath.startsWith('http') ? imagePath : `https://backend-acad.onrender.com/${imagePath.replace(/^\/+/g, '')}`;
   }
 
   logout(): void {

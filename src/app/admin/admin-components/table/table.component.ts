@@ -57,7 +57,7 @@ export class TableComponent implements OnInit, AfterViewInit {
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
-    return `http://localhost:8000/${imagePath.replace(/^\/+/, '')}`;
+    return `https://backend-acad.onrender.com/${imagePath.replace(/^\/+/, '')}`;
   }
 
   showDetail(element: Project) {

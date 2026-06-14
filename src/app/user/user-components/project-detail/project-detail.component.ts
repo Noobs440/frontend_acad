@@ -521,7 +521,7 @@ confirmDeleteDocument(document: any) {
     if (!projectImage) return '';
     return projectImage.startsWith('http')
       ? projectImage
-      : `http://localhost:8000${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
+      : `https://backend-acad.onrender.com${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
   }
   
 }
