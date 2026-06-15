@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RegisterComponent } from '../register-popup/register-popup.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -13,30 +13,23 @@ import { UserService } from '../../../services/user.service';
   templateUrl: './login-popup.component.html',
   styleUrls: ['./login-popup.component.css']
 })
-export class LoginPopupComponent {
-  password !: string;
-  email !: string;
-  user: any;
+export class LoginPopupComponent implements OnInit {
   loginForm!: FormGroup;
-  codeForm!: FormGroup;
-  errorMessage = '';
   resetForm!: FormGroup;
-  showPasswordReset = false;
-  submitted3 = false;
-  isLoading: boolean = false;
   resetRequestForm!: FormGroup;
   verificationForm!: FormGroup;
+
+  errorMessage = '';
+  successMessage = '';
+  isLoading = false;
   submitted = false;
   showVerification = false;
+  showPasswordReset = false;
   showResetPasswordForm = false;
   showSuccessMessage = false;
-  successMessage = '';
-
-  // Ajout de la variable pour afficher / masquer le mot de passe
-  showPassword: boolean = false;       // Pour le champ mot de passe du login
-  showNewPassword: boolean = false;    // Pour le nouveau mot de passe (reset)
-  showConfirmPassword: boolean = false; // Pour la confirmation du mot de passe (reset)
-
+  showPassword = false;
+  showNewPassword = false;
+  showConfirmPassword = false;
 
   constructor(
     private router: Router,
@@ -46,94 +39,59 @@ export class LoginPopupComponent {
     private fb: FormBuilder,
     private customValidator: CustomvalidationService,
     private userService: UserService
-  ) { }
+  ) {}
 
   ngOnInit() {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, this.customValidator.patternValidator()]]
+    });
+
     this.resetRequestForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });
+
     this.verificationForm = this.fb.group({
       verificationCode: ['', Validators.required]
-    });
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.compose([Validators.required, this.customValidator.patternValidator()])]
-    }, {
-      validator: this.customValidator.MatchPassword('password', 'confirmPassword')
     });
 
     this.resetForm = this.fb.group({
       newPassword: ['', Validators.required],
-      confirmPassword: ['', [Validators.required,]]
-    },
-      {
-        validator: this.customValidator.MatchPassword('newPassword', 'confirmPassword'),
-      }
-    );
-  }
-
-  get loginFormControl() {
-    return this.loginForm.controls;
-  }
-
-  get resetRequestFormControl() {
-    return this.resetRequestForm.controls;
-  }
-
-  get verificationFormControl() {
-    return this.verificationForm.controls;
-  }
-
-  get resetFormControl() {
-    return this.resetForm.controls;
-  }
-
-  onResetPassword() {
-    this.submitted = true;
-    if (this.resetForm.invalid) {
-      return;
-    }
-    this.isLoading = true;
-    const email = this.resetRequestForm.value.email;
-    const newPassword = this.resetForm.value.newPassword;
-    const verificationCode = this.verificationForm.value.verificationCode;
-
-    this.userService.resetPassword(email, newPassword, verificationCode).subscribe({
-      next: () => {
-        this.showSuccessMessage = true;
-        this.successMessage = 'Votre mot de passe a été réinitialisé avec succès.';
-      },
-      error: err => {
-
-        this.isLoading = false;
-        this.errorMessage = 'Aucun utilisateur trouver avec cette adresse email';
-        alert(this.errorMessage);
-      },
-      complete: () => {
-        this.isLoading = false;
-      }
+      confirmPassword: ['', Validators.required]
+    }, {
+      validators: this.customValidator.MatchPassword('newPassword', 'confirmPassword')
     });
   }
 
-  onVerifyCode() {
+  get loginFormControl()        { return this.loginForm.controls; }
+  get resetRequestFormControl() { return this.resetRequestForm.controls; }
+  get verificationFormControl() { return this.verificationForm.controls; }
+  get resetFormControl()        { return this.resetForm.controls; }
+
+  onSubmit() {
     this.submitted = true;
-    if (this.verificationForm.invalid) {
-      return;
-    }
+    this.errorMessage = '';
+
+    if (this.loginForm.invalid) return;
 
     this.isLoading = true;
-    const email = this.resetRequestForm.value.email;
-    const verificationCode = this.verificationForm.value.verificationCode;
+    const { email, password } = this.loginForm.value;
 
-    this.userService.verifyResetcode(email, verificationCode).subscribe({
-      next: () => {
-        this.showResetPasswordForm = true;
+    this.userService.login(email, password).subscribe({
+      next: (value) => {
+        // On stocke via AuthService — plus de localStorage direct
+        this.authService.setSession(value.access_token, {
+          id: value.id,
+          username: value.username,
+          role: value.role
+        });
+
+        this.dialogRef.close();
+        this.redirectUserByRole(value.role);
       },
-      error: err => {
-
+      error: () => {
         this.isLoading = false;
-        this.errorMessage = 'Code de vérification invalide.';
-        alert(this.errorMessage);
+        this.errorMessage = 'Adresse email ou mot de passe invalide.';
       },
       complete: () => {
         this.isLoading = false;
@@ -143,144 +101,79 @@ export class LoginPopupComponent {
 
   onSendVerificationCode() {
     this.submitted = true;
-    if (this.resetRequestForm.invalid) {
-      return;
-    }
+    if (this.resetRequestForm.invalid) return;
 
     this.isLoading = true;
-    const email = this.resetRequestForm.value.email;
-
-    this.userService.sendVerificationCode(email).subscribe({
-      next: () => {
-        this.showVerification = true;
-      },
-      error: err => {
-
-        this.isLoading = true;
-        this.errorMessage = 'Erreur lors de l\'envoi du code de vérification.';
-        alert(this.errorMessage);
-      },
-      complete: () => {
+    this.userService.sendVerificationCode(this.resetRequestForm.value.email).subscribe({
+      next: () => { this.showVerification = true; },
+      error: () => {
         this.isLoading = false;
-      }
+        this.errorMessage = 'Erreur lors de l\'envoi du code de vérification.';
+      },
+      complete: () => { this.isLoading = false; }
     });
   }
 
-  mustMatch(controlName: string) {
-    return (formGroup: FormGroup) => {
-      const control = formGroup.controls[controlName];
-      const matchingControl = formGroup.controls['confirmPassword'];
+  onVerifyCode() {
+    this.submitted = true;
+    if (this.verificationForm.invalid) return;
 
-      if (matchingControl.errors && !matchingControl.errors['mustMatch']) {
-        return;
-      }
+    this.isLoading = true;
+    const { email } = this.resetRequestForm.value;
+    const { verificationCode } = this.verificationForm.value;
 
-      if (control.value !== matchingControl.value) {
-        matchingControl.setErrors({ mustMatch: true });
-      } else {
-        matchingControl.setErrors(null);
-      }
-    };
+    this.userService.verifyResetcode(email, verificationCode).subscribe({
+      next: () => { this.showResetPasswordForm = true; },
+      error: () => {
+        this.isLoading = false;
+        this.errorMessage = 'Code de vérification invalide.';
+      },
+      complete: () => { this.isLoading = false; }
+    });
   }
 
-  onSubmit() {
+  onResetPassword() {
     this.submitted = true;
-    this.errorMessage = '';
+    if (this.resetForm.invalid) return;
 
-    if (this.loginForm.invalid) {
-      return;
-    }
+    this.isLoading = true;
+    const email = this.resetRequestForm.value.email;
+    const { newPassword, verificationCode } = {
+      newPassword: this.resetForm.value.newPassword,
+      verificationCode: this.verificationForm.value.verificationCode
+    };
 
-    if (this.loginForm.valid) {
-      this.isLoading = true;
-      this.userService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
-        next: value => {
-
-          const userRole = value.role;
-          const token = value.access_token;
-          const name = value.username;
-          const role = value.role;
-          const id = value.id;
-
-          localStorage.setItem('token', token);
-          localStorage.setItem('name', name);
-          localStorage.setItem('role', role);
-          localStorage.setItem('id', id);
-          localStorage.setItem('user', JSON.stringify(value.user)); // Stocker les informations de l'utilisateur
-
-          // Correction : stocker aussi l'utilisateur pour le guard
-          localStorage.setItem('currentUser', JSON.stringify({
-            id: value.id,
-            username: value.username,
-            role: value.role
-          }));
-
-          // Rediriger l'utilisateur en fonction de son rôle sans exposer les données sensibles dans l'URL
-            //this.router.navigate([`/${userRole}/dashboard`]);
-            this.redirectUserByRole(userRole);
-          // Fermer le modal
-          this.dialogRef.close();
-        },
-        error: err => {
-
-          this.isLoading = false;
-          this.errorMessage = "Addresse email ou mot de passe invalide";
-
-        },
-        complete: () => {
-          this.isLoading = false;
-        }
-      });
-    }
+    this.userService.resetPassword(email, newPassword, verificationCode).subscribe({
+      next: () => {
+        this.showSuccessMessage = true;
+        this.successMessage = 'Votre mot de passe a été réinitialisé avec succès.';
+      },
+      error: () => {
+        this.isLoading = false;
+        this.errorMessage = 'Aucun utilisateur trouvé avec cette adresse email.';
+      },
+      complete: () => { this.isLoading = false; }
+    });
   }
 
   private redirectUserByRole(role: string) {
     switch (role) {
-      case 'admin':
-        this.router.navigate(['/admin/dashboard']);
-        break;
-      case 'adminsys':
-        this.router.navigate(['/adminsys']);
-        break;
-      case 'superviseur':
-        this.router.navigate(['/enseignant']);
-        break;
-      case 'user':
-        this.router.navigate(['/user/dashboard']);
-        break;
-      default:
-        this.router.navigate(['/unauthorized']);
-        break;
+      case 'admin':     this.router.navigate(['/admin/dashboard']); break;
+      case 'adminsys':  this.router.navigate(['/adminsys']); break;
+      case 'user':      this.router.navigate(['/user/dashboard']); break;
+      default:          this.router.navigate(['/unauthorized']); break;
     }
   }
 
-  onCancel() {
-    this.dialogRef.close();
-  }
+  onCancel() { this.dialogRef.close(); }
 
   openRegisterDialog(): void {
-    this.dialogRef.close(); // Close the current dialog
-
-    const dialogRef2 = this.dialog.open(RegisterComponent, {
-      width: '387px',
-      height: '600px',
-    });
-
-    dialogRef2.afterClosed().subscribe(result => {
-
-    });
+    this.dialogRef.close();
+    this.dialog.open(RegisterComponent, { width: '387px', height: '600px' });
   }
 
   openForgetPasswordDialog(): void {
-    this.dialogRef.close(); // Close the current dialog
-
-    const dialogRef3 = this.dialog.open(ForgetPasswordComponent, {
-      width: '400px',
-      height: '500px'
-    });
-
-    dialogRef3.afterClosed().subscribe(result => {
-
-    });
+    this.dialogRef.close();
+    this.dialog.open(ForgetPasswordComponent, { width: '400px', height: '500px' });
   }
 }

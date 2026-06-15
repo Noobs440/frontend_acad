@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { DocumentService } from '../../services/document.service';
 import { ProjetService } from '../../services/projet.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
+import { InfoDialogComponent } from '../../shared/info-dialog/info-dialog.component';
 
 @Component({
   selector: 'app-document-list',
@@ -39,7 +42,7 @@ export class DocumentListComponent implements OnInit {
   selectedFile: File | null = null;
   isSaving: boolean = false;
 
-  constructor(private documentService: DocumentService, private projetService: ProjetService) { }
+  constructor(private documentService: DocumentService, private projetService: ProjetService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.loadDocuments();
@@ -167,11 +170,14 @@ export class DocumentListComponent implements OnInit {
   }
 
   deleteDocument(id: number): void {
-    if (confirm('Confirmer la suppression ?')) {
-      this.documentService.deleteDocument(id.toString()).subscribe(() => {
-        this.loadDocuments();
-      });
-    }
+    const ref = this.dialog.open(ConfirmDialogComponent, { width: '380px', data: { title: 'Confirmation', message: 'Confirmer la suppression ?' } });
+    ref.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.documentService.deleteDocument(id.toString()).subscribe(() => {
+          this.loadDocuments();
+        });
+      }
+    });
   }
 
 }

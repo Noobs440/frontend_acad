@@ -1,4 +1,4 @@
-<header id="header" [ngStyle]="{ 'background-color': bgColor }" class="header d-flex align-items-center fixed-top">
+<header id="header" [ngStyle]="{ 'background-color': bgColor }" class="header d-flex align-items-center fixed-top" [class.mobile-nav-active]="mobileNavActive">
   <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
 
     <a class="logo d-flex align-items-center me-auto me-xl-0" routerLink="/home">
@@ -7,7 +7,7 @@
     </a>
 
     <nav id="navmenu" class="navmenu">
-  <ul>
+      <ul>
         <li>
           <a [routerLink]="['/home']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             <i class="fas fa-home"></i> Accueil
@@ -33,20 +33,21 @@
             <i class="fas fa-envelope"></i> Contact
           </a>
         </li>
-
+        <li class="nav-item-cta" *ngIf="!isLoggedIn">
+          <a class="btn-getstarted" (click)="openDialog()">
+            <i class="fas fa-sign-in-alt"></i> Se Connecter
+          </a>
+        </li>
+        <li class="nav-item-cta" *ngIf="isLoggedIn">
+          <a class="btn-getstarted" (click)="logout()">
+            <i class="fas fa-sign-out-alt"></i> Déconnexion
+          </a>
+        </li>
       </ul>
-      <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
     </nav>
 
-    <ng-container *ngIf="!isLoggedIn">
-      <a class="btn-getstarted" (click)="openDialog()">
-        <i class="fas fa-sign-in-alt"></i> Se Connecter
-      </a>
-    </ng-container>
-    <ng-container *ngIf="isLoggedIn">
-      <a class="btn-getstarted" (click)="logout()">
-        <i class="fas fa-sign-out-alt"></i> Déconnexion
-      </a>
-    </ng-container>
+    <i class="mobile-nav-toggle d-xl-none bi bi-list" (click)="toggleMobileNav()" aria-label="Toggle navigation" role="button" tabindex="0"></i>
+
+    <!-- CTA moved inside nav list; external CTA removed -->
   </div>
 </header>

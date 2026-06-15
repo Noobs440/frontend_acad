@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserManagementService } from '../../services/user-management.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ResetPasswordDialogComponent } from '../reset-password-dialog/reset-password-dialog.component';
+import { InfoDialogComponent } from '../../shared/info-dialog/info-dialog.component';
 
 @Component({
   selector: 'app-user-management',
@@ -234,7 +235,7 @@ export class UserManagementComponent implements OnInit {
     if (this.userToDelete) {
       this.userService.deleteUser(this.userToDelete.id).subscribe({
         next: () => this.loadUsers(),
-        error: err => alert(err.error?.error || 'Erreur lors de la suppression.')
+        error: err => this.dialog.open(InfoDialogComponent, { width: '420px', data: { title: 'Erreur', message: err.error?.error || 'Erreur lors de la suppression.' } })
       });
     }
     this.closeConfirmModal();

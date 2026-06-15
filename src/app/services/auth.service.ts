@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 
 export interface User {
@@ -12,35 +13,31 @@ export interface User {
 })
 export class AuthService {
   private readonly USER_KEY = 'currentUser';
+  private readonly TOKEN_KEY = 'token';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
-  login(username: string, password: string): boolean {
-    // Mock login logic — à remplacer par ton API d’auth réelle
-    let user: User | null = null;
-
-    if (username === 'admin' && password === 'ADMINadmin123') {
-      user = { id: 1, username, role: 'admin' };
-    } else if (username === 'user' && password === 'User123user') {
-      user = { id: 2, username, role: 'user' };
-    } else if (username === 'adminsys' && password === 'adminsys123') {
-      user = { id: 3, username, role: 'adminsys' };
-    }
-
-    if (user) {
-      this.setUser(user);
-      return true;
-    }
-
-    return false;
+  private get storage(): Storage | null {
+    return isPlatformBrowser(this.platformId) && typeof sessionStorage !== 'undefined'
+      ? sessionStorage
+      : null;
   }
 
-  setUser(user: User): void {
-    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+  // Appelé après login réussi depuis LoginPopupComponent
+  setSession(token: string, user: User): void {
+    this.storage?.setItem(this.TOKEN_KEY, token);
+    this.storage?.setItem(this.USER_KEY, JSON.stringify(user));
+  }
+
+  getToken(): string | null {
+    return this.storage?.getItem(this.TOKEN_KEY) ?? null;
   }
 
   getUser(): User | null {
-    const userStr = localStorage.getItem(this.USER_KEY);
+    const userStr = this.storage?.getItem(this.USER_KEY);
     if (!userStr) return null;
     try {
       return JSON.parse(userStr);
@@ -49,16 +46,22 @@ export class AuthService {
     }
   }
 
+  // Le rôle vient toujours de la session, elle-même alimentée par /api/user au login
   getRole(): string {
     return this.getUser()?.role || '';
   }
 
   getUserId(): number | null {
-    return this.getUser()?.id || null;
+    return this.getUser()?.id ?? null;
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
   }
 
   logout(): void {
-    localStorage.removeItem(this.USER_KEY);
+    this.storage?.removeItem(this.TOKEN_KEY);
+    this.storage?.removeItem(this.USER_KEY);
     this.router.navigate(['/']);
   }
 }

@@ -4,6 +4,9 @@ import { UserManagementService } from '../../services/user-management.service';
 import { normalizeString } from '../../utils/string-utils';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { Subject, of } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { InfoDialogComponent } from '../../shared/info-dialog/info-dialog.component';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-project-list',
@@ -53,7 +56,7 @@ export class ProjectListComponent implements OnInit {
 
   userSearch$ = new Subject<string>();
 
-  constructor(private projetService: ProjetService, private userManage: UserManagementService) {}
+  constructor(private projetService: ProjetService, private userManage: UserManagementService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.loadProjects();
@@ -168,7 +171,7 @@ export class ProjectListComponent implements OnInit {
 
   saveProject(): void {
     if (!this.currentProject.titre_projet.trim() || !this.currentProject.descript_projet.trim() || !this.currentProject.user_id) {
-      alert('Veuillez remplir tous les champs requis.');
+      this.dialog.open(InfoDialogComponent, { width: '380px', data: { title: 'Erreur', message: 'Veuillez remplir tous les champs requis.' } });
       return;
     }
     this.showConfirmSaveModal = true;

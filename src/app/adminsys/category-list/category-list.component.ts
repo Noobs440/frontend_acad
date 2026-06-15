@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CategoryService } from '../../services/category.service';
+import { MatDialog } from '@angular/material/dialog';
+import { InfoDialogComponent } from '../../shared/info-dialog/info-dialog.component';
 
 @Component({
   selector: 'app-category-list',
@@ -36,7 +38,7 @@ export class CategoryListComponent implements OnInit {
   deletingId: number | null = null;
   editingId: number | null = null; // 🔹 Pour spinner sur le bouton Modifier
 
-  constructor(private categoryService: CategoryService) {}
+  constructor(private categoryService: CategoryService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.loadCategories();
@@ -107,7 +109,7 @@ export class CategoryListComponent implements OnInit {
 
   saveCategory(): void {
     if (!this.currentCategory.nom_cat?.trim() || !this.currentCategory.descript_cat?.trim()) {
-      alert('Veuillez remplir tous les champs.');
+      this.dialog.open(InfoDialogComponent, { width: '380px', data: { title: 'Erreur', message: 'Veuillez remplir tous les champs.' } });
       return;
     }
 

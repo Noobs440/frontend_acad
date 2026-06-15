@@ -1,13 +1,30 @@
 <div class="confirm-dialog-container">
-	<h2 class="confirm-dialog-title">{{ data.title }}</h2>
-	<div class="confirm-dialog-message">{{ data.message }}</div>
-	<div class="confirm-dialog-actions">
-		<button mat-button (click)="onCancel()" class="btn-cancel">
-			<i class="bi bi-x-lg me-1"></i>Annuler
-		</button>
-		<button mat-raised-button color="primary" (click)="onConfirm()" class="btn-confirm">
-			<i class="bi bi-check-lg me-1"></i>Approuver
-		</button>
-	</div>
+  <div class="confirm-dialog-icon-wrapper">
+    <mat-icon class="confirm-dialog-icon" color="warn">help_outline</mat-icon>
+  </div>
+
+  <h2 class="confirm-dialog-title">{{ data.title }}</h2>
+
+  <div class="confirm-dialog-message">
+    <p>{{ data.message }}</p>
+  </div>
+
+  <div class="confirm-dialog-actions">
+    <button 
+      mat-button 
+      (click)="onCancel()" 
+      class="btn-cancel">
+      <mat-icon>close</mat-icon>
+      <span>Annuler</span>
+    </button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onConfirm()" 
+      class="btn-confirm">
+      <mat-icon>check</mat-icon>
+      <span>Confirmer</span>
+    </button>
+  </div>
 </div>
 

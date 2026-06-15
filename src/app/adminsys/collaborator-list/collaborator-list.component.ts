@@ -5,6 +5,9 @@ import { UserManagementService } from '../../services/user-management.service';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { Subject, of } from 'rxjs';
 import { normalizeString } from '../../utils/string-utils';
+import { MatDialog } from '@angular/material/dialog';
+import { InfoDialogComponent } from '../../shared/info-dialog/info-dialog.component';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-collaborator-list',
@@ -44,7 +47,8 @@ export class CollaboratorListComponent implements OnInit {
   constructor(
     private collaborateurService: CollaborateurService,
     private userService: UserManagementService,
-    private projetService: ProjetService
+    private projetService: ProjetService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -175,15 +179,15 @@ export class CollaboratorListComponent implements OnInit {
 
   saveCollaborator(): void {
     if (!this.currentCollaborator.nom_collab.trim() || !this.currentCollaborator.email_collab.trim()) {
-      alert("Le nom et l'email sont obligatoires.");
+      this.dialog.open(InfoDialogComponent, { width: '380px', data: { title: 'Erreur', message: "Le nom et l'email sont obligatoires." } });
       return;
     }
     if (!this.currentCollaborator.user_id) {
-      alert("Cet utilisateur n'existe pas.");
+      this.dialog.open(InfoDialogComponent, { width: '380px', data: { title: 'Erreur', message: "Cet utilisateur n'existe pas." } });
       return;
     }
     if (!this.currentCollaborator.tbl_projet_id) {
-      alert("Veuillez sélectionner un projet valide.");
+      this.dialog.open(InfoDialogComponent, { width: '380px', data: { title: 'Erreur', message: "Veuillez sélectionner un projet valide." } });
       return;
     }
     this.isSaving = true;
@@ -215,8 +219,11 @@ export class CollaboratorListComponent implements OnInit {
   }
 
   deleteCollaborator(id: string): void {
-    if (confirm('Confirmer la suppression ?')) {
-      this.collaborateurService.deleteCollaborateur(id).subscribe(() => this.loadCollaborators());
-    }
+    const ref = this.dialog.open(ConfirmDialogComponent, { width: '380px', data: { title: 'Confirmation', message: 'Confirmer la suppression ?' } });
+    ref.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.collaborateurService.deleteCollaborateur(id).subscribe(() => this.loadCollaborators());
+      }
+    });
   }
 }

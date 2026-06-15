@@ -100,11 +100,17 @@ a{
   mask-size: 100% 100%;
 }
 .category {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   padding: 20px;
-  background: rgba(19, 106, 213, 0.05);
-  border-radius: 4px;
+  background: rgba(19, 106, 213, 0.08);
+  border-radius: 18px;
   text-decoration: none !important;
+  width: 100%;
+  max-width: 100%;
+  min-height: 110px;
+  transition: transform .3s ease, background .3s ease, box-shadow .3s ease;
 }
 .category, .category h3, .category span {
   -webkit-transition: .3s all ease;
@@ -115,49 +121,67 @@ a{
   font-family: "Inter", sans-serif;
   margin: 0;
   font-size: 16px;
-  line-height: 1;
+  line-height: 1.2;
   color: #343a40;
 }
 .category span {
   font-size: 13px;
-  color: rgba(52, 58, 64, 0.4);
+  color: rgba(52, 58, 64, 0.6);
 }
-.category .uil {
-  text-align: center;
-  display: inline-block;
-  color: #00aeff;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  margin-right: 20px;
-  background-color: #ffff;
-  font-size: 30px;
-  line-height: 40px;
-}
-
+.category .uil,
 .category .bai {
   text-align: center;
-  display: inline-block;
+  display: inline-flex;
   color: #00aeff;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  margin-right: 20px;
-  font-size: 30px;
-  line-height: 40px;
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  margin-right: 0;
+  background-color: #ffffff;
+  font-size: 24px;
+  line-height: 1;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
 }
-
 .category:hover {
-  background: #06bbcc8c;
+  background: rgba(6, 187, 204, 0.16);
+  transform: translateY(-3px);
+  box-shadow: 0 24px 40px rgba(0, 0, 0, 0.1);
 }
 .category:hover h3, .category:hover span {
-  color: #ffffff;
+  color: #343a40;
 }
 .category:hover span {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(52, 58, 64, 0.55);
 }
 .carousel-container {
   position: relative;
+}
+
+@media (max-width: 768px) {
+  .category {
+    padding: 16px;
+    min-height: auto;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .category h3 {
+    font-size: 15px;
+  }
+
+  .category span {
+    font-size: 12px;
+  }
+
+  .category .uil,
+  .category .bai {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
 }
 
 .carousel-control-prev, .carousel-control-next {
