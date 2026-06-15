@@ -248,4 +248,52 @@ export class UserManagementComponent implements OnInit {
     this.showConfirmModal = false;
     this.userToDelete = null;
   }
+
+  // Export données en CSV
+  exportToCSV(): void {
+    if (this.users.length === 0) {
+      alert('Aucun utilisateur à exporter.');
+      return;
+    }
+
+    // En-têtes CSV
+    const headers = ['Nom', 'Email', 'Matricule', 'Filière', 'Rôle'];
+    
+    // Préparer les données
+    const data = this.users.map(user => [
+      this.escapeCSV(user.nom_user),
+      this.escapeCSV(user.email),
+      this.escapeCSV(user.matricule || '-'),
+      this.escapeCSV(this.getFiliereName(user.tbl_filiere_id)),
+      this.escapeCSV(user.role)
+    ]);
+
+    // Créer le contenu CSV
+    const csvContent = [
+      headers.join(','),
+      ...data.map(row => row.join(','))
+    ].join('\n');
+
+    // Créer un blob et déclencher le téléchargement
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `utilisateurs_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // Échapper les caractères spéciaux pour CSV
+  private escapeCSV(field: string): string {
+    if (!field) return '';
+    const escaped = field.toString().replace(/"/g, '""');
+    return escaped.includes(',') || escaped.includes('"') || escaped.includes('\n') 
+      ? `"${escaped}"` 
+      : escaped;
+  }
 }

@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  backendUrl: 'https://backend-acad.onrender.com/api',  // <-- enlever /api ici
-  assetUrl: 'https://backend-acad.onrender.com/images'
+  backendUrl: 'https://dschangschoolhub.duckdns.org/api',  // <-- enlever /api ici
+  assetUrl: 'https://dschangschoolhub.duckdns.org/images'
 };

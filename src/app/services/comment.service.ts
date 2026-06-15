@@ -19,7 +19,7 @@ export interface Comment {
 })
 export class CommentService {
 
-  private apiUrl = 'https://backend-acad.onrender.com/api';
+  private apiUrl = 'https://dschangschoolhub.duckdns.org/api';
 
   constructor(private http: HttpClient) { }
 

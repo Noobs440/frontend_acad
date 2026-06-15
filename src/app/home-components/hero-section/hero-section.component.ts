@@ -22,7 +22,7 @@ import { Router } from '@angular/router';
 export class HeroSectionComponent {
   @ViewChild('searchInput') searchInput!: ElementRef;
   private overlayRef!: OverlayRef;
-  private baseUrl: string = 'https://backend-acad.onrender.com';
+  private baseUrl: string = 'https://dschangschoolhub.duckdns.org';
 
   chunkedCategories: any[] = [];
   categories_name: any = [];

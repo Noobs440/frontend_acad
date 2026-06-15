@@ -8,7 +8,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class NotificationService {
 
-  private baseUrl = 'https://backend-acad.onrender.com/api/auth'; // Vérifie si ton backend utilise bien ce préfixe "auth"
+  private baseUrl = 'https://dschangschoolhub.duckdns.org/api/auth'; // Vérifie si ton backend utilise bien ce préfixe "auth"
 
   constructor(private http: HttpClient) {}
 

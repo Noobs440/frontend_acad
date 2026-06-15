@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectHistoryService {
-  private apiUrl = 'https://backend-acad.onrender.com/api/projects';
+  private apiUrl = 'https://dschangschoolhub.duckdns.org/api/projects';
 
   constructor(private http: HttpClient) {}
 

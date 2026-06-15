@@ -54,7 +54,7 @@ export class ProjetService {
     return this.http.post(`${this.API_BASE}/ressources/projets/${projectId}/assign-admin`, { admin_id: adminId });
   }
 
-  private API_BASE = 'https://backend-acad.onrender.com/api';
+  private API_BASE = 'https://dschangschoolhub.duckdns.org/api';
 
   constructor(private http: HttpClient) {}
 
@@ -138,7 +138,7 @@ resubmitProject(id: number): Observable<any> {
     );
   }
   getNiveaux(): Observable<any[]>{
-    return this.http.get<any[]>('https://backend-acad.onrender.com/api/ressources/niveaux').pipe(
+    return this.http.get<any[]>('https://dschangschoolhub.duckdns.org/api/ressources/niveaux').pipe(
       
       catchError((error) =>{
         
@@ -148,7 +148,7 @@ resubmitProject(id: number): Observable<any> {
   }
 
 getCategories(): Observable<any[]>{
-    return this.http.get<any[]>('https://backend-acad.onrender.com/api/ressources/categories').pipe(
+    return this.http.get<any[]>('https://dschangschoolhub.duckdns.org/api/ressources/categories').pipe(
       
       catchError((error) =>{
 

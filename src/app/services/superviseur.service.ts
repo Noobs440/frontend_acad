@@ -13,7 +13,7 @@ export interface Superviseur {
 })
 export class SuperviseurService {
 
-  private apiBaseUrl = 'https://backend-acad.onrender.com/api/ressources/superviseurs';
+  private apiBaseUrl = 'https://dschangschoolhub.duckdns.org/api/ressources/superviseurs';
 
   constructor(private http: HttpClient) {}
 

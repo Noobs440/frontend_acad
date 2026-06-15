@@ -17,7 +17,7 @@ export interface Document {
 })
 export class DocumentService {
 
-  private baseUrl = 'https://backend-acad.onrender.com/api/ressources/documents';
+  private baseUrl = 'https://dschangschoolhub.duckdns.org/api/ressources/documents';
 
   constructor(private http: HttpClient) {}
 
@@ -61,15 +61,15 @@ export class DocumentService {
   }
 
   addDocumentMultipart(formData: FormData) {
-  return this.http.post<any>('https://backend-acad.onrender.com/api/ressources/documents', formData);
+  return this.http.post<any>('https://dschangschoolhub.duckdns.org/api/ressources/documents', formData);
 }
 
 updateDocumentMultipart(id: number, formData: FormData) {
   formData.append('_method', 'PUT'); // important !
-  return this.http.post<any>(`https://backend-acad.onrender.com/api/ressources/documents/${id}`, formData);
+  return this.http.post<any>(`https://dschangschoolhub.duckdns.org/api/ressources/documents/${id}`, formData);
 }
   getDocumentsByProject(id:number): Observable<any[]>{
-    return this.http.get<any[]>(`https://backend-acad.onrender.com/api/usecases/listing/projet/documents/${id}`).pipe(
+    return this.http.get<any[]>(`https://dschangschoolhub.duckdns.org/api/usecases/listing/projet/documents/${id}`).pipe(
       
       catchError((error) =>{
         

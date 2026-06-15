@@ -10,10 +10,10 @@ export class RechercheService {
   constructor(private http:HttpClient) { }
 
   searchProjects(query: string): Observable<any> {
-    return this.http.post<any>('https://backend-acad.onrender.com/api/usecases/search/projets', { query });
+    return this.http.post<any>('https://dschangschoolhub.duckdns.org/api/usecases/search/projets', { query });
   }
 
   searchProjectsCategories(query: string): Observable<any> {
-    return this.http.post<any>('https://backend-acad.onrender.com/api/usecases/search/projets/categorie', { query });
+    return this.http.post<any>('https://dschangschoolhub.duckdns.org/api/usecases/search/projets/categorie', { query });
   }
 }
