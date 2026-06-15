@@ -33,7 +33,7 @@ export class ProjectsComponent implements OnInit {
   @Input() prevButtonColor: string = 'blue';
   @Input() nextButtonColor: string = '#000';
 
-  private baseUrl: string = 'https://backend-acad.onrender.com';
+  private baseUrl: string = 'https://uds-faculte-des-sciences.netlify.app/';
   data: any[] = [];
   categories: any[] = [];
   filieres: any[] = [];
@@ -253,6 +253,6 @@ export class ProjectsComponent implements OnInit {
     if (!projectImage) {
       return '';
     }
-    return projectImage.startsWith('http') ? projectImage : `https://backend-acad.onrender.com/${projectImage.replace(/^\/+/, '')}`;
+    return projectImage.startsWith('http') ? projectImage : `https://uds-faculte-des-sciences.netlify.app//${projectImage.replace(/^\/+/, '')}`;
   }
 }

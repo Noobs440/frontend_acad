@@ -18,7 +18,7 @@ export interface Comment {
 })
 export class ChatService {
 
-  private apiUrl = 'https://backend-acad.onrender.com/api';
+  private apiUrl = 'https://uds-faculte-des-sciences.netlify.app//api';
 
   constructor(private http: HttpClient) { }
   sendMessage(projectId: number, content: string): Observable<Comment> {

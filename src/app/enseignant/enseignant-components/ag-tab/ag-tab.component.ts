@@ -30,7 +30,7 @@ export class AgTabComponent implements OnInit {
   }
 
   imageCellRenderer(params: any) {
-    const imageUrl = `https://backend-acad.onrender.com${params.value}`;
+    const imageUrl = `https://uds-faculte-des-sciences.netlify.app/${params.value}`;
     return `<img src="${imageUrl}" alt="image" class="img-fluid" style="max-width: 100px; max-height: 100px;">`;
   }
 

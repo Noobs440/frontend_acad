@@ -255,19 +255,19 @@ export class ProjectDetailComponent implements OnInit {
     if (!projectImage) {
       return '';
     }
-    return projectImage.startsWith('http') ? projectImage : `https://backend-acad.onrender.com/${projectImage.replace(/^\/+/, '')}`;
+    return projectImage.startsWith('http') ? projectImage : `https://uds-faculte-des-sciences.netlify.app//${projectImage.replace(/^\/+/, '')}`;
   }
 
   getFullDocumentUrl(lien_doc: string): string {
     if (!lien_doc) return '#';
     if (lien_doc.startsWith('http')) return lien_doc;
     if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
-      return `https://backend-acad.onrender.com/${lien_doc.replace(/^\/+/, '')}`;
+      return `https://uds-faculte-des-sciences.netlify.app//${lien_doc.replace(/^\/+/, '')}`;
     }
-    return `https://backend-acad.onrender.com/storage/${lien_doc.replace(/^\/+/, '')}`;
+    return `https://uds-faculte-des-sciences.netlify.app//storage/${lien_doc.replace(/^\/+/, '')}`;
   }
 
   getFullDocument(documentPath: string) {
-    return `https://backend-acad.onrender.com${documentPath}`;
+    return `https://uds-faculte-des-sciences.netlify.app/${documentPath}`;
   }
 }

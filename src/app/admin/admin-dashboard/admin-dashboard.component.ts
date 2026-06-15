@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, NgZone } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 import { Router } from '@angular/router';
@@ -125,14 +125,20 @@ confirmRestore() {
   isSidebarCollapsed = true;
   isDarkTheme = false;
   dynamicChart: any;
+  chartHasData = false;
   rowSelection = 'single';
+
+  chartPercentages: number[] = [];
+  chartDescriptions: string[] = [];
+  interpretationText: string = '';
 
   constructor(
     private router: Router,
     private projetService: ProjetService,
     private userService: UserService,
     private collaborateurService: CollaborateurService,
-    private projetstatusService: ProjetstatusService
+    private projetstatusService: ProjetstatusService,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit() {
@@ -447,6 +453,24 @@ confirmRestore() {
       return;
     }
 
+    // helper to create subtle vertical gradient per bar
+    const createGradient = (baseHex: string) => {
+      try {
+        const g = ctx.createLinearGradient(0, 0, 0, 360);
+        // convert hex like #1976d2 to rgba endpoints
+        const hex = baseHex.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16);
+        const gcol = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        g.addColorStop(0, `rgba(${r}, ${gcol}, ${b}, 0.95)`);
+        g.addColorStop(0.6, `rgba(${r}, ${gcol}, ${b}, 0.45)`);
+        g.addColorStop(1, `rgba(${r}, ${gcol}, ${b}, 0.12)`);
+        return g;
+      } catch (e) {
+        return baseHex;
+      }
+    };
+
     let labels: string[] = [];
     let data: number[] = [];
     let label = '';
@@ -560,6 +584,32 @@ confirmRestore() {
       barColors = Array(labels.length).fill(color);
     }
 
+    // Determine if chart has meaningful data
+    this.chartHasData = labels.length > 0 && data.some(val => val && val > 0);
+    if (!this.chartHasData) {
+      // clear canvas and show friendly message
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.fillStyle = '#6c757d';
+      ctx.font = '16px "Nunito", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Aucune donnée', canvas.width / 2, (canvas.height / 2) - 8);
+      ctx.restore();
+      return;
+    }
+
+    const datasetBackgrounds = barColors.map(c => createGradient(c as string));
+
+    // compute percentages and descriptions
+    const total = data.reduce((s, v) => s + (Number(v) || 0), 0) || 0;
+    this.chartPercentages = data.map(v => total > 0 ? Math.round(((Number(v) || 0) / total) * 100) : 0);
+    this.chartDescriptions = labels.map((lbl, i) => {
+      const val = data[i] || 0;
+      const pct = this.chartPercentages[i] || 0;
+      return `${lbl}: ${val} (${pct}%) — Représente ${pct}% du total.`;
+    });
+
+    const self = this;
     this.dynamicChart = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -568,30 +618,86 @@ confirmRestore() {
           label,
           data,
           borderColor: barColors,
-          backgroundColor: barColors.map(c => c + '22'),
+          backgroundColor: datasetBackgrounds,
           hoverBackgroundColor: barColors.map(c => c + '66'),
-          hoverBorderColor: barColors
+          hoverBorderColor: barColors,
+          borderRadius: 8,
+          borderSkipped: false,
+          barPercentage: 0.75,
+          categoryPercentage: 0.9
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 800, easing: 'easeOutQuart' },
         plugins: {
-          legend: { display: false },
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              generateLabels: function(chart: any) {
+                const meta = chart.getDatasetMeta(0);
+                return chart.data.labels.map((label: any, i: number) => ({
+                  text: `${label} — ${chart.data.datasets[0].data[i]} (${self.chartPercentages[i] || 0}%)`,
+                  fillStyle: chart.data.datasets[0].borderColor[i] || chart.data.datasets[0].borderColor,
+                  hidden: false,
+                  index: i
+                }));
+              }
+            }
+          },
           title: { display: false },
           tooltip: {
             backgroundColor: '#222',
             titleColor: '#fff',
             bodyColor: '#fff',
             borderColor: '#fff',
-            borderWidth: 1
+            borderWidth: 1,
+            callbacks: {
+              label: (context: any) => {
+                const v = context.parsed.y ?? context.parsed ?? 0;
+                const idx = context.dataIndex ?? context.index ?? 0;
+                const pct = self.chartPercentages[idx] ?? 0;
+                const desc = self.chartDescriptions[idx] ?? '';
+                return `${context.label || ''}: ${v} (${pct}%)\n${desc}`;
+              }
+            }
           }
         },
         scales: {
-          x: { title: { display: true, text: '' }, grid: { color: '#e0e0e0' } },
-          y: { title: { display: true, text: label }, beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f5f5f5' } }
+          x: {
+            title: { display: false },
+            grid: { display: false },
+            ticks: { maxRotation: 45, autoSkip: true, maxTicksLimit: 10 }
+          },
+          y: {
+            title: { display: true, text: label },
+            beginAtZero: true,
+            ticks: { precision: 0 },
+            grid: { color: '#f5f5f5' }
+          }
+        },
+        layout: { padding: { top: 8, bottom: 8, left: 0, right: 0 } },
+        onHover: function(event: any, elements: any[], chart: any) {
+          if (elements && elements.length > 0) {
+            const idx = elements[0].index;
+            self.ngZone.run(() => { self.interpretationText = self.chartDescriptions[idx] || ''; });
+          } else {
+            self.ngZone.run(() => { self.interpretationText = ''; });
+          }
         }
       }
     });
+  }
+
+  downloadChart() {
+    const canvas = document.getElementById('dynamicChart') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png', 0.92);
+    link.download = `dashboard-chart-${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.png`;
+    link.click();
   }
 
   // --- Sidebar ---
@@ -600,10 +706,10 @@ confirmRestore() {
   }
 
   // --- Status Card ---
-  onCardClick(status: string) {
+  public onCardClick = (status: string): void => {
     this.selectedStatus = status;
     this.filterTable(status);
-  }
+  };
 
   hideProjectList() {
     this.selectedStatus = null;

@@ -36,7 +36,7 @@ getFullImageUrl(projectImage: string): string {
   if (!projectImage) {
     return '';
   }
-  return projectImage.startsWith('http') ? projectImage : `https://backend-acad.onrender.com/${projectImage.replace(/^\/+/, '')}`;
+  return projectImage.startsWith('http') ? projectImage : `https://uds-faculte-des-sciences.netlify.app//${projectImage.replace(/^\/+/, '')}`;
 }
 
 imageCellRenderer(params: any) {

@@ -521,7 +521,7 @@ confirmDeleteDocument(document: any) {
     if (!projectImage) return '';
     return projectImage.startsWith('http')
       ? projectImage
-      : `https://backend-acad.onrender.com${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
+      : `https://uds-faculte-des-sciences.netlify.app/${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
   }
   
 }

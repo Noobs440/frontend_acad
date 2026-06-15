@@ -13,7 +13,7 @@ export interface Superviseur {
 })
 export class SuperviseurService {
 
-  private apiBaseUrl = 'https://backend-acad.onrender.com/api/ressources/superviseurs';
+  private apiBaseUrl = 'https://uds-faculte-des-sciences.netlify.app//api/ressources/superviseurs';
 
   constructor(private http: HttpClient) {}
 

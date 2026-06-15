@@ -1,39 +1,4 @@
 
-<style>
-.maison-nav {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-.home-btn {
-  margin-left: 45%;
-  margin-top: -2.5em;
-  padding: 3em;
-}
-.home-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #1976d2;
-  color: #fff;
-  border-radius: 50%;
-  width: 64px;
-  height: 64px;
-  font-size: 2rem;
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.12);
-  border: none;
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-  margin-right: 0.5em;
-}
-.home-btn:hover {
-  background: #1565c0;
-  color: #fff;
-  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.18);
-}
-</style>
 <main id="main" class="main">
   <div class="pagetitle">
     <h1>{{ name |
@@ -59,7 +24,7 @@
 
 
 <div class="filter-container d-flex justify-content-center mb-4">
-  <div class="filter-bar d-flex align-items-center gap-3">
+  <div class="filter-bar d-flex align-items-center gap-2">
     <input
       type="text"
       class="form-control filter-input"
@@ -68,9 +33,10 @@
       (input)="onSearchQueryChange($event)"
       aria-label="Recherche par titre"
     />
-      <button class="btn btn-outline-primary ms-2" type="button" style="border-width:3px;border-color:#1976d2;padding-left:1.6em;padding-right:1.6em;" disabled>
-        <i class="fas fa-search"></i>
-      </button>
+    <button class="btn search-btn" type="button" (click)="onSearchButtonClick()" aria-label="Rechercher">
+      <i class="fas fa-search" aria-hidden="true"></i>
+      <span class="visually-hidden">Rechercher</span>
+    </button>
   </div>
 </div>
 
@@ -85,7 +51,7 @@
 
 
     <!-- Cartes de filtre sur une seule ligne, intégrées à la section projets -->
-    <div class="dashboard-cards-bar mb-4" style="display: flex; gap: 0.7rem; width: 100%; flex-wrap: nowrap; justify-content: stretch; align-items: stretch;">
+    <div class="dashboard-cards-bar mb-4">
       <ng-container *ngFor="let state of projectStates">
         <div class="dashboard-card status-card px-2 py-1 d-flex flex-column align-items-center justify-content-center"
              [ngClass]="{'active': selectedStateFilter === state}"
@@ -120,104 +86,7 @@
       </div>
     </div>
 
-<style>
-.filter-container {
-  position: sticky;
-  top: 5em;
-  z-index: 100;
-  background: #fff;
-  border-radius: 1em;
-  box-shadow: 0 2px 12px rgba(6,187,204,0.10);
-  border: 2px solid #e0e0e0;
-  margin: 2em;
-  padding: 2em;
-  height: 2em;
-}
-.dashboard-cards-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.2rem;
-  justify-content: center;
-  align-items: stretch;
-}
-/* Barre de recherche sticky */
-
-.dashboard-card {
-  min-width: 240px;
-  max-width: 300px;
-  flex: 1 1 240px;
-  background: #fff;
-  border-radius: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-  transition: box-shadow 0.2s, transform 0.2s;
-  cursor: pointer;
-  margin-bottom: 0;
-  display: flex;
-  align-items: stretch;
-}
-.dashboard-card.active {
-  box-shadow: 0 4px 16px rgba(6,187,204,0.18);
-  border: 2px solid #06BBCC;
-  transform: translateY(-4px) scale(1.03);
-}
-.dashboard-card .card-body {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 1rem 1.2rem;
-}
-.dashboard-card .card-icon {
-  min-width: 48px;
-  min-height: 48px;
-  max-width: 48px;
-  max-height: 48px;
-}
-.dashboard-card .card-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.2rem;
-}
-.dashboard-card .h4 {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-@media (max-width: 1200px) {
-  .dashboard-cards-bar {
-    gap: 0.7rem;
-  }
-  .dashboard-card {
-    min-width: 150px;
-    max-width: 180px;
-    font-size: 0.95rem;
-  }
-}
-@media (max-width: 900px) {
-  .dashboard-cards-bar {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .dashboard-card {
-    min-width: 120px;
-    max-width: 150px;
-    font-size: 0.9rem;
-  }
-}
-@media (max-width: 600px) {
-  .dashboard-cards-bar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-  }
-  .dashboard-card {
-    min-width: 100%;
-    max-width: 100%;
-    font-size: 0.95rem;
-  }
-}
-</style>
-
-    <div class="container">
+  <div class="container">
       <div class="row">
         <div *ngIf="isLoading" class="container d-flex projects p-4 justify-content-center align-items-center" style="min-height: 220px;">
           <div class="d-flex gap-3 justify-content-center align-items-center w-100">
@@ -232,7 +101,7 @@
 
 
 <!-- Affichage des projets en collaboration si la carte est active -->
-<div *ngIf="showCollabProjects" class="container mt-3">
+<div *ngIf="showCollabProjects" id="project-section" class="container mt-3">
   <div class="row">
     <div class="col-12 mb-2 mt-4 d-flex justify-content-between align-items-center">
       <h5 class="fw-bold text-primary">Projets en collaboration ({{ collaboratorProjects.length }})</h5>
@@ -294,7 +163,7 @@
 </div>
 
 <!-- Affichage exclusif des projets par statut -->
-<div *ngIf="showStateProjects" class="container mt-3">
+<div *ngIf="showStateProjects" id="project-section" class="container mt-3">
   <div class="row">
     <div class="col-12 mb-2 mt-4 d-flex justify-content-between align-items-center">
       <h5 class="fw-bold text-primary">Projets {{ showStateProjects | titlecase }} ({{ groupedProjects[showStateProjects].length || 0 }})</h5>
@@ -348,68 +217,9 @@
           </li>
         </ul>
       </nav>
-<style>
-.project-card-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.1rem 1.2rem;
-  justify-items: center;
-  align-items: stretch;
-  margin-bottom: 1.2rem;
-}
-.project-card-item {
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-}
-.project-card-custom {
-  width: 100%;
-  min-width: 240px;
-  max-width: 320px;
-  min-height: 280px;
-  max-height: 320px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  box-shadow: 0 4px 18px rgba(6,187,204,0.10);
-  border-radius: 1.1rem;
-  transition: box-shadow 0.2s, transform 0.2s;
-  background: #fff;
-  border: none;
-  margin: 0;
-}
-.project-card-custom:hover {
-  box-shadow: 0 8px 32px rgba(6,187,204,0.18);
-  transform: translateY(-4px) scale(1.03);
-  z-index: 2;
-}
-.project-card-custom .card-img-top {
-  height: 120px;
-  object-fit: cover;
-  border-top-left-radius: 1.1rem;
-  border-top-right-radius: 1.1rem;
-}
-.project-card-custom .card-body {
-  padding: 1rem 1.2rem 0.7rem 1.2rem;
-}
-@media (max-width: 1200px) {
-  .project-card-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 700px) {
-  .project-card-grid {
-    grid-template-columns: 1fr;
-  }
-  .project-card-custom {
-    min-width: 90vw;
-    max-width: 98vw;
-  }
-}
-</style>
     </ng-container>
     <ng-template #noState>
-      <div class="col-12"><p class="text-muted">Aucun projet pour cet état.</p></div>
+      <div class="col-12"><p class="text-muted">Aucun projet dans l'état "{{ showStateProjects | titlecase }}".</p></div>
     </ng-template>
   </div>
 </div>
@@ -486,30 +296,3 @@
 <a href="#" class="back-to-top d-flex align-items-center justify-content-center" aria-label="Retour en haut">
   <i class="bi bi-arrow-up-short"></i>
 </a>
-<style>
-.comment-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.comment-modal {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-  padding: 2rem 1.5rem 1.5rem 1.5rem;
-  min-width: 400px;
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-}
-.comment-backdrop {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.25);
-  z-index: 1999;
-}
-</style>

@@ -31,7 +31,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.role = localStorage.getItem('role');
     // 1. Charger le cookie CSRF Laravel Sanctum
-    this.http.get('https://backend-acad.onrender.com/sanctum/csrf-cookie', { withCredentials: true }).subscribe({
+    this.http.get('https://uds-faculte-des-sciences.netlify.app//sanctum/csrf-cookie', { withCredentials: true }).subscribe({
       next: () => {
         // 2. Charger le profil utilisateur dans UserService (met à jour BehaviorSubject)
         this.userService.loadUserProfile();
@@ -93,6 +93,6 @@ export class ProfileComponent implements OnInit {
     if (this.user.photo.startsWith('http')) {
       return this.user.photo;
     }
-    return `https://backend-acad.onrender.com/${this.user.photo}`; // exemple: 'images/nomfichier.jpg'
+    return `https://uds-faculte-des-sciences.netlify.app//${this.user.photo}`; // exemple: 'images/nomfichier.jpg'
   }
 }

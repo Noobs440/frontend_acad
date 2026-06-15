@@ -362,7 +362,7 @@ confirmReject() {
     if (!projectImage) {
       return '';
     }
-    return projectImage.startsWith('http') ? projectImage : `https://backend-acad.onrender.com/${projectImage.replace(/^\/+/, '')}`;
+    return projectImage.startsWith('http') ? projectImage : `https://uds-faculte-des-sciences.netlify.app//${projectImage.replace(/^\/+/, '')}`;
   }
   getFullDocumentUrl(lien_doc: string): string {
     if (!lien_doc) return '#';

@@ -68,7 +68,7 @@ export class PopCategoryComponent implements OnInit {
   selectedLevel: string | null = null;
   // ...
 
-  private baseUrl: string = 'https://backend-acad.onrender.com';
+  private baseUrl: string = 'https://uds-faculte-des-sciences.netlify.app/';
 
   constructor(
     private acceuilService: AcceuilService,
