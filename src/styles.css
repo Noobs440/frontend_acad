@@ -3,6 +3,12 @@
 /* custom-dialog.component.css */
 
 /* Scrollbar styles */
+
+/* styles.css - garder ici uniquement */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 ::ng-deep .mat-dialog-container .scrollable-content {
   max-height: 400px; /* Adjust as needed */
   overflow-y: auto;

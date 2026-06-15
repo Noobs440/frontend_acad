@@ -155,6 +155,6 @@ export class PopCategoryComponent implements OnInit {
   }
 
   getFullImageUrl(imagePath: string): string {
-    return `${this.baseUrl}${imagePath}`;
+    return `${imagePath}`;
   }
 }
