@@ -188,8 +188,8 @@ export class UserDashboardComponent implements OnInit {
     this.selectedStateFilter = state;
     this.currentPage = 1;
     this.applyFilters();
+    setTimeout(() => this.scrollToProjectSection(), 75);
   }
-
 
   hideProjectList() {
     this.showCollabProjects = false;
@@ -250,8 +250,10 @@ export class UserDashboardComponent implements OnInit {
   openDialog(): void {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
-    dialogConfig.width = '400px';
-    dialogConfig.height = '620px';
+    dialogConfig.width = '95vw';
+    dialogConfig.maxWidth = '420px';
+    dialogConfig.maxHeight = '90vh';
+    dialogConfig.panelClass = 'submit-popup-panel';
     this.dialog.open(SubmitPopupComponent, dialogConfig);
   }
 
@@ -262,8 +264,19 @@ export class UserDashboardComponent implements OnInit {
       this.currentPage = 1;
       this.totalPages = Math.max(1, Math.ceil(this.collaboratorProjects.length / this.itemsPerPage));
       this.selectedProject = this.collaboratorProjects.slice(0, this.itemsPerPage);
+      setTimeout(() => this.scrollToProjectSection(), 75);
     } else {
       this.applyFilters();
+    }
+  }
+
+  private scrollToProjectSection(): void {
+    if (typeof document === 'undefined') {
+      return;
+    }
+    const target = document.getElementById('project-section');
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 

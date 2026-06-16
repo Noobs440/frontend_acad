@@ -1,11 +1,12 @@
 /* Style professionnel pour l'ouverture de la popup */
-.mat-dialog-container {
+:host ::ng-deep .submit-popup-panel .mat-dialog-container,
+:host ::ng-deep .mat-dialog-container {
   border-radius: 18px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 1.5px 6px rgba(0,0,0,0.10);
   background: #fff;
   animation: fadeInPopup 0.35s cubic-bezier(0.4,0,0.2,1);
   padding: 0;
-  min-width: 420px;
+  min-width: 320px;
   max-width: 98vw;
 }
 /* Overlay sombre couvrant toute la page */
@@ -30,9 +31,10 @@
   box-shadow: 0 8px 32px rgba(0,0,0,0.25);
   padding: 2rem 1.5rem;
   max-width: 95vw;
-  width: 420px;
+  width: min(420px, 95vw);
   max-height: 90vh;
-  /* overflow-y: auto; */
+  overflow-y: auto;
+  box-sizing: border-box;
   position: relative;
   z-index: 2100;
   animation: popup-fade-in 0.25s;
@@ -69,7 +71,7 @@ body.submit-popup-open {
 @media (max-width: 600px) {
   .submit-popup-container {
     width: 98vw;
-    padding: 1rem 0.5rem;
+    padding: 1rem 0.75rem;
   }
   .submit-popup-close-btn {
     top: 8px;
@@ -81,7 +83,8 @@ body.submit-popup-open {
     margin-bottom: 1rem !important;
   }
   .form-group input,
-  .form-group select {
+  .form-group select,
+  textarea {
     font-size: 1rem !important;
     padding: 0.5rem !important;
   }
@@ -96,6 +99,9 @@ body.submit-popup-open {
     flex-direction: column;
     gap: 8px;
     padding: 0 0.5rem 1rem 0.5rem;
+  }
+  .submit-popup-container {
+    margin: 0 0.5rem;
   }
 }
 

@@ -79,7 +79,15 @@ export class LoginPopupComponent implements OnInit {
 
     this.userService.login(email, password).subscribe({
       next: (value) => {
-        // On stocke via AuthService — plus de localStorage direct
+        // Stocker les données dans localStorage pour la cohérence avec le reste de l'app
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('id', value.id || '');
+          localStorage.setItem('name', value.username || value.nom_user || '');
+          localStorage.setItem('role', value.role || '');
+          // Note: photo sera chargée plus tard via loadUserProfile()
+        }
+
+        // Aussi stocker via AuthService pour les composants qui l'utilisent
         this.authService.setSession(value.access_token, {
           id: value.id,
           username: value.username,

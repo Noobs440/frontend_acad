@@ -1,5 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-home',
@@ -12,18 +13,41 @@ export class HomeComponent implements OnInit {
   userName: string | null = null;
   sectionClass: string = 'recent-posts section';
 
+  constructor(private userService: UserService) {}
+
   getDashboardLink(): string {
-    // On suppose que le rôle est stocké dans le localStorage sous 'role' (ex: 'admin', 'user', 'enseignant')
+    // Vérifier d'abord si l'utilisateur est toujours authentifié
+    const token = localStorage.getItem('token');
+    if (!token) {
+      // Si pas de token, rediriger vers le dashboard utilisateur par défaut
+      return '/user/dashboard';
+    }
+    
+    // On suppose que le rôle est stocké dans le localStorage sous 'role' (ex: 'admin', 'user', 'enseignant', 'adminsys')
     const role = localStorage.getItem('role');
-    if (role === 'admin') return '/admin/dashboard';
-    if (role === 'enseignant') return '/enseignant/dashboard';
-    if (role === 'adminsys') return '/adminsys';
-    return '/user/dashboard';
+    switch(role) {
+      case 'admin':
+        return '/admin/dashboard';
+      case 'enseignant':
+        return '/enseignant/dashboard';
+      case 'adminsys':
+        return '/adminsys';
+      case 'superviseur':
+        return '/admin/dashboard'; // Les superviseurs vont aussi au dashboard admin
+      default:
+        return '/user/dashboard';
+    }
   }
 
   ngOnInit(): void {
     this.sectionClass = 'different-class';
     this.checkLoginState();
+    
+    // Écouter les changements d'état d'authentification
+    this.userService.isUserLoggedIn$().subscribe(isLoggedIn => {
+      this.isLoggedIn = isLoggedIn;
+    });
+    
     setTimeout(() => {
       this.isLoading = false;
     }, 300);

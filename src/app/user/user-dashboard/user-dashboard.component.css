@@ -9,11 +9,24 @@
   color: white;
   font-weight: bold;
   transition: background-color 0.3s ease;
-  margin-left: 1300px; /* positionne correctement le bouton */
 }
 
 .breadcrumb-item1 a:hover {
   background-color: #0adef1;
+}
+
+@media (max-width: 1199px) {
+  .breadcrumb-item1 a {
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .breadcrumb-item1 a {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
 }
 
 .status-grouping-container {
@@ -22,6 +35,55 @@
   justify-content: center;
   gap: 18px;
   margin-bottom: 32px;
+}
+
+.dashboard-cards-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.9rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-cards-bar::-webkit-scrollbar {
+  height: 8px;
+}
+
+.dashboard-cards-bar::-webkit-scrollbar-thumb {
+  background: rgba(6, 187, 204, 0.35);
+  border-radius: 999px;
+}
+
+.dashboard-card {
+  flex: 0 0 auto;
+  min-width: 180px;
+}
+
+@media (max-width: 991px) {
+  .dashboard-cards-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    overflow-x: visible;
+  }
+
+  .dashboard-card {
+    flex: 1 1 calc(50% - 0.75rem);
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 575px) {
+  .dashboard-cards-bar {
+    gap: 0.6rem;
+  }
+
+  .dashboard-card {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
 }
 
 .maison {
@@ -718,6 +780,118 @@ h6 {
   }
 }
 
+.project-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.1rem 1.2rem;
+  justify-items: center;
+  align-items: stretch;
+  margin-bottom: 1.2rem;
+}
+.project-card-item {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+.project-card-custom {
+  width: 100%;
+  min-width: 240px;
+  max-width: 320px;
+  min-height: 280px;
+  max-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 0 4px 18px rgba(6,187,204,0.10);
+  border-radius: 1.1rem;
+  transition: box-shadow 0.2s, transform 0.2s;
+  background: #fff;
+  border: none;
+  margin: 0;
+}
+.project-card-custom:hover {
+  box-shadow: 0 8px 32px rgba(6,187,204,0.18);
+  transform: translateY(-4px) scale(1.03);
+  z-index: 2;
+}
+.project-card-custom .card-img-top {
+  height: 120px;
+  object-fit: cover;
+  border-top-left-radius: 1.1rem;
+  border-top-right-radius: 1.1rem;
+}
+.project-card-custom .card-body {
+  padding: 1rem 1.2rem 0.7rem 1.2rem;
+}
+@media (max-width: 992px) {
+  .project-card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.9rem 1rem;
+  }
+  .project-card-custom {
+    min-width: 200px;
+    max-width: 280px;
+    min-height: 260px;
+    max-height: 300px;
+  }
+}
+@media (max-width: 768px) {
+  .project-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+  .project-card-custom {
+    min-width: 0;
+    max-width: none;
+    min-height: 240px;
+    max-height: 280px;
+  }
+}
+@media (max-width: 576px) {
+  .project-card-grid {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+  .project-card-custom {
+    min-width: 100%;
+    max-width: 100%;
+    min-height: 240px;
+    max-height: 280px;
+  }
+}
+
+.comment-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.comment-modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  min-width: 400px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.comment-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 1999;
+}
+
 @media (max-width: 1199px) {
   .toggle-sidebar .sidebar {
     left: 0;
@@ -1168,19 +1342,34 @@ h6 {
 }
 
 .mybutton {
-  padding: 10px 20px; /* Adjust as needed */
-  font-size: 24px; /* Adjust as needed */
-  background-color:#06BBCC; /* Bootstrap primary color */
+  padding: 10px 20px;
+  font-size: 24px;
+  background-color:#06BBCC;
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .mybutton:hover {
   background-color: #0adef1;
+}
+
+@media (max-width: 768px) {
+  .mybutton {
+    padding: 8px 16px;
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .mybutton {
+    padding: 6px 12px;
+    font-size: 16px;
+    width: 100%;
+  }
 }
 .card {
   position: relative;
@@ -1266,6 +1455,19 @@ h6 {
   text-transform: capitalize;
 }
 
+.project-badges {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.project-badges .badge {
+  white-space: nowrap;
+}
+
 .badge-pending {
   background-color: #f39c12;
 }
@@ -1305,32 +1507,51 @@ h6 {
 
 .filter-container {
   width: 100%;
-  max-width: 700px; /* Limite la largeur max pour un bon équilibre */
-  margin: 0 auto; /* Centre horizontalement */
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 10px;
 }
 
 .filter-bar {
   width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .filter-input {
-  flex: 1; /* Prend tout l'espace disponible */
-  min-width: 0; /* Important pour que flex fonctionne bien */
+  flex: 1;
+  min-width: 0;
   font-size: 1rem;
   padding: 0.5rem 1rem;
-  border-radius: 0.375rem; /* Même que Bootstrap */
+  border-radius: 0.375rem;
   border: 1px solid #ced4da;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .filter-input:focus {
-  border-color: #0d6efd; /* Bootstrap primary bleu */
+  border-color: #0d6efd;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
   outline: none;
 }
 
+.search-btn {
+  padding: 0.5rem 1rem;
+  background-color: #06BBCC;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-btn:hover {
+  background-color: #0adef1;
+}
+
 .filter-select {
-  width: 180px; /* Largeur fixe raisonnable */
+  width: 180px;
   font-size: 1rem;
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
@@ -1342,4 +1563,40 @@ h6 {
   border-color: #0d6efd;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
   outline: none;
+}
+
+@media (max-width: 768px) {
+  .filter-container {
+    max-width: 100%;
+  }
+
+  .filter-input {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .search-btn {
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .filter-bar {
+    flex-direction: column;
+  }
+
+  .filter-input {
+    width: 100%;
+    font-size: 0.85rem;
+    padding: 0.35rem 0.7rem;
+  }
+
+  .search-btn {
+    width: 100%;
+    padding: 0.35rem 0.7rem;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
 }

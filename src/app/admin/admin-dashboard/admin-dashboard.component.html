@@ -73,12 +73,12 @@
     </nav>
   </div><!-- End Page Title -->
 
-  <section class="section dashboard">
+  <section class="section dashboard" [ngClass]="{'status-selected': selectedStatus}">
 
     <div class="row">
 
       <div class="col-lg-12">
-        <div class="row">
+        <div class="row status-cards-row">
 
           <!-- Approved Card -->
           <div class="col-xxl-4 col-md-4">
@@ -196,10 +196,10 @@
 
     </div><!-- End first row -->
 
-    <div class="row">
+    <div class="row dashboard-content-row">
 
       <!-- Liste des projets filtrés -->
-      <div class="col-12" *ngIf="selectedStatus">
+      <div class="col-12 selected-status-section" *ngIf="selectedStatus" id="selectedStatusSection">
         <div class="card recent-sales overflow-auto">
           <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
             <h5 class="card-title mb-0">Projets {{ selectedStatus | titlecase }}</h5>
@@ -393,7 +393,18 @@
                 </select>
               </div>
             </div>
-            <canvas id="dynamicChart" height="120"></canvas>
+            <div class="d-flex align-items-center gap-2 mt-2">
+              <button class="btn btn-sm btn-outline-primary" (click)="renderDynamicChart()">Rafraîchir</button>
+              <button class="btn btn-sm btn-primary" (click)="downloadChart()">Exporter PNG</button>
+            </div>
+            <div class="chart-container mt-3 position-relative">
+              <canvas id="dynamicChart"></canvas>
+              <div *ngIf="!chartHasData" class="no-data-overlay d-flex align-items-center justify-content-center">Aucune donnée disponible</div>
+              <div class="chart-interpretation position-absolute p-3" *ngIf="interpretationText">
+                <strong>Interprétation:</strong>
+                <div class="small mt-1">{{ interpretationText }}</div>
+              </div>
+            </div>
           </div>
         </div>
       </div><!-- End Analyse dynamique -->

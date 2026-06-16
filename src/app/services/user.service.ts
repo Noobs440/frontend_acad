@@ -73,9 +73,13 @@ login(email: string, password: string): Observable<any> {
 logout(): Observable<any> {
   return this.http.post(`${this.apiUrl}/auth/deconnexion`, null, this.getAuthHeaders()).pipe(
     tap(() => {
-      // Effacer le token
+      // Nettoyer complètement le localStorage
       if (typeof localStorage !== 'undefined') {
         localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        localStorage.removeItem('name');
+        localStorage.removeItem('id');
+        localStorage.removeItem('photo');
       }
       // Notifier que l'utilisateur est déconnecté
       this.userSubject.next(null);

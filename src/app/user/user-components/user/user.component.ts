@@ -205,9 +205,9 @@ isLoadingLogout = false;
 
   // Ouvre/ferme le menu latéral sur mobile
   toggleSidebar(): void {
-    const sidebar = document.querySelector('.sidebar');
-    if (sidebar) {
-      sidebar.classList.toggle('sidebar-mobile-open');
+    const bodyElement = document.getElementById('body');
+    if (bodyElement) {
+      bodyElement.classList.toggle('toggle-sidebar');
     }
   }
 
