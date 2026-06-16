@@ -709,6 +709,12 @@ confirmRestore() {
   public onCardClick = (status: string): void => {
     this.selectedStatus = status;
     this.filterTable(status);
+    setTimeout(() => {
+      const projectSection = document.getElementById('selectedStatusSection');
+      if (projectSection) {
+        projectSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 50);
   };
 
   hideProjectList() {
