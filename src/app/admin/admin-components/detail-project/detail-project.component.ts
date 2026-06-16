@@ -362,7 +362,7 @@ confirmReject() {
     if (!projectImage) {
       return '';
     }
-    return projectImage.startsWith('http') ? projectImage : `https://uds-faculte-des-sciences.netlify.app//${projectImage.replace(/^\/+/, '')}`;
+    return projectImage.startsWith('http') ? projectImage : `https://dschangschoolhub.duckdns.org/${projectImage.replace(/^\/+/, '')}`;
   }
   getFullDocumentUrl(lien_doc: string): string {
     if (!lien_doc) return '#';

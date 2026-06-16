@@ -27,7 +27,7 @@ export interface ActivityLog {
   providedIn: 'root'
 })
 export class ActivityLogService {
-  private apiUrl = 'https://uds-faculte-des-sciences.netlify.app//api/activity-logs';
+  private apiUrl = 'https://dschangschoolhub.duckdns.org/api/activity-logs';
 
   constructor(private http: HttpClient) {}
 

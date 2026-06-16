@@ -69,9 +69,9 @@ export class DetailProjetComponent {
     if (!lien_doc) return '#';
     if (lien_doc.startsWith('http')) return lien_doc;
     if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
-      return `https://uds-faculte-des-sciences.netlify.app//${lien_doc.replace(/^\/+/, '')}`;
+      return `https://dschangschoolhub.duckdns.org/${lien_doc.replace(/^\/+/, '')}`;
     }
-    return `https://uds-faculte-des-sciences.netlify.app//storage/${lien_doc.replace(/^\/+/, '')}`;
+    return `https://dschangschoolhub.duckdns.org/storage/${lien_doc.replace(/^\/+/, '')}`;
   }
 
   getFullImageUrl(imagePath: string): string {
@@ -80,7 +80,7 @@ export class DetailProjetComponent {
     }
     return imagePath.startsWith('http')
       ? imagePath
-      : `https://uds-faculte-des-sciences.netlify.app//${imagePath.replace(/^\/+/, '')}`;
+      : `https://dschangschoolhub.duckdns.org/${imagePath.replace(/^\/+/, '')}`;
   }
 
   loadProjectDetails(): void {

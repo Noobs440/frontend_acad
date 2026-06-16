@@ -36,7 +36,7 @@ getFullImageUrl(projectImage: string): string {
   if (!projectImage) {
     return '';
   }
-  return projectImage.startsWith('http') ? projectImage : `https://uds-faculte-des-sciences.netlify.app//${projectImage.replace(/^\/+/, '')}`;
+  return projectImage.startsWith('http') ? projectImage : `https://dschangschoolhub.duckdns.org/${projectImage.replace(/^\/+/, '')}`;
 }
 
 imageCellRenderer(params: any) {

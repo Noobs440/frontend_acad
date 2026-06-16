@@ -19,7 +19,7 @@ export interface Comment {
 })
 export class CommentService {
 
-  private apiUrl = 'https://uds-faculte-des-sciences.netlify.app//api';
+  private apiUrl = 'https://dschangschoolhub.duckdns.org/api';
 
   constructor(private http: HttpClient) { }
 

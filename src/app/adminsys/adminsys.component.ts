@@ -32,7 +32,7 @@ export class AdminsysComponent implements OnInit {
     if (!imagePath) {
       return 'assets/img/default.png';
     }
-    return imagePath.startsWith('http') ? imagePath : `https://uds-faculte-des-sciences.netlify.app//${imagePath.replace(/^\/+/g, '')}`;
+    return imagePath.startsWith('http') ? imagePath : `https://dschangschoolhub.duckdns.org/${imagePath.replace(/^\/+/g, '')}`;
   }
 
   logout(): void {

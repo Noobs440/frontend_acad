@@ -33,7 +33,7 @@ export class ProjectsComponent implements OnInit {
   @Input() prevButtonColor: string = 'blue';
   @Input() nextButtonColor: string = '#000';
 
-  private baseUrl: string = 'https://uds-faculte-des-sciences.netlify.app/';
+  private baseUrl: string = 'https://dschangschoolhub.duckdns.org';
   data: any[] = [];
   categories: any[] = [];
   filieres: any[] = [];
@@ -253,6 +253,6 @@ export class ProjectsComponent implements OnInit {
     if (!projectImage) {
       return '';
     }
-    return projectImage.startsWith('http') ? projectImage : `https://uds-faculte-des-sciences.netlify.app//${projectImage.replace(/^\/+/, '')}`;
+    return projectImage.startsWith('http') ? projectImage : `https://dschangschoolhub.duckdns.org/${projectImage.replace(/^\/+/, '')}`;
   }
 }

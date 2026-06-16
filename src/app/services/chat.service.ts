@@ -18,7 +18,7 @@ export interface Comment {
 })
 export class ChatService {
 
-  private apiUrl = 'https://uds-faculte-des-sciences.netlify.app//api';
+  private apiUrl = 'https://dschangschoolhub.duckdns.org/api';
 
   constructor(private http: HttpClient) { }
   sendMessage(projectId: number, content: string): Observable<Comment> {

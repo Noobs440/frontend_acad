@@ -74,6 +74,6 @@ export class EditPhotoComponent implements OnInit {
     if (this.user.photo.startsWith('http')) {
       return this.user.photo;
     }
-    return `https://uds-faculte-des-sciences.netlify.app//${this.user.photo}`; // exemple: 'images/nomfichier.jpg'
+    return `https://dschangschoolhub.duckdns.org/${this.user.photo}`; // exemple: 'images/nomfichier.jpg'
   }
 }

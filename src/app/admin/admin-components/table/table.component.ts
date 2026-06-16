@@ -57,7 +57,7 @@ export class TableComponent implements OnInit, AfterViewInit {
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
-    return `https://uds-faculte-des-sciences.netlify.app//${imagePath.replace(/^\/+/, '')}`;
+    return `https://dschangschoolhub.duckdns.org/${imagePath.replace(/^\/+/, '')}`;
   }
 
   showDetail(element: Project) {

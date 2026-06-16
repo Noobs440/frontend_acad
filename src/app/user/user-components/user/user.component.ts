@@ -71,7 +71,7 @@ isLoadingLogout = false;
 
     const storedPhoto = localStorage.getItem('photo');
     this.photo = storedPhoto && storedPhoto !== 'null' && storedPhoto !== 'undefined'
-      ? (storedPhoto.startsWith('http') ? storedPhoto : `https://uds-faculte-des-sciences.netlify.app//${storedPhoto}`)
+      ? (storedPhoto.startsWith('http') ? storedPhoto : `https://dschangschoolhub.duckdns.org/${storedPhoto}`)
       : 'assets/img/default.png';
 
     // Mets à jour le UserService si besoin
@@ -92,7 +92,7 @@ isLoadingLogout = false;
         if (profile.photo) {
           this.photo = profile.photo.startsWith('http')
             ? profile.photo
-            : `https://uds-faculte-des-sciences.netlify.app//${profile.photo}`;
+            : `https://dschangschoolhub.duckdns.org/${profile.photo}`;
         }
       }
     });
@@ -205,9 +205,9 @@ isLoadingLogout = false;
 
   // Ouvre/ferme le menu latéral sur mobile
   toggleSidebar(): void {
-    const sidebar = document.querySelector('.sidebar');
-    if (sidebar) {
-      sidebar.classList.toggle('sidebar-mobile-open');
+    const bodyElement = document.getElementById('body');
+    if (bodyElement) {
+      bodyElement.classList.toggle('toggle-sidebar');
     }
   }
 

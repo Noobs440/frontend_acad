@@ -15,11 +15,11 @@ export class SubmitProjectService {
     });
     
     return new Observable(observer => {
-      this.http.post<any>(`https://uds-faculte-des-sciences.netlify.app//api/usecases/submit/${projetId}`, null, { headers }).subscribe({
+      this.http.post<any>(`https://dschangschoolhub.duckdns.org/api/usecases/submit/${projetId}`, null, { headers }).subscribe({
         next: (submitRes) => {
           // Après soumission, associer l'admin
           const body = { admin_id: adminId };
-          this.http.post<any>(`https://uds-faculte-des-sciences.netlify.app//api/ressources/projets/${projetId}/assign-admin`, body, { headers }).subscribe({
+          this.http.post<any>(`https://dschangschoolhub.duckdns.org/api/ressources/projets/${projetId}/assign-admin`, body, { headers }).subscribe({
             next: (assignRes) => {
               observer.next({ submit: submitRes, assign: assignRes });
               observer.complete();

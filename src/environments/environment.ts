@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  backendUrl: 'https://uds-faculte-des-sciences.netlify.app//api',  // <-- enlever /api ici
-  assetUrl: 'https://uds-faculte-des-sciences.netlify.app//images'
+  backendUrl: 'https://dschangschoolhub.duckdns.org/api',  // <-- enlever /api ici
+  assetUrl: 'https://dschangschoolhub.duckdns.org/images'
 };

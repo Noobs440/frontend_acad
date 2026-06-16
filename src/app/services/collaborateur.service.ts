@@ -16,7 +16,7 @@ export interface Collaborateur {
 })
 export class CollaborateurService {
 
-  private apiUrl = 'https://uds-faculte-des-sciences.netlify.app//api/ressources/collaborateurs';
+  private apiUrl = 'https://dschangschoolhub.duckdns.org/api/ressources/collaborateurs';
 
   constructor(private http: HttpClient) {}
 
@@ -32,7 +32,7 @@ export class CollaborateurService {
 
   // Ajout collaborateur via endpoint usecases/add/collaborateur/projet/{id}
   addCollaborateur(nom_collab: string, email_collab: string, projet_id: string, user_id: number): Observable<any> {
-    return this.http.post<any>(`https://uds-faculte-des-sciences.netlify.app//api/usecases/add/collaborateur/projet/${projet_id}`, { nom_collab, email_collab, user_id });
+    return this.http.post<any>(`https://dschangschoolhub.duckdns.org/api/usecases/add/collaborateur/projet/${projet_id}`, { nom_collab, email_collab, user_id });
   }
 
   deleteCollaborateur(id: number | string): Observable<void> {
@@ -40,11 +40,11 @@ export class CollaborateurService {
   }
 
 updateCollaborateur(id: number, nom_collab:string, email_collab:string, tbl_projet_id:number, user_id:number): Observable<any> {
-  return this.http.put<any>(`https://uds-faculte-des-sciences.netlify.app//api/ressources/collaborateurs/${id}`,{nom_collab,email_collab,tbl_projet_id,user_id });
+  return this.http.put<any>(`https://dschangschoolhub.duckdns.org/api/ressources/collaborateurs/${id}`,{nom_collab,email_collab,tbl_projet_id,user_id });
 }
 
    getCollaborateursByProject(id:number): Observable<any[]>{
-    return this.http.get<any[]>(`https://uds-faculte-des-sciences.netlify.app//api/usecases/listing/projet/collaborateurs/${id}`).pipe(
+    return this.http.get<any[]>(`https://dschangschoolhub.duckdns.org/api/usecases/listing/projet/collaborateurs/${id}`).pipe(
       
       catchError((error) =>{
         

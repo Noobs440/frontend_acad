@@ -10,7 +10,7 @@ import { Observable, tap, catchError, of } from 'rxjs';
 export class NiveauService {
 
     searchNiveaux(query: string): Observable<any[]> {
-      return this.http.get<any[]>(`https://uds-faculte-des-sciences.netlify.app//api/ressources/niveaux/search?q=${encodeURIComponent(query)}`).pipe(
+      return this.http.get<any[]>(`https://dschangschoolhub.duckdns.org/api/ressources/niveaux/search?q=${encodeURIComponent(query)}`).pipe(
         catchError((error) => {
         
           return of([]);
@@ -19,14 +19,14 @@ export class NiveauService {
     }
 
   getLevelsWithProjectCount(): Observable<any[]> {
-  return this.http.get<any[]>('https://uds-faculte-des-sciences.netlify.app//api/usecases/listing/levels-with-project-count');
+  return this.http.get<any[]>('https://dschangschoolhub.duckdns.org/api/usecases/listing/levels-with-project-count');
   }
 
   constructor(private http:HttpClient){}
 
 
   getNiveaux(): Observable<any[]>{
-    return this.http.get<any[]>('https://uds-faculte-des-sciences.netlify.app//api/ressources/niveaux').pipe(
+    return this.http.get<any[]>('https://dschangschoolhub.duckdns.org/api/ressources/niveaux').pipe(
       
       catchError((error) =>{
         
@@ -36,14 +36,14 @@ export class NiveauService {
   }
 
   addniveau(code_niv:string ):Observable<any>{
-    return this.http.post<any>('https://uds-faculte-des-sciences.netlify.app//api/ressources/niveaux', {code_niv});
+    return this.http.post<any>('https://dschangschoolhub.duckdns.org/api/ressources/niveaux', {code_niv});
   }
 
   deleteniveau(id:string):Observable<any>{
-    return this.http.delete(`https://uds-faculte-des-sciences.netlify.app//api/ressources/niveaux/${id}`);
+    return this.http.delete(`https://dschangschoolhub.duckdns.org/api/ressources/niveaux/${id}`);
   }
 
   updateniveau(id:string ,code_niv:string ):Observable<any>{
-    return this.http.put<any>(`https://uds-faculte-des-sciences.netlify.app//api/ressources/niveaux/${id}`, {code_niv});
+    return this.http.put<any>(`https://dschangschoolhub.duckdns.org/api/ressources/niveaux/${id}`, {code_niv});
   }
 }

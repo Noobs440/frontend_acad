@@ -244,7 +244,7 @@ export class UserDashboardComponent implements OnInit {
     if (!projectImage) return '';
     return projectImage.startsWith('http')
       ? projectImage
-      : `https://uds-faculte-des-sciences.netlify.app/${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
+      : `https://dschangschoolhub.duckdns.org${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
   }
 
   openDialog(): void {

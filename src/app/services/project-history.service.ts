@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectHistoryService {
-  private apiUrl = 'https://uds-faculte-des-sciences.netlify.app//api/projects';
+  private apiUrl = 'https://dschangschoolhub.duckdns.org/api/projects';
 
   constructor(private http: HttpClient) {}
 

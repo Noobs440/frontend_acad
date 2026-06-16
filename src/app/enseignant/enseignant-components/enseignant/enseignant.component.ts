@@ -180,6 +180,6 @@ export class EnseignantComponent implements OnInit {
     if (!imagePath) {
       return 'assets/img/default.png';
     }
-    return imagePath.startsWith('http') ? imagePath : `https://uds-faculte-des-sciences.netlify.app//${imagePath.replace(/^\/+/, '')}`;
+    return imagePath.startsWith('http') ? imagePath : `https://dschangschoolhub.duckdns.org/${imagePath.replace(/^\/+/, '')}`;
   }
 }
