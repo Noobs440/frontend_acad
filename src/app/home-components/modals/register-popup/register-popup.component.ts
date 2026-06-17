@@ -92,8 +92,11 @@ export class RegisterComponent {
 
         },
         error: err => {
-
-          this.verifyAccountMessage = "Ce compte d'utilisateur existe deja";
+          if (err.status === 429) {
+            this.verifyAccountMessage = err.error?.message ?? 'Trop de requêtes. Veuillez patienter.';
+          } else {
+            this.verifyAccountMessage = "Ce compte d'utilisateur existe deja";
+          }
           this.isLoading = false;
         },
         complete: () => {
@@ -134,8 +137,11 @@ onVerifyCode() {
 
       },
       error: err => {
-
-        this.verifyCodeErrorMessage = "Code de vérification invalide ou informations incorrectes.";
+        if (err.status === 429) {
+          this.verifyCodeErrorMessage = err.error?.message ?? 'Trop de requêtes. Veuillez patienter.';
+        } else {
+          this.verifyCodeErrorMessage = "Code de vérification invalide ou informations incorrectes.";
+        }
         this.isLoading = false;
       },
       complete: () => {

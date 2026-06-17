@@ -97,9 +97,13 @@ export class LoginPopupComponent implements OnInit {
         this.dialogRef.close();
         this.redirectUserByRole(value.role);
       },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
-        this.errorMessage = 'Adresse email ou mot de passe invalide.';
+        if (err.status === 429) {
+          this.errorMessage = err.error?.message ?? 'Trop de tentatives. Réessayez plus tard.';
+        } else {
+          this.errorMessage = 'Adresse email ou mot de passe invalide.';
+        }
       },
       complete: () => {
         this.isLoading = false;
@@ -114,9 +118,13 @@ export class LoginPopupComponent implements OnInit {
     this.isLoading = true;
     this.userService.sendVerificationCode(this.resetRequestForm.value.email).subscribe({
       next: () => { this.showVerification = true; },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
-        this.errorMessage = 'Erreur lors de l\'envoi du code de vérification.';
+        if (err.status === 429) {
+          this.errorMessage = err.error?.message ?? 'Trop de requêtes. Veuillez patienter.';
+        } else {
+          this.errorMessage = 'Erreur lors de l\'envoi du code de vérification.';
+        }
       },
       complete: () => { this.isLoading = false; }
     });
@@ -132,9 +140,13 @@ export class LoginPopupComponent implements OnInit {
 
     this.userService.verifyResetcode(email, verificationCode).subscribe({
       next: () => { this.showResetPasswordForm = true; },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
-        this.errorMessage = 'Code de vérification invalide.';
+        if (err.status === 429) {
+          this.errorMessage = err.error?.message ?? 'Trop de requêtes. Veuillez patienter.';
+        } else {
+          this.errorMessage = 'Code de vérification invalide.';
+        }
       },
       complete: () => { this.isLoading = false; }
     });
@@ -156,9 +168,13 @@ export class LoginPopupComponent implements OnInit {
         this.showSuccessMessage = true;
         this.successMessage = 'Votre mot de passe a été réinitialisé avec succès.';
       },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
-        this.errorMessage = 'Aucun utilisateur trouvé avec cette adresse email.';
+        if (err.status === 429) {
+          this.errorMessage = err.error?.message ?? 'Trop de requêtes. Veuillez patienter.';
+        } else {
+          this.errorMessage = 'Aucun utilisateur trouvé avec cette adresse email.';
+        }
       },
       complete: () => { this.isLoading = false; }
     });
