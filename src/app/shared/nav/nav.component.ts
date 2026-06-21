@@ -70,8 +70,12 @@ export class NavComponent implements OnInit {
   }
 
   logout(): void {
+    // Fermer le menu mobile avant d'ouvrir le dialogue
+    this.closeMobileNav();
+    
     const dialogRef = this.dialog.open(LogoutConfirmDialogComponent, {
-      width: '350px'
+      width: '350px',
+      panelClass: 'logout-dialog-panel'
     });
     dialogRef.afterClosed().subscribe(result => {
         if (result) {

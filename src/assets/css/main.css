@@ -457,9 +457,7 @@ h6 {
 
   .mobile-nav-active .navmenu>ul li a i {
     margin-right: 10px;
-    width: 26px;
-    display: inline-block;
-    text-align: left;
+    font-size: 16px;
   }
 
   /* Make links full-width and obviously clickable on mobile */
@@ -497,18 +495,12 @@ h6 {
   .navmenu a i,
   .navmenu a:focus i {
     text-decoration: none;
-    font-size: 12px;
+    font-size: 16px;
     line-height: 0;
-    margin-left: 5px;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    text-wrap: nowrap;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
+    margin-right: 10px;
+    display: inline-block;
     transition: 0.3s;
-    background-color: color-mix(in srgb, var(--accent-color), transparent 90%);
+    color: inherit;
   }
   .navmenu a span,
   .navmenu a:focus span {
@@ -518,9 +510,8 @@ h6 {
 
   .navmenu a i:hover,
   .navmenu a:focus i:hover {
-    background-color: var(--accent-color);
-    color: var(--contrast-color);
-
+    color: var(--accent-color);
+    font-size: 18px;
   }
 
   .navmenu a:hover,
@@ -531,9 +522,9 @@ h6 {
 
   .navmenu .active i,
   .navmenu .active:focus i {
-    background-color: var(--accent-color);
-    color: var(--contrast-color);
-    transform: rotate(180deg);
+    color: var(--accent-color);
+    font-size: 18px;
+    font-weight: 700;
   }
 
   .navmenu .dropdown ul {
@@ -555,10 +546,6 @@ h6 {
   .navmenu .dropdown>.dropdown-active {
     display: block;
     background-color: rgba(33, 37, 41, 0.03);
-  }
-
-  .mobile-nav-active {
-    overflow: hidden;
   }
 
   .mobile-nav-active .mobile-nav-toggle {

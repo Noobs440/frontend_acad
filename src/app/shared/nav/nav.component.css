@@ -4,3 +4,8 @@ a{
 .header{
 
 }
+
+/* Ensure logout dialog appears above mobile menu */
+::ng-deep .logout-dialog-panel {
+  z-index: 13000 !important;
+}
