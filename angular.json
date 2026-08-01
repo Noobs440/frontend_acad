@@ -33,7 +33,17 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/static.json"
+              "src/static.json",
+              {
+                "glob": "google6b2ae44d06fe822a.html",
+                "input": "src",
+                "output": "/"
+              },
+              {
+                "glob": "sitemap.xml",
+                "input": "src",
+                "output": "/"
+              }
             ],
             "styles": [
               "src/custom-theme.scss",
