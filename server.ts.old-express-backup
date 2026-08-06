@@ -1,0 +1,55 @@
+import { APP_BASE_HREF } from '@angular/common';
+import { CommonEngine } from '@angular/ssr';
+import express from 'express';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import AppServerModule from './src/main.server';
+
+const server = express();
+const distFolder = join(process.cwd(), 'dist/uv-projet/browser');
+const indexHtml = existsSync(join(distFolder, 'index.original.html'))
+  ? join(distFolder, 'index.original.html')
+  : join(distFolder, 'index.html');
+
+const commonEngine = new CommonEngine();
+
+server.set('view engine', 'html');
+server.set('views', distFolder);
+
+server.get('*.*', express.static(distFolder, { maxAge: '1y' }));
+
+server.get('*', (req, res, next) => {
+  const protocol = req.protocol;
+  const host = req.get('host');
+  const originalUrl = req.originalUrl;
+  const baseUrl = req.baseUrl;
+
+  commonEngine
+    .render({
+      bootstrap: AppServerModule,
+      documentFilePath: indexHtml,
+      url: `${protocol}://${host}${originalUrl}`,
+      publicPath: distFolder,
+      providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
+    })
+    .then((html) => res.send(html))
+    .catch((err) => next(err));
+});
+
+function run(): void {
+  const port = process.env['PORT'] || 4000;
+  server.listen(port, () => {
+    console.log(`Node Express server listening on http://localhost:${port}`);
+  });
+}
+
+const currentFilePath = fileURLToPath(import.meta.url);
+const mainModule = process.argv[1];
+
+if (mainModule === currentFilePath) {
+  run();
+}
+
+export { server, run };
+export default AppServerModule;

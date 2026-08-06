@@ -23,7 +23,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/uv-projet",
+            "outputPath": "dist/uv-projet/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -41,6 +41,11 @@
               },
               {
                 "glob": "sitemap.xml",
+                "input": "src",
+                "output": "/"
+              },
+              {
+                "glob": "_redirects",
                 "input": "src",
                 "output": "/"
               }
@@ -124,6 +129,64 @@
             ],
             "scripts": []
           }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/uv-projet/server",
+            "main": "server.ts",
+            "tsConfig": "tsconfig.server.json"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-ssr": {
+          "builder": "@angular-devkit/build-angular:ssr-dev-server",
+          "configurations": {
+            "development": {
+              "browserTarget": "UV_projet:build:development",
+              "serverTarget": "UV_projet:server:development"
+            },
+            "production": {
+              "browserTarget": "UV_projet:build:production",
+              "serverTarget": "UV_projet:server:production"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "prerender": {
+          "builder": "@angular-devkit/build-angular:prerender",
+          "options": {
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "UV_projet:build:production",
+              "serverTarget": "UV_projet:server:production"
+            },
+            "development": {
+              "browserTarget": "UV_projet:build:development",
+              "serverTarget": "UV_projet:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }
