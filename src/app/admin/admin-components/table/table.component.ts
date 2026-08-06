@@ -57,7 +57,7 @@ export class TableComponent implements OnInit, AfterViewInit {
     if (imagePath.startsWith('http')) {
       return imagePath;
     }
-    return `https://dschangschoolhub.duckdns.org/${imagePath.replace(/^\/+/, '')}`;
+    return `https://dschangschoolhub.ddns.net/${imagePath.replace(/^\/+/, '')}`;
   }
 
   showDetail(element: Project) {

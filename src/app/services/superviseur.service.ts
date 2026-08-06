@@ -13,7 +13,7 @@ export interface Superviseur {
 })
 export class SuperviseurService {
 
-  private apiBaseUrl = 'https://dschangschoolhub.duckdns.org/api/ressources/superviseurs';
+  private apiBaseUrl = 'https://dschangschoolhub.ddns.net/api/ressources/superviseurs';
 
   constructor(private http: HttpClient) {}
 

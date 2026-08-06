@@ -521,7 +521,7 @@ confirmDeleteDocument(document: any) {
     if (!projectImage) return '';
     return projectImage.startsWith('http')
       ? projectImage
-      : `https://dschangschoolhub.duckdns.org${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
+      : `https://dschangschoolhub.ddns.net${projectImage.startsWith('/') ? '' : '/'}${projectImage}`;
   }
   
 }

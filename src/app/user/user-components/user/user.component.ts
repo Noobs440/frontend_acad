@@ -71,7 +71,7 @@ isLoadingLogout = false;
 
     const storedPhoto = localStorage.getItem('photo');
     this.photo = storedPhoto && storedPhoto !== 'null' && storedPhoto !== 'undefined'
-      ? (storedPhoto.startsWith('http') ? storedPhoto : `https://dschangschoolhub.duckdns.org/${storedPhoto}`)
+      ? (storedPhoto.startsWith('http') ? storedPhoto : `https://dschangschoolhub.ddns.net/${storedPhoto}`)
       : 'assets/img/default.png';
 
     // Mets à jour le UserService si besoin
@@ -92,7 +92,7 @@ isLoadingLogout = false;
         if (profile.photo) {
           this.photo = profile.photo.startsWith('http')
             ? profile.photo
-            : `https://dschangschoolhub.duckdns.org/${profile.photo}`;
+            : `https://dschangschoolhub.ddns.net/${profile.photo}`;
         }
       }
     });

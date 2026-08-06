@@ -11,7 +11,7 @@ export class UniversityService {
 
 
   getUniversities(): Observable<any[]>{
-    return this.http.get<any[]>('https://dschangschoolhub.duckdns.org/api/ressources/universites').pipe(
+    return this.http.get<any[]>('https://dschangschoolhub.ddns.net/api/ressources/universites').pipe(
       
       catchError((error) =>{
         
@@ -21,14 +21,14 @@ export class UniversityService {
   }
 
   adduniversity(nom_univ:string , email_univ:string , localite_univ:string, boite_postale:string):Observable<any>{
-    return this.http.post<any>('https://dschangschoolhub.duckdns.org/api/ressources/universites', {nom_univ , email_univ , localite_univ, boite_postale});
+    return this.http.post<any>('https://dschangschoolhub.ddns.net/api/ressources/universites', {nom_univ , email_univ , localite_univ, boite_postale});
   }
 
   deleteuniversity(id:string):Observable<any>{
-    return this.http.delete(`https://dschangschoolhub.duckdns.org/api/ressources/universites/${id}`);
+    return this.http.delete(`https://dschangschoolhub.ddns.net/api/ressources/universites/${id}`);
   }
 
   updateuniversity(id:string ,nom_univ:string , email_univ:string , localite_univ:string, boite_postale:string):Observable<any>{
-    return this.http.put<any>(`https://dschangschoolhub.duckdns.org/api/ressources/universites/${id}`, {nom_univ , email_univ , localite_univ, boite_postale});
+    return this.http.put<any>(`https://dschangschoolhub.ddns.net/api/ressources/universites/${id}`, {nom_univ , email_univ , localite_univ, boite_postale});
   }
 }

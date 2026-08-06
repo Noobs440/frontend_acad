@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  backendUrl: 'https://dschangschoolhub.duckdns.org/api',
-  assetUrl: 'https://dschangschoolhub.duckdns.org/images'
+  backendUrl: 'https://dschangschoolhub.ddns.net/api',
+  assetUrl: 'https://dschangschoolhub.ddns.net/images'
 };

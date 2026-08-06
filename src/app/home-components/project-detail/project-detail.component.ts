@@ -255,19 +255,19 @@ export class ProjectDetailComponent implements OnInit {
     if (!projectImage) {
       return '';
     }
-    return projectImage.startsWith('http') ? projectImage : `https://dschangschoolhub.duckdns.org/${projectImage.replace(/^\/+/, '')}`;
+    return projectImage.startsWith('http') ? projectImage : `https://dschangschoolhub.ddns.net/${projectImage.replace(/^\/+/, '')}`;
   }
 
   getFullDocumentUrl(lien_doc: string): string {
     if (!lien_doc) return '#';
     if (lien_doc.startsWith('http')) return lien_doc;
     if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
-      return `https://dschangschoolhub.duckdns.org/${lien_doc.replace(/^\/+/, '')}`;
+      return `https://dschangschoolhub.ddns.net/${lien_doc.replace(/^\/+/, '')}`;
     }
-    return `https://dschangschoolhub.duckdns.org/storage/${lien_doc.replace(/^\/+/, '')}`;
+    return `https://dschangschoolhub.ddns.net/storage/${lien_doc.replace(/^\/+/, '')}`;
   }
 
   getFullDocument(documentPath: string) {
-    return `https://dschangschoolhub.duckdns.org${documentPath}`;
+    return `https://dschangschoolhub.ddns.net${documentPath}`;
   }
 }

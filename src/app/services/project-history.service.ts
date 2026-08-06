@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectHistoryService {
-  private apiUrl = 'https://dschangschoolhub.duckdns.org/api/projects';
+  private apiUrl = 'https://dschangschoolhub.ddns.net/api/projects';
 
   constructor(private http: HttpClient) {}
 

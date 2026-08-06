@@ -11,7 +11,7 @@ export class FacultyService {
 
 
   getFaculties(): Observable<any[]>{
-    return this.http.get<any[]>('https://dschangschoolhub.duckdns.org/api/ressources/facultes').pipe(
+    return this.http.get<any[]>('https://dschangschoolhub.ddns.net/api/ressources/facultes').pipe(
     
       catchError((error) =>{
         
@@ -21,19 +21,19 @@ export class FacultyService {
   }
 
   addFaculty(nom_fac:string , email_fac:string , tbl_universite_id:string):Observable<any>{
-    return this.http.post<any>('https://dschangschoolhub.duckdns.org/api/ressources/facultes', {nom_fac , email_fac , tbl_universite_id});
+    return this.http.post<any>('https://dschangschoolhub.ddns.net/api/ressources/facultes', {nom_fac , email_fac , tbl_universite_id});
   }
 
   deleteFaculty(id:string):Observable<any>{
-    return this.http.delete(`https://dschangschoolhub.duckdns.org/api/ressources/facultes/${id}`);
+    return this.http.delete(`https://dschangschoolhub.ddns.net/api/ressources/facultes/${id}`);
   }
 
   updateFaculty(id:string ,nom_fac:string , email_fac:string , tbl_universite_id:string):Observable<any>{
-    return this.http.put<any>(`https://dschangschoolhub.duckdns.org/api/ressources/facultes/${id}`, {nom_fac , email_fac , tbl_universite_id});
+    return this.http.put<any>(`https://dschangschoolhub.ddns.net/api/ressources/facultes/${id}`, {nom_fac , email_fac , tbl_universite_id});
   }
 
     getUniversities(): Observable<any[]>{
-    return this.http.get<any[]>('https://dschangschoolhub.duckdns.org/api/ressources/universites').pipe(
+    return this.http.get<any[]>('https://dschangschoolhub.ddns.net/api/ressources/universites').pipe(
       
       catchError((error) =>{
         

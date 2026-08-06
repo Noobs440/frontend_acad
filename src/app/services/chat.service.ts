@@ -18,7 +18,7 @@ export interface Comment {
 })
 export class ChatService {
 
-  private apiUrl = 'https://dschangschoolhub.duckdns.org/api';
+  private apiUrl = 'https://dschangschoolhub.ddns.net/api';
 
   constructor(private http: HttpClient) { }
   sendMessage(projectId: number, content: string): Observable<Comment> {

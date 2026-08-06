@@ -69,9 +69,9 @@ export class DetailProjetComponent {
     if (!lien_doc) return '#';
     if (lien_doc.startsWith('http')) return lien_doc;
     if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
-      return `https://dschangschoolhub.duckdns.org/${lien_doc.replace(/^\/+/, '')}`;
+      return `https://dschangschoolhub.ddns.net/${lien_doc.replace(/^\/+/, '')}`;
     }
-    return `https://dschangschoolhub.duckdns.org/storage/${lien_doc.replace(/^\/+/, '')}`;
+    return `https://dschangschoolhub.ddns.net/storage/${lien_doc.replace(/^\/+/, '')}`;
   }
 
   getFullImageUrl(imagePath: string): string {
@@ -80,7 +80,7 @@ export class DetailProjetComponent {
     }
     return imagePath.startsWith('http')
       ? imagePath
-      : `https://dschangschoolhub.duckdns.org/${imagePath.replace(/^\/+/, '')}`;
+      : `https://dschangschoolhub.ddns.net/${imagePath.replace(/^\/+/, '')}`;
   }
 
   loadProjectDetails(): void {

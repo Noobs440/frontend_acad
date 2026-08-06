@@ -25,7 +25,7 @@ export class RecentPostComponent implements OnInit {
 
   chunkedPosts: any[] = [];
   data: any[] = [];
-  private baseUrl: string = 'https://dschangschoolhub.duckdns.org';
+  private baseUrl: string = 'https://dschangschoolhub.ddns.net';
   maxElements: number = 16;
   allProjects:any;
   isLoading=false;
@@ -64,7 +64,7 @@ export class RecentPostComponent implements OnInit {
     if (!projectImage) {
       return '';
     }
-    return projectImage.startsWith('http') ? projectImage : `https://dschangschoolhub.duckdns.org/${projectImage.replace(/^\/+/, '')}`;
+    return projectImage.startsWith('http') ? projectImage : `https://dschangschoolhub.ddns.net/${projectImage.replace(/^\/+/, '')}`;
   }
 
   getFullDocumentUrl(lien_doc: string): string {
@@ -73,9 +73,9 @@ export class RecentPostComponent implements OnInit {
     if (lien_doc.startsWith('http')) return lien_doc;
     // Si le lien commence par /public ou public, ajoute le préfixe
     if (lien_doc.startsWith('/public') || lien_doc.startsWith('public')) {
-      return `https://dschangschoolhub.duckdns.org/${lien_doc.replace(/^\/+/, '')}`;
+      return `https://dschangschoolhub.ddns.net/${lien_doc.replace(/^\/+/, '')}`;
     }
     // Sinon, ajoute /storage/
-    return `https://dschangschoolhub.duckdns.org/storage/${lien_doc.replace(/^\/+/, '')}`;
+    return `https://dschangschoolhub.ddns.net/storage/${lien_doc.replace(/^\/+/, '')}`;
   }
 }

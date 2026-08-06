@@ -33,7 +33,7 @@ export class ProjectsComponent implements OnInit {
   @Input() prevButtonColor: string = 'blue';
   @Input() nextButtonColor: string = '#000';
 
-  private baseUrl: string = 'https://dschangschoolhub.duckdns.org';
+  private baseUrl: string = 'https://dschangschoolhub.ddns.net';
   data: any[] = [];
   categories: any[] = [];
   filieres: any[] = [];
@@ -253,6 +253,6 @@ export class ProjectsComponent implements OnInit {
     if (!projectImage) {
       return '';
     }
-    return projectImage.startsWith('http') ? projectImage : `https://dschangschoolhub.duckdns.org/${projectImage.replace(/^\/+/, '')}`;
+    return projectImage.startsWith('http') ? projectImage : `https://dschangschoolhub.ddns.net/${projectImage.replace(/^\/+/, '')}`;
   }
 }

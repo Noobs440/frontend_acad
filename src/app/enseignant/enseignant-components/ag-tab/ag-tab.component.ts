@@ -30,7 +30,7 @@ export class AgTabComponent implements OnInit {
   }
 
   imageCellRenderer(params: any) {
-    const imageUrl = `https://dschangschoolhub.duckdns.org${params.value}`;
+    const imageUrl = `https://dschangschoolhub.ddns.net${params.value}`;
     return `<img src="${imageUrl}" alt="image" class="img-fluid" style="max-width: 100px; max-height: 100px;">`;
   }
 

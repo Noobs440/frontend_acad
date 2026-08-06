@@ -11,7 +11,7 @@ export class AcceuilService {
   constructor(private http:HttpClient , private router:Router) { }
 
   getProjectsByOrder(): Observable<any[]>{
-    return this.http.get<any[]>('https://dschangschoolhub.duckdns.org/api/usecases/acceuil/projets/ordre').pipe(
+    return this.http.get<any[]>('https://dschangschoolhub.ddns.net/api/usecases/acceuil/projets/ordre').pipe(
       
       catchError((error) =>{
   
@@ -21,7 +21,7 @@ export class AcceuilService {
   }
 
   getCategoriesWithProjectNumber(): Observable<any[]>{
-    return this.http.get<any[]>('https://dschangschoolhub.duckdns.org/api/usecases/acceuil/categories').pipe(
+    return this.http.get<any[]>('https://dschangschoolhub.ddns.net/api/usecases/acceuil/categories').pipe(
       
       catchError((error) =>{
         

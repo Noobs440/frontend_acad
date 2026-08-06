@@ -68,7 +68,7 @@ export class PopCategoryComponent implements OnInit {
   selectedLevel: string | null = null;
   // ...
 
-  private baseUrl: string = 'https://dschangschoolhub.duckdns.org';
+  private baseUrl: string = 'https://dschangschoolhub.ddns.net';
 
   constructor(
     private acceuilService: AcceuilService,
