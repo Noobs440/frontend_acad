@@ -50,13 +50,17 @@ export class RegisterComponent {
       verificationCode: ['', Validators.required]
     });
 
-    this.filiereService.getFilieres().subscribe(filiere => {
-      this.filiere = filiere;
-      for (var k = 0; k < this.filiere.length; k++) {
-        this.filiere_id.push([this.filiere[k].id]);
-      }
-      for (var k = 0; k < this.filiere.length; k++) {
-        this.filiere_name.push([this.filiere[k].nom_fil]);
+    this.filiereService.getFilieres().subscribe({
+      next: filieres => {
+        this.filiere = filieres || [];
+        this.filiere_id = this.filiere.map(f => f.id);
+        this.filiere_name = this.filiere.map(f => f.nom_fil);
+      },
+      error: err => {
+        console.error('Unable to load filieres', err);
+        this.filiere = [];
+        this.filiere_id = [];
+        this.filiere_name = [];
       }
     });
   }
